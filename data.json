@@ -1,0 +1,41 @@
+{
+  "users": [
+    {
+      "id": "62a21805-b6cc-43b0-b33e-4040a8139165",
+      "email": "vladimirstoanov10@gmail.com",
+      "username": "Сисадмин: Владимир Стоянов",
+      "password_hash": "$2a$10$tW8IJFJYkD7ATGbEyrDN2ecESmbOLGt8R6xURf0krDjievlDFKRmS",
+      "role": "admin",
+      "is_confirmed": false,
+      "created_at": 1768497801223
+    },
+    {
+      "id": "e6d7a30c-2626-43e0-ad63-83bf922a40bd",
+      "email": "vladiumnikaaa@abv.bg",
+      "username": "???? ABV",
+      "password_hash": "$2a$10$5MIEMNIG7As.C4bOwH7tPOlsCGRZ24vcUQaoRMtcYejbDHYOeVzTG",
+      "role": "user",
+      "is_confirmed": true,
+      "banned": false,
+      "locale": "bg",
+      "created_at": 1768584450765
+    }
+  ],
+  "categories": [],
+  "threads": [],
+  "posts": [],
+  "email_verifications": [
+    {
+      "token": "c7d0efd1-4aa6-4d7d-836a-48c121d1e0f0",
+      "user_id": "62a21805-b6cc-43b0-b33e-4040a8139165",
+      "expires_at": 1768584201223
+    }
+  ],
+  "password_resets": [
+    {
+      "token": "21057c2b-1da4-428f-bfa4-00a8565345ca",
+      "user_id": "e6d7a30c-2626-43e0-ad63-83bf922a40bd",
+      "expires_at": 1768588751083
+    }
+  ]
+}
