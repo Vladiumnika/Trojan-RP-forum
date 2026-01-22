@@ -22,7 +22,7 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const DATA_DIR = process.env.DATA_DIR || __dirname;
 const DATA_PATH = path.join(DATA_DIR, "data.json");
 const UPLOAD_DIR = path.join(__dirname, "uploads");
-const DB_TYPE = (process.env.DB_TYPE || "json").toLowerCase();
+const DB_TYPE = "json";
 console.log(`[Prestige RP] Storage: ${DB_TYPE}`);
 let MYSQL_READY = false;
 
