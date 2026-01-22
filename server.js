@@ -191,6 +191,9 @@ app.get(["/", "/index.html"], async (req, res) => {
     let html = await fs.readFile(htmlPath, "utf-8");
     const base = linkBaseFor(req);
     html = html.replace(/__RUNTIME_API_BASE__/g, base);
+    if (html.includes("</head>")) {
+      html = html.replace("</head>", `<script>window.API_BASE=${JSON.stringify(base)};</script>\n</head>`);
+    }
     res.set("Content-Type", "text/html; charset=utf-8");
     res.set("Cache-Control", "no-store");
     res.send(html);
