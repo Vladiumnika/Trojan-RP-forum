@@ -193,6 +193,12 @@ function computeBaseUrl(req) {
   const host = (req.headers["x-forwarded-host"] || req.get("host") || `localhost:${PORT}`);
   return `${proto}://${host}`;
 }
+function linkBaseFor(req) {
+  const envBase = (process.env.BASE_URL || "").trim();
+  if (!envBase) return computeBaseUrl(req);
+  if (/localhost|127\.0\.0\.1/.test(envBase)) return computeBaseUrl(req);
+  return envBase;
+}
 
 async function readDB() {
   try {
@@ -434,7 +440,7 @@ app.post("/api/auth/register", async (req, res) => {
     const token = uid();
     const expires_at = Date.now() + 1000 * 60 * 60 * 24;
     await pool.query("INSERT INTO email_verifications (token,user_id,expires_at) VALUES (:token,:user_id,:expires_at)", { token, user_id: id, expires_at });
-    const linkBase = process.env.BASE_URL || computeBaseUrl(req);
+    const linkBase = linkBaseFor(req);
     const link = `${linkBase}/api/auth/confirm?token=${encodeURIComponent(token)}`;
     const { subject, html } = mailTemplate(locale || "ru", "confirm", { username, link });
     await sendMail(email, subject, html);
@@ -450,7 +456,7 @@ app.post("/api/auth/register", async (req, res) => {
   const expires_at = Date.now() + 1000 * 60 * 60 * 24;
   db.email_verifications.push({ token, user_id: user.id, expires_at });
   await writeDB(db);
-  const linkBase = process.env.BASE_URL || computeBaseUrl(req);
+  const linkBase = linkBaseFor(req);
   const link = `${linkBase}/api/auth/confirm?token=${encodeURIComponent(token)}`;
   const { subject, html } = mailTemplate(user.locale, "confirm", { username, link });
   await sendMail(email, subject, html);
@@ -981,7 +987,7 @@ app.post("/api/auth/reset/request", async (req, res) => {
       const token = uid();
       const expires_at = Date.now() + 1000 * 60 * 60;
       await pool.query("INSERT INTO password_resets (token,user_id,expires_at) VALUES (:token,:user_id,:expires_at)", { token, user_id: u.id, expires_at });
-      const linkBase = process.env.BASE_URL || computeBaseUrl(req);
+      const linkBase = linkBaseFor(req);
       const link = `${linkBase}/api/auth/reset/confirm?token=${encodeURIComponent(token)}`;
       const { subject, html } = mailTemplate(u.locale, "reset", { username: u.username, link });
       await sendMail(email, subject, html);
@@ -995,7 +1001,7 @@ app.post("/api/auth/reset/request", async (req, res) => {
     const expires_at = Date.now() + 1000 * 60 * 60;
     db.password_resets.push({ token, user_id: u.id, expires_at });
     await writeDB(db);
-    const linkBase = process.env.BASE_URL || computeBaseUrl(req);
+    const linkBase = linkBaseFor(req);
     const link = `${linkBase}/api/auth/reset/confirm?token=${encodeURIComponent(token)}`;
     const { subject, html } = mailTemplate(u.locale, "reset", { username: u.username, link });
     await sendMail(email, subject, html);
@@ -1043,7 +1049,7 @@ app.post("/api/auth/reset/perform", async (req, res) => {
 });
 
 const server = app.listen(PORT, () => {
-  console.log(`Prestige RP backend on ${BASE_URL}`);
+  console.log(`Prestige RP backend listening on port ${PORT}`);
   console.log("Press Ctrl+C to stop");
 });
 server.on('error', (e) => {
