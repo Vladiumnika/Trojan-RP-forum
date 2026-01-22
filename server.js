@@ -185,6 +185,19 @@ app.use((req, res, next) => {
   }
   next();
 });
+app.get(["/", "/index.html"], async (req, res) => {
+  try {
+    const htmlPath = path.join(__dirname, "index.html");
+    let html = await fs.readFile(htmlPath, "utf-8");
+    const base = linkBaseFor(req);
+    html = html.replace(/__RUNTIME_API_BASE__/g, base);
+    res.set("Content-Type", "text/html; charset=utf-8");
+    res.set("Cache-Control", "no-store");
+    res.send(html);
+  } catch {
+    res.sendFile(path.join(__dirname, "index.html"));
+  }
+});
 app.use(express.static(__dirname, { etag: false, lastModified: false, cacheControl: false, maxAge: 0 }));
 app.use("/uploads", express.static(UPLOAD_DIR));
 
