@@ -924,6 +924,20 @@ app.post("/api/users/:id/ban", authMiddleware, requireAdmin, async (req, res) =>
   await writeDB(db);
   return res.json({ ok: true });
 });
+app.post("/api/users/:id/confirm", authMiddleware, requireAdmin, async (req, res) => {
+  if (MYSQL_READY) {
+    await pool.query("UPDATE users SET is_confirmed=1 WHERE id=:id", { id: req.params.id });
+    await pool.query("DELETE FROM email_verifications WHERE user_id=:id", { id: req.params.id });
+    return res.json({ ok: true });
+  }
+  const db = await readDB();
+  const u = db.users.find(x => x.id === req.params.id);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  u.is_confirmed = true;
+  db.email_verifications = (db.email_verifications || []).filter(ev => ev.user_id !== u.id);
+  await writeDB(db);
+  return res.json({ ok: true });
+});
 app.post("/api/users/:id/avatar", authMiddleware, upload.single("avatar"), async (req, res) => {
   if (req.user.sub !== req.params.id && req.user.role !== "admin") return res.status(403).json({ error: "Forbidden" });
   const f = req.file;

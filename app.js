@@ -87,6 +87,9 @@ const translations = {
     resendConfirm: "Отправить повторно подтверждение",
     resendConfirmSent: "Письмо с подтверждением отправлено, если аккаунт не подтвержден",
     smtpDisabledNote: "SMTP не настроен: регистрация пройдет, но письмо не придет. После настройки используйте кнопку 'Отправить повторно подтверждение'."
+    ,
+    confirmEmail: "Подтвердить email",
+    emailUnconfirmed: "email не подтвержден"
   },
   kk: {
     title: "Prestige RolePlay",
@@ -176,6 +179,9 @@ const translations = {
     resendConfirm: "Қайта растауды жіберу",
     resendConfirmSent: "Растау хаты жіберілді (егер аккаунт расталмаған болса)",
     smtpDisabledNote: "SMTP бапталмаған: тіркелу орындалады, бірақ хат келмейді. Баптаудан кейін 'Қайта растауды жіберу' түймесін қолданыңыз."
+    ,
+    confirmEmail: "Email-ді растау",
+    emailUnconfirmed: "email расталмаған"
   },
   uk: {
     title: "Prestige RolePlay",
@@ -263,6 +269,9 @@ const translations = {
     resendConfirm: "Надіслати повторне підтвердження",
     resendConfirmSent: "Лист підтвердження надіслано, якщо акаунт не підтверджений",
     smtpDisabledNote: "SMTP не налаштовано: реєстрація пройде, але лист не прийде. Після налаштування використовуйте 'Надіслати повторне підтвердження'."
+    ,
+    confirmEmail: "Підтвердити email",
+    emailUnconfirmed: "email не підтверджено"
   },
   bg: {
     title: "Prestige RolePlay",
@@ -352,6 +361,9 @@ const translations = {
     resendConfirm: "Изпрати наново потвърждение",
     resendConfirmSent: "Изпратихме потвърждение, ако акаунтът не е потвърден",
     smtpDisabledNote: "SMTP не е конфигуриран: Регистрацията ще мине, но няма да получиш имейл. След конфигуриране използвай 'Изпрати наново потвърждение'."
+    ,
+    confirmEmail: "Потвърди имейл",
+    emailUnconfirmed: "имейл не е потвърден"
   },
   en: {
     title: "Prestige RolePlay",
@@ -441,6 +453,9 @@ const translations = {
     resendConfirm: "Resend confirmation",
     resendConfirmSent: "Confirmation email sent if the account is unconfirmed",
     smtpDisabledNote: "SMTP is not configured: registration works, but no email will arrive. After configuring, use 'Resend confirmation'."
+    ,
+    confirmEmail: "Confirm email",
+    emailUnconfirmed: "email unconfirmed"
   }
 };
 
@@ -1295,7 +1310,7 @@ const ui = {
         const li = document.createElement("li");
         const left = document.createElement("div");
         left.innerHTML = `<div class="item-title">${escapeHtml(u.username)} • ${u.role}</div>
-                          <div class="item-sub">${escapeHtml(u.email)}${u.banned ? " • "+this.t("bannedLabel") : ""}</div>`;
+                          <div class="item-sub">${escapeHtml(u.email)}${u.banned ? " • "+this.t("bannedLabel") : ""}${u.is_confirmed ? "" : " • " + this.t("emailUnconfirmed")}</div>`;
         const actions = document.createElement("div");
         actions.className = "inline-actions";
         const modBtn = document.createElement("button");
@@ -1314,6 +1329,13 @@ const ui = {
         banBtn.className = "ghost";
         banBtn.textContent = u.banned ? this.t("unban") : this.t("ban");
         banBtn.addEventListener("click", () => api.post(`/api/users/${u.id}/ban`, { banned: !u.banned }).then(()=>this.renderAdmin()));
+        if (!u.is_confirmed) {
+          const confirmBtn = document.createElement("button");
+          confirmBtn.className = "ghost";
+          confirmBtn.textContent = this.t("confirmEmail");
+          confirmBtn.addEventListener("click", () => api.post(`/api/users/${u.id}/confirm`, {}).then(()=>this.renderAdmin()));
+          actions.appendChild(confirmBtn);
+        }
         actions.appendChild(modBtn);
         actions.appendChild(userBtn);
         actions.appendChild(adminBtn);
