@@ -505,6 +505,38 @@ app.get("/api/auth/confirm", async (req, res) => {
   return res.json({ message: "Email confirmed" });
 });
 
+app.post("/api/auth/resend-confirm", async (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ error: "Missing email" });
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT * FROM users WHERE LOWER(email)=LOWER(:email)", { email });
+    if (!rows.length) return res.json({ ok: true });
+    const u = rows[0];
+    if (u.is_confirmed) return res.status(400).json({ error: "Already confirmed" });
+    const token = uid();
+    const expires_at = Date.now() + 1000 * 60 * 60 * 24;
+    await pool.query("INSERT INTO email_verifications (token,user_id,expires_at) VALUES (:token,:user_id,:expires_at)", { token, user_id: u.id, expires_at });
+    const linkBase = linkBaseFor(req);
+    const link = `${linkBase}/api/auth/confirm?token=${encodeURIComponent(token)}`;
+    const { subject, html } = mailTemplate(u.locale || "ru", "confirm", { username: u.username, link });
+    await sendMail(email, subject, html);
+    return res.json({ ok: true });
+  }
+  const db = await readDB();
+  const u = db.users.find(x => x.email.toLowerCase() === email.toLowerCase());
+  if (!u) return res.json({ ok: true });
+  if (u.is_confirmed) return res.status(400).json({ error: "Already confirmed" });
+  const token = uid();
+  const expires_at = Date.now() + 1000 * 60 * 60 * 24;
+  db.email_verifications.push({ token, user_id: u.id, expires_at });
+  await writeDB(db);
+  const linkBase = linkBaseFor(req);
+  const link = `${linkBase}/api/auth/confirm?token=${encodeURIComponent(token)}`;
+  const { subject, html } = mailTemplate(u.locale || "ru", "confirm", { username: u.username, link });
+  await sendMail(email, subject, html);
+  return res.json({ ok: true });
+});
+
 app.post("/api/auth/login", async (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: "Missing fields" });

@@ -83,6 +83,10 @@ const translations = {
     dbMySQL: "MySQL",
     dbJSON: "JSON",
     dbJSONFallback: "JSON (временный режим)"
+    ,
+    resendConfirm: "Отправить повторно подтверждение",
+    resendConfirmSent: "Письмо с подтверждением отправлено, если аккаунт не подтвержден",
+    smtpDisabledNote: "SMTP не настроен: регистрация пройдет, но письмо не придет. После настройки используйте кнопку 'Отправить повторно подтверждение'."
   },
   kk: {
     title: "Prestige RolePlay",
@@ -168,6 +172,10 @@ const translations = {
     dbMySQL: "MySQL",
     dbJSON: "JSON",
     dbJSONFallback: "JSON (уақытша режим)"
+    ,
+    resendConfirm: "Қайта растауды жіберу",
+    resendConfirmSent: "Растау хаты жіберілді (егер аккаунт расталмаған болса)",
+    smtpDisabledNote: "SMTP бапталмаған: тіркелу орындалады, бірақ хат келмейді. Баптаудан кейін 'Қайта растауды жіберу' түймесін қолданыңыз."
   },
   uk: {
     title: "Prestige RolePlay",
@@ -251,6 +259,10 @@ const translations = {
     dbMySQL: "MySQL",
     dbJSON: "JSON",
     dbJSONFallback: "JSON (тимчасовий режим)"
+    ,
+    resendConfirm: "Надіслати повторне підтвердження",
+    resendConfirmSent: "Лист підтвердження надіслано, якщо акаунт не підтверджений",
+    smtpDisabledNote: "SMTP не налаштовано: реєстрація пройде, але лист не прийде. Після налаштування використовуйте 'Надіслати повторне підтвердження'."
   },
   bg: {
     title: "Prestige RolePlay",
@@ -336,6 +348,10 @@ const translations = {
     dbMySQL: "MySQL",
     dbJSON: "JSON",
     dbJSONFallback: "JSON (временен режим)"
+    ,
+    resendConfirm: "Изпрати наново потвърждение",
+    resendConfirmSent: "Изпратихме потвърждение, ако акаунтът не е потвърден",
+    smtpDisabledNote: "SMTP не е конфигуриран: Регистрацията ще мине, но няма да получиш имейл. След конфигуриране използвай 'Изпрати наново потвърждение'."
   },
   en: {
     title: "Prestige RolePlay",
@@ -421,6 +437,10 @@ const translations = {
     dbMySQL: "MySQL",
     dbJSON: "JSON",
     dbJSONFallback: "JSON (fallback)"
+    ,
+    resendConfirm: "Resend confirmation",
+    resendConfirmSent: "Confirmation email sent if the account is unconfirmed",
+    smtpDisabledNote: "SMTP is not configured: registration works, but no email will arrive. After configuring, use 'Resend confirmation'."
   }
 };
 
@@ -520,10 +540,12 @@ const ui = {
     this.el.loginDialog = document.getElementById("loginDialog");
     this.el.loginForm = document.getElementById("loginForm");
     this.el.loginCaptcha = document.getElementById("loginCaptcha");
+    this.el.loginNote = document.getElementById("loginNote");
     this.el.loginTitle = document.getElementById("loginTitle");
     this.el.loginEmail = document.getElementById("loginEmail");
     this.el.loginPassword = document.getElementById("loginPassword");
     this.el.loginCancel = document.getElementById("loginCancel");
+    this.el.loginResendBtn = document.getElementById("loginResendBtn");
     this.el.loginSubmit = document.getElementById("loginSubmit");
     this.el.registerDialog = document.getElementById("registerDialog");
     this.el.registerForm = document.getElementById("registerForm");
@@ -841,6 +863,21 @@ const ui = {
         }
       });
     }
+    if (this.el.loginResendBtn) {
+      this.el.loginResendBtn.addEventListener("click", async () => {
+        const email = this.el.loginEmail.value.trim();
+        if (!email) { alert(this.t("emailPh")); return }
+        this.el.loginResendBtn.disabled = true;
+        try {
+          await api.post("/api/auth/resend-confirm", { email });
+          if (this.el.loginNote) this.el.loginNote.textContent = this.t("resendConfirmSent");
+        } catch (err) {
+          if (this.el.loginNote) this.el.loginNote.textContent = `${this.t("apiError")}: ${err.message}`;
+        } finally {
+          this.el.loginResendBtn.disabled = false;
+        }
+      });
+    }
     if (this.el.adminDiagDBBtn) {
       this.el.adminDiagDBBtn.addEventListener("click", async () => {
         try {
@@ -976,6 +1013,9 @@ const ui = {
       const m = await api.get("/api/meta");
       this.state.meta = m;
       this.updateDbBadge();
+      if (this.el.registerNote) {
+        this.el.registerNote.textContent = m.smtp_ready ? this.t("registerNote") : this.t("smtpDisabledNote");
+      }
       if (this.el.viewAdmin && !this.el.viewAdmin.classList.contains("hidden")) {
         const label = this.t("dbLabel");
         const mysql = this.t("dbMySQL");
