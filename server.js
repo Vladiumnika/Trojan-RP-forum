@@ -938,6 +938,27 @@ app.post("/api/users/:id/confirm", authMiddleware, requireAdmin, async (req, res
   await writeDB(db);
   return res.json({ ok: true });
 });
+app.post("/api/admin/confirm-email", authMiddleware, requireAdmin, async (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ error: "Missing email" });
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT id,username,locale,is_confirmed FROM users WHERE LOWER(email)=LOWER(:email)", { email });
+    if (!rows.length) return res.status(404).json({ error: "User not found" });
+    const u = rows[0];
+    if (u.is_confirmed) return res.json({ ok: true, already: true });
+    await pool.query("UPDATE users SET is_confirmed=1 WHERE id=:id", { id: u.id });
+    await pool.query("DELETE FROM email_verifications WHERE user_id=:id", { id: u.id });
+    return res.json({ ok: true });
+  }
+  const db = await readDB();
+  const u = db.users.find(x => x.email.toLowerCase() === email.toLowerCase());
+  if (!u) return res.status(404).json({ error: "User not found" });
+  if (u.is_confirmed) return res.json({ ok: true, already: true });
+  u.is_confirmed = true;
+  db.email_verifications = (db.email_verifications || []).filter(ev => ev.user_id !== u.id);
+  await writeDB(db);
+  return res.json({ ok: true });
+});
 app.post("/api/users/:id/avatar", authMiddleware, upload.single("avatar"), async (req, res) => {
   if (req.user.sub !== req.params.id && req.user.role !== "admin") return res.status(403).json({ error: "Forbidden" });
   const f = req.file;
