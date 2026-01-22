@@ -425,16 +425,18 @@ const translations = {
 };
 
 const api = {
-  base: (typeof window !== "undefined" && (window.API_BASE || new URLSearchParams(window.location.search).get("apiBase") || (document.querySelector('meta[name="api-base"]') && document.querySelector('meta[name="api-base"]').content) || window.location.origin)) || "http://localhost:3000",
+  base: (typeof window !== "undefined" && (window.API_BASE || new URLSearchParams(window.location.search).get("apiBase") || (document.querySelector('meta[name="api-base"]') && document.querySelector('meta[name="api-base"]').content))) || "",
   token: localStorage.getItem("auth_token") || "",
   setToken(t) { this.token = t; if (t) localStorage.setItem("auth_token", t); else localStorage.removeItem("auth_token"); },
   async get(path) {
-    const r = await fetch(`${this.base}${path}`, { headers: this.token ? { Authorization: `Bearer ${this.token}` } : {} });
+    const url = this.base ? `${this.base}${path}` : path;
+    const r = await fetch(url, { headers: this.token ? { Authorization: `Bearer ${this.token}` } : {} });
     if (!r.ok) throw new Error(await r.text());
     return r.json();
   },
   async post(path, body) {
-    const r = await fetch(`${this.base}${path}`, {
+    const url = this.base ? `${this.base}${path}` : path;
+    const r = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
       body: JSON.stringify(body)
@@ -448,7 +450,7 @@ if (typeof window !== "undefined") {
   try {
     const host = window.location && window.location.hostname;
     if (/localhost|127\.0\.0\.1/.test(api.base) && host && !/localhost|127\.0\.0\.1/.test(host)) {
-      api.base = window.location.origin;
+      api.base = "";
     }
   } catch {}
 }
