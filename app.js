@@ -1,6 +1,6 @@
 const translations = {
   ru: {
-    title: "Trojan RolePlay",
+    title: "Prestige RolePlay",
     subtitle: "Форум",
     language: "Язык",
     themeToggle: "Тема",
@@ -22,7 +22,7 @@ const translations = {
     reply: "Ответить",
     captchaSolve: "Решите капчу",
     captchaRefresh: "Обновить",
-    footer: "Trojan RP • GTA RolePlay",
+    footer: "Prestige RolePlay • GTA RolePlay",
     empty: "Нет записей",
     threadsCount: "тем",
     postsCount: "постов",
@@ -85,7 +85,7 @@ const translations = {
     dbJSONFallback: "JSON (временный режим)"
   },
   kk: {
-    title: "Trojan RolePlay",
+    title: "Prestige RolePlay",
     subtitle: "Форум",
     language: "Тіл",
     themeToggle: "Тема",
@@ -107,7 +107,7 @@ const translations = {
     reply: "Жауап беру",
     captchaSolve: "Капчаны шешіңіз",
     captchaRefresh: "Жаңарту",
-    footer: "Trojan RP • GTA RolePlay",
+    footer: "Prestige RolePlay • GTA RolePlay",
     empty: "Жазбалар жоқ",
     threadsCount: "тақырып",
     postsCount: "пост",
@@ -170,7 +170,7 @@ const translations = {
     dbJSONFallback: "JSON (уақытша режим)"
   },
   uk: {
-    title: "Trojan RolePlay",
+    title: "Prestige RolePlay",
     subtitle: "Форум",
     language: "Мова",
     themeToggle: "Тема",
@@ -192,7 +192,7 @@ const translations = {
     reply: "Відповісти",
     captchaSolve: "Розв'яжіть капчу",
     captchaRefresh: "Оновити",
-    footer: "Trojan RP • GTA RolePlay",
+    footer: "Prestige RolePlay • GTA RolePlay",
     empty: "Немає записів",
     threadsCount: "тем",
     postsCount: "постів",
@@ -253,7 +253,7 @@ const translations = {
     dbJSONFallback: "JSON (тимчасовий режим)"
   },
   bg: {
-    title: "Trojan RolePlay",
+    title: "Prestige RolePlay",
     subtitle: "Форум",
     language: "Език",
     themeToggle: "Тема",
@@ -275,7 +275,7 @@ const translations = {
     reply: "Отговори",
     captchaSolve: "Решете CAPTCHA",
     captchaRefresh: "Обнови",
-    footer: "Trojan RP • GTA RolePlay",
+    footer: "Prestige RolePlay • GTA RolePlay",
     empty: "Няма записи",
     threadsCount: "теми",
     postsCount: "постове",
@@ -338,7 +338,7 @@ const translations = {
     dbJSONFallback: "JSON (временен режим)"
   },
   en: {
-    title: "Trojan RolePlay",
+    title: "Prestige RolePlay",
     subtitle: "Forum",
     language: "Language",
     themeToggle: "Theme",
@@ -360,7 +360,7 @@ const translations = {
     reply: "Reply",
     captchaSolve: "Solve CAPTCHA",
     captchaRefresh: "Refresh",
-    footer: "Trojan RP • GTA RolePlay",
+    footer: "Prestige RolePlay • GTA RolePlay",
     empty: "No records",
     threadsCount: "threads",
     postsCount: "posts",

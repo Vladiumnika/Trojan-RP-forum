@@ -22,7 +22,7 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const DATA_PATH = path.join(__dirname, "data.json");
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 const DB_TYPE = (process.env.DB_TYPE || "json").toLowerCase();
-console.log(`[Trojan RP] Storage: ${DB_TYPE}`);
+console.log(`[Prestige RP] Storage: ${DB_TYPE}`);
 let MYSQL_READY = false;
 
 let pool = null;
@@ -98,19 +98,24 @@ async function initMySQL() {
   const port = parseInt(process.env.MYSQL_PORT || "3306", 10);
   const user = process.env.MYSQL_USER || "root";
   const password = process.env.MYSQL_PASS || "";
-  const database = process.env.MYSQL_DB || "trojan_forum";
+  const database = process.env.MYSQL_DB || "prestige_forum";
   const useSsl = (process.env.MYSQL_SSL || "false").toLowerCase() === "true";
   const allowSelfSigned = (process.env.MYSQL_SSL_ALLOW_SELF_SIGNED || "false").toLowerCase() === "true";
   const ssl = useSsl ? (allowSelfSigned ? { rejectUnauthorized: false } : {}) : undefined;
   pool = mysql.createPool({ host, port, user, password, database, waitForConnections: true, connectionLimit: 10, queueLimit: 0, namedPlaceholders: true, ...(ssl ? { ssl } : {}) });
+  console.log(`[Prestige RP] Connecting to MySQL at ${host}:${port}...`);
   try {
     await ensureTables();
+    console.log("[Prestige RP] MySQL connected and tables verified.");
     MYSQL_READY = true;
   } catch (e) {
+    console.error("[Prestige RP] MySQL Connection Error:", e.message);
     if (e?.code === "ER_BAD_DB_ERROR") {
+      console.log("[Prestige RP] Database not found, attempting to create...");
       const conn = await mysql.createConnection({ host, port, user, password, ...(ssl ? { ssl } : {}) });
       await conn.query(`CREATE DATABASE IF NOT EXISTS \`${database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
       await conn.end();
+      console.log("[Prestige RP] Database created.");
       pool = mysql.createPool({ host, port, user, password, database, waitForConnections: true, connectionLimit: 10, queueLimit: 0, namedPlaceholders: true, ...(ssl ? { ssl } : {}) });
       await ensureTables();
       MYSQL_READY = true;
@@ -160,10 +165,10 @@ if (DB_TYPE === "mysql") {
       for (const pr of db.password_resets) {
         await pool.query("INSERT INTO password_resets (token,user_id,expires_at) VALUES (:token,:user_id,:expires_at)", { token: pr.token, user_id: pr.user_id, expires_at: pr.expires_at });
       }
-      console.log("[Trojan RP] Migrated JSON data to MySQL");
+      console.log("[Prestige RP] Migrated JSON data to MySQL");
     }
   } catch (err) {
-    console.error("[Trojan RP] MySQL init failed, falling back to JSON storage:", err?.code || err?.message || err);
+    console.error("[Prestige RP] MySQL init failed, falling back to JSON storage:", err?.code || err?.message || err);
     MYSQL_READY = false;
   }
 }
@@ -232,47 +237,47 @@ async function sendMail(to, subject, html) {
     tls: allowSelfSigned ? { rejectUnauthorized: false } : undefined
   });
   await transporter.verify().catch(() => {});
-  await transporter.sendMail({ from: `"Trojan RP" <${user}>`, to, subject, html });
+  await transporter.sendMail({ from: `"Prestige RP" <${user}>`, to, subject, html });
 }
 
 function mailTemplate(locale, type, data) {
   const L = locale || "ru";
   const t = {
     ru: {
-      confirm_subject: "Подтверждение регистрации Trojan RP",
+      confirm_subject: "Подтверждение регистрации Prestige RP",
       confirm_body: `Здравствуйте, ${data.username}!<br/>Перейдите по ссылке для подтверждения email: <a href="${data.link}">${data.link}</a>`,
-      reset_subject: "Сброс пароля Trojan RP",
+      reset_subject: "Сброс пароля Prestige RP",
       reset_body: `Здравствуйте, ${data.username}!<br/>Для сброса пароля перейдите по ссылке: <a href="${data.link}">${data.link}</a>`
     },
     kk: {
-      confirm_subject: "Trojan RP тіркеуді растау",
+      confirm_subject: "Prestige RP тіркеуді растау",
       confirm_body: `Сәлем, ${data.username}!<br/>Email растау үшін сілтеме: <a href="${data.link}">${data.link}</a>`,
-      reset_subject: "Trojan RP құпиясөзді қалпына келтіру",
+      reset_subject: "Prestige RP құпиясөзді қалпына келтіру",
       reset_body: `Сәлем, ${data.username}!<br/>Құпиясөзді қалпына келтіру үшін сілтеме: <a href="${data.link}">${data.link}</a>`
     },
     uk: {
-      confirm_subject: "Підтвердження реєстрації Trojan RP",
+      confirm_subject: "Підтвердження реєстрації Prestige RP",
       confirm_body: `Вітаємо, ${data.username}!<br/>Підтвердьте email за посиланням: <a href="${data.link}">${data.link}</a>`,
-      reset_subject: "Скидання пароля Trojan RP",
+      reset_subject: "Скидання пароля Prestige RP",
       reset_body: `Вітаємо, ${data.username}!<br/>Скиньте пароль за посиланням: <a href="${data.link}">${data.link}</a>`
     },
     bg: {
-      confirm_subject: "Потвърждение на регистрация Trojan RP",
+      confirm_subject: "Потвърждение на регистрация Prestige RP",
       confirm_body: `Здравей, ${data.username}!<br/>Потвърди имейла чрез линка: <a href="${data.link}">${data.link}</a>`,
-      reset_subject: "Възстановяване на парола Trojan RP",
+      reset_subject: "Възстановяване на парола Prestige RP",
       reset_body: `Здравей, ${data.username}!<br/>За смяна на паролата отвори: <a href="${data.link}">${data.link}</a>`
     },
     en: {
-      confirm_subject: "Trojan RP Registration Confirmation",
+      confirm_subject: "Prestige RP Registration Confirmation",
       confirm_body: `Hello, ${data.username}!<br/>Confirm your email via: <a href="${data.link}">${data.link}</a>`,
-      reset_subject: "Trojan RP Password Reset",
+      reset_subject: "Prestige RP Password Reset",
       reset_body: `Hello, ${data.username}!<br/>Reset your password via: <a href="${data.link}">${data.link}</a>`
     }
   }[L];
   if (type === "confirm") return { subject: t.confirm_subject, html: `<p>${t.confirm_body}</p>` };
   if (type === "reset") return { subject: t.reset_subject, html: `<p>${t.reset_body}</p>` };
   if (type === "reply") return { subject: "Новий відгук / New reply", html: `<p>${data.username} ответил(а) в теме: ${data.threadTitle}</p>` };
-  return { subject: "Trojan RP", html: "" };
+  return { subject: "Prestige RP", html: "" };
 }
 
 const storage = multer.diskStorage({
@@ -305,7 +310,7 @@ app.get("/api/meta", (req, res) => {
     mysql: MYSQL_READY ? {
       host: process.env.MYSQL_HOST || "localhost",
       port: parseInt(process.env.MYSQL_PORT || "3306", 10),
-      db: process.env.MYSQL_DB || "trojan_forum"
+      db: process.env.MYSQL_DB || "prestige_forum"
     } : null
   });
 });
@@ -313,7 +318,7 @@ app.post("/api/diag/mysql", authMiddleware, requireAdmin, async (req, res) => {
   try {
     const host = process.env.MYSQL_HOST || "localhost";
     const port = parseInt(process.env.MYSQL_PORT || "3306", 10);
-    const db = process.env.MYSQL_DB || "trojan_forum";
+    const db = process.env.MYSQL_DB || "prestige_forum";
     if (!MYSQL_READY) return res.json({ ok: false, ready: false, error: "MySQL not ready" });
     await pool.query("SELECT 1");
     return res.json({ ok: true, ready: true, host, port, db });
@@ -339,9 +344,9 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
     await transporter.verify();
     const to = (req.body && req.body.email) || user;
     await transporter.sendMail({
-      from: `"Trojan RP" <${user}>`,
+      from: `"Prestige RP" <${user}>`,
       to,
-      subject: "SMTP Test Trojan RP",
+      subject: "SMTP Test Prestige RP",
       html: "<p>SMTP тест успешно.</p>"
     });
     return res.json({ ok: true, verified: true, sent_to: to });
@@ -1017,6 +1022,15 @@ app.post("/api/auth/reset/perform", async (req, res) => {
   return res.json({ ok: true });
 });
 
-app.listen(PORT, () => {
-  console.log(`Trojan RP backend on ${BASE_URL}`);
+const server = app.listen(PORT, () => {
+  console.log(`Prestige RP backend on ${BASE_URL}`);
+  console.log("Press Ctrl+C to stop");
+});
+server.on('error', (e) => {
+  if (e.code === 'EADDRINUSE') {
+    console.error(`[Error] Port ${PORT} is already in use!`);
+    console.error(`Please close the application using port ${PORT} or change PORT in .env`);
+  } else {
+    console.error("[Error] Server failed to start:", e);
+  }
 });
