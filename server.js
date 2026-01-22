@@ -312,6 +312,7 @@ app.get("/api/meta", (req, res) => {
   const mode = MYSQL_READY ? "mysql" : (DB_TYPE === "mysql" ? "json_fallback" : "json");
   return res.json({
     ok: true,
+    version: "v2-json-forced",
     mode,
     mysql_ready: MYSQL_READY,
     mysql: MYSQL_READY ? {

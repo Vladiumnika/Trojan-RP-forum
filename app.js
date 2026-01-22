@@ -982,10 +982,12 @@ const ui = {
       this.el.dbBadge.textContent = `${this.t("dbLabel")}: ${this.t("dbMySQL")}`;
       this.el.dbBadge.className = "badge badge-success";
       this.el.dbBadge.style.display = "";
+      this.el.dbBadge.title = m.version || "";
     } else if (m) {
       this.el.dbBadge.textContent = `${this.t("dbLabel")}: ${this.t("dbJSON")}`;
       this.el.dbBadge.className = "badge badge-warning";
       this.el.dbBadge.style.display = "";
+      this.el.dbBadge.title = m.version || "";
     } else {
       this.el.dbBadge.textContent = "";
       this.el.dbBadge.style.display = "none";
