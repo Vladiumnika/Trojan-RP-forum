@@ -425,7 +425,7 @@ const translations = {
 };
 
 const api = {
-  base: "http://localhost:3000",
+  base: (typeof window !== "undefined" && (window.API_BASE || new URLSearchParams(window.location.search).get("apiBase") || (document.querySelector('meta[name=\"api-base\"]') && document.querySelector('meta[name=\"api-base\"]').content) || window.location.origin)) || "http://localhost:3000",
   token: localStorage.getItem("auth_token") || "",
   setToken(t) { this.token = t; if (t) localStorage.setItem("auth_token", t); else localStorage.removeItem("auth_token"); },
   async get(path) {
