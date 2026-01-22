@@ -978,7 +978,7 @@ const ui = {
   updateDbBadge() {
     const m = this.state.meta;
     if (!this.el.dbBadge) return;
-    if (m && m.mysql_ready) {
+    if (m && m.mysql_ready && m.mode === "mysql") {
       this.el.dbBadge.textContent = `${this.t("dbLabel")}: ${this.t("dbMySQL")}`;
       this.el.dbBadge.className = "badge badge-success";
       this.el.dbBadge.style.display = "";

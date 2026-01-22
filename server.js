@@ -177,7 +177,15 @@ if (DB_TYPE === "mysql") {
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));
-app.use(express.static(__dirname));
+app.use((req, res, next) => {
+  if (/\.(js|css|html)$/.test(req.path)) {
+    res.set("Cache-Control", "no-store");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+  }
+  next();
+});
+app.use(express.static(__dirname, { etag: false, lastModified: false, cacheControl: false, maxAge: 0 }));
 app.use("/uploads", express.static(UPLOAD_DIR));
 
 function computeBaseUrl(req) {
