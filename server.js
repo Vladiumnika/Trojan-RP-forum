@@ -19,7 +19,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
-const DATA_PATH = path.join(__dirname, "data.json");
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+const DATA_PATH = path.join(DATA_DIR, "data.json");
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 const DB_TYPE = (process.env.DB_TYPE || "json").toLowerCase();
 console.log(`[Prestige RP] Storage: ${DB_TYPE}`);
@@ -178,6 +179,12 @@ app.use(express.json({ limit: "1mb" }));
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));
 app.use(express.static(__dirname));
 app.use("/uploads", express.static(UPLOAD_DIR));
+
+function computeBaseUrl(req) {
+  const proto = (req.headers["x-forwarded-proto"] || req.protocol || "http");
+  const host = (req.headers["x-forwarded-host"] || req.get("host") || `localhost:${PORT}`);
+  return `${proto}://${host}`;
+}
 
 async function readDB() {
   try {
@@ -418,7 +425,8 @@ app.post("/api/auth/register", async (req, res) => {
     const token = uid();
     const expires_at = Date.now() + 1000 * 60 * 60 * 24;
     await pool.query("INSERT INTO email_verifications (token,user_id,expires_at) VALUES (:token,:user_id,:expires_at)", { token, user_id: id, expires_at });
-    const link = `${BASE_URL}/api/auth/confirm?token=${encodeURIComponent(token)}`;
+    const linkBase = process.env.BASE_URL || computeBaseUrl(req);
+    const link = `${linkBase}/api/auth/confirm?token=${encodeURIComponent(token)}`;
     const { subject, html } = mailTemplate(locale || "ru", "confirm", { username, link });
     await sendMail(email, subject, html);
     return res.json({ message: "Registered. Check email to confirm." });
@@ -433,7 +441,8 @@ app.post("/api/auth/register", async (req, res) => {
   const expires_at = Date.now() + 1000 * 60 * 60 * 24;
   db.email_verifications.push({ token, user_id: user.id, expires_at });
   await writeDB(db);
-  const link = `${BASE_URL}/api/auth/confirm?token=${encodeURIComponent(token)}`;
+  const linkBase = process.env.BASE_URL || computeBaseUrl(req);
+  const link = `${linkBase}/api/auth/confirm?token=${encodeURIComponent(token)}`;
   const { subject, html } = mailTemplate(user.locale, "confirm", { username, link });
   await sendMail(email, subject, html);
   return res.json({ message: "Registered. Check email to confirm." });
@@ -963,7 +972,8 @@ app.post("/api/auth/reset/request", async (req, res) => {
       const token = uid();
       const expires_at = Date.now() + 1000 * 60 * 60;
       await pool.query("INSERT INTO password_resets (token,user_id,expires_at) VALUES (:token,:user_id,:expires_at)", { token, user_id: u.id, expires_at });
-      const link = `${BASE_URL}/api/auth/reset/confirm?token=${encodeURIComponent(token)}`;
+      const linkBase = process.env.BASE_URL || computeBaseUrl(req);
+      const link = `${linkBase}/api/auth/reset/confirm?token=${encodeURIComponent(token)}`;
       const { subject, html } = mailTemplate(u.locale, "reset", { username: u.username, link });
       await sendMail(email, subject, html);
       return res.json({ ok: true });
@@ -976,7 +986,8 @@ app.post("/api/auth/reset/request", async (req, res) => {
     const expires_at = Date.now() + 1000 * 60 * 60;
     db.password_resets.push({ token, user_id: u.id, expires_at });
     await writeDB(db);
-    const link = `${BASE_URL}/api/auth/reset/confirm?token=${encodeURIComponent(token)}`;
+    const linkBase = process.env.BASE_URL || computeBaseUrl(req);
+    const link = `${linkBase}/api/auth/reset/confirm?token=${encodeURIComponent(token)}`;
     const { subject, html } = mailTemplate(u.locale, "reset", { username: u.username, link });
     await sendMail(email, subject, html);
     return res.json({ ok: true });

@@ -23,13 +23,14 @@
     {
       "id": "19d1f827-10f4-4832-b7d3-1830a326c6a1",
       "email": "vladimirstoanov12@gmail.com",
-      "username": "Admin",
+      "username": "Vladimir Stoyanov",
       "password_hash": "$2a$10$GE29lPlNqHwWzF4fiMbxBeIgjrx3ZzNLutZMVrwoS0151mt9kPaI.",
       "role": "admin",
       "is_confirmed": true,
       "banned": false,
       "locale": "bg",
-      "created_at": 1769090858197
+      "created_at": 1769090858197,
+      "notifications": false
     }
   ],
   "categories": [],
