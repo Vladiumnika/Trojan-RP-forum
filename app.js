@@ -84,6 +84,8 @@ const translations = {
     dbJSON: "JSON",
     dbJSONFallback: "JSON (временный режим)"
     ,
+    dbJSONWorkingNote: "Для ясности: база данных — JSON. Пишет, что отключена, но работает."
+    ,
     resendConfirm: "Отправить повторно подтверждение",
     resendConfirmSent: "Письмо с подтверждением отправлено, если аккаунт не подтвержден",
     smtpDisabledNote: "SMTP не настроен: регистрация пройдет, но письмо не придет. После настройки используйте кнопку 'Отправить повторно подтверждение'."
@@ -176,6 +178,8 @@ const translations = {
     dbJSON: "JSON",
     dbJSONFallback: "JSON (уақытша режим)"
     ,
+    dbJSONWorkingNote: "Түсінікті болу үшін: дерекқор JSON. Өшірілген деп жазылғанымен, жұмыс істейді."
+    ,
     resendConfirm: "Қайта растауды жіберу",
     resendConfirmSent: "Растау хаты жіберілді (егер аккаунт расталмаған болса)",
     smtpDisabledNote: "SMTP бапталмаған: тіркелу орындалады, бірақ хат келмейді. Баптаудан кейін 'Қайта растауды жіберу' түймесін қолданыңыз."
@@ -265,6 +269,8 @@ const translations = {
     dbMySQL: "MySQL",
     dbJSON: "JSON",
     dbJSONFallback: "JSON (тимчасовий режим)"
+    ,
+    dbJSONWorkingNote: "Для ясності: база даних — JSON. Пише, що вимкнена, але працює."
     ,
     resendConfirm: "Надіслати повторне підтвердження",
     resendConfirmSent: "Лист підтвердження надіслано, якщо акаунт не підтверджений",
@@ -358,6 +364,8 @@ const translations = {
     dbJSON: "JSON",
     dbJSONFallback: "JSON (временен режим)"
     ,
+    dbJSONWorkingNote: "За яснота: Базата данни е JSON. Пише, че е изключена, но работи."
+    ,
     resendConfirm: "Изпрати наново потвърждение",
     resendConfirmSent: "Изпратихме потвърждение, ако акаунтът не е потвърден",
     smtpDisabledNote: "SMTP не е конфигуриран: Регистрацията ще мине, но няма да получиш имейл. След конфигуриране използвай 'Изпрати наново потвърждение'."
@@ -449,6 +457,8 @@ const translations = {
     dbMySQL: "MySQL",
     dbJSON: "JSON",
     dbJSONFallback: "JSON (fallback)"
+    ,
+    dbJSONWorkingNote: "For clarity: the database is JSON. It says it's disabled, but it works."
     ,
     resendConfirm: "Resend confirmation",
     resendConfirmSent: "Confirmation email sent if the account is unconfirmed",
@@ -739,13 +749,13 @@ const ui = {
       e.preventDefault();
       try {
         if (!captcha.verify(this.el.registerCaptcha)) return;
-        await api.post("/api/auth/register", {
+        const r = await api.post("/api/auth/register", {
           email: this.el.registerEmail.value.trim(),
           username: this.el.registerUsername.value.trim(),
           password: this.el.registerPassword.value,
           locale: this.state.lang
         });
-        this.el.registerNote.textContent = this.t("registerNote");
+        this.el.registerNote.textContent = (r && r.smtp_ready) ? this.t("registerNote") : this.t("smtpDisabledNote");
       } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
     });
     this.el.resetForm.addEventListener("submit", async (e) => {

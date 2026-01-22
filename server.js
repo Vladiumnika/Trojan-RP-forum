@@ -446,6 +446,7 @@ app.post("/api/bootstrap/admin", async (req, res) => {
 app.post("/api/auth/register", async (req, res) => {
   const { email, username, password, locale } = req.body || {};
   if (!email || !password || !username) return res.status(400).json({ error: "Missing fields" });
+  const smtp_ready = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
   if (MYSQL_READY) {
     const [rows] = await pool.query("SELECT id FROM users WHERE LOWER(email)=LOWER(:email)", { email });
     if (rows.length) return res.status(409).json({ error: "Email exists" });
@@ -462,7 +463,7 @@ app.post("/api/auth/register", async (req, res) => {
     const link = `${linkBase}/api/auth/confirm?token=${encodeURIComponent(token)}`;
     const { subject, html } = mailTemplate(locale || "ru", "confirm", { username, link });
     await sendMail(email, subject, html);
-    return res.json({ message: "Registered. Check email to confirm." });
+    return res.json({ message: "Registered. Check email to confirm.", smtp_ready });
   }
   const db = await readDB();
   const exists = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -478,7 +479,7 @@ app.post("/api/auth/register", async (req, res) => {
   const link = `${linkBase}/api/auth/confirm?token=${encodeURIComponent(token)}`;
   const { subject, html } = mailTemplate(user.locale, "confirm", { username, link });
   await sendMail(email, subject, html);
-  return res.json({ message: "Registered. Check email to confirm." });
+  return res.json({ message: "Registered. Check email to confirm.", smtp_ready });
 });
 
 app.get("/api/auth/confirm", async (req, res) => {
