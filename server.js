@@ -340,11 +340,13 @@ const upload = multer({
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 app.get("/api/meta", (req, res) => {
   const mode = MYSQL_READY ? "mysql" : (DB_TYPE === "mysql" ? "json_fallback" : "json");
+  const smtp_ready = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
   return res.json({
     ok: true,
     version: "v2-json-forced",
     mode,
     mysql_ready: MYSQL_READY,
+    smtp_ready,
     mysql: MYSQL_READY ? {
       host: process.env.MYSQL_HOST || "localhost",
       port: parseInt(process.env.MYSQL_PORT || "3306", 10),
