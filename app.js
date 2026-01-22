@@ -91,7 +91,15 @@ const translations = {
     smtpDisabledNote: "SMTP не настроен: регистрация пройдет, но письмо не придет. После настройки используйте кнопку 'Отправить повторно подтверждение'."
     ,
     confirmEmail: "Подтвердить email",
-    emailUnconfirmed: "email не подтвержден"
+    emailUnconfirmed: "email не подтвержден",
+    twofa: "Двухфакторная защита",
+    enable2fa: "Включить 2FA (Google Authenticator)",
+    disable2fa: "Выключить 2FA",
+    twofaSetupTitle: "Настройка 2FA",
+    twofaScanNote: "Сканируйте QR в Google Authenticator или введите секрет вручную.",
+    twofaCodePh: "TOTP код",
+    twofaEnabledNote: "2FA включен",
+    twofaRequired: "Требуется 2FA код"
   },
   kk: {
     title: "Prestige RolePlay",
@@ -185,7 +193,15 @@ const translations = {
     smtpDisabledNote: "SMTP бапталмаған: тіркелу орындалады, бірақ хат келмейді. Баптаудан кейін 'Қайта растауды жіберу' түймесін қолданыңыз."
     ,
     confirmEmail: "Email-ді растау",
-    emailUnconfirmed: "email расталмаған"
+    emailUnconfirmed: "email расталмаған",
+    twofa: "Екі факторлы қорғау",
+    enable2fa: "2FA қосу (Google Authenticator)",
+    disable2fa: "2FA болдырмау",
+    twofaSetupTitle: "2FA баптау",
+    twofaScanNote: "Google Authenticator-де QR скандеңіз немесе құпияны қолмен енгізіңіз.",
+    twofaCodePh: "TOTP код",
+    twofaEnabledNote: "2FA қосылған",
+    twofaRequired: "2FA коды қажет"
   },
   uk: {
     title: "Prestige RolePlay",
@@ -277,7 +293,15 @@ const translations = {
     smtpDisabledNote: "SMTP не налаштовано: реєстрація пройде, але лист не прийде. Після налаштування використовуйте 'Надіслати повторне підтвердження'."
     ,
     confirmEmail: "Підтвердити email",
-    emailUnconfirmed: "email не підтверджено"
+    emailUnconfirmed: "email не підтверджено",
+    twofa: "Двофакторний захист",
+    enable2fa: "Увімкнути 2FA (Google Authenticator)",
+    disable2fa: "Вимкнути 2FA",
+    twofaSetupTitle: "Налаштування 2FA",
+    twofaScanNote: "Скануйте QR у Google Authenticator або введіть секрет вручну.",
+    twofaCodePh: "TOTP код",
+    twofaEnabledNote: "2FA увімкнено",
+    twofaRequired: "Потрібен 2FA код"
   },
   bg: {
     title: "Prestige RolePlay",
@@ -371,7 +395,15 @@ const translations = {
     smtpDisabledNote: "SMTP не е конфигуриран: Регистрацията ще мине, но няма да получиш имейл. След конфигуриране използвай 'Изпрати наново потвърждение'."
     ,
     confirmEmail: "Потвърди имейл",
-    emailUnconfirmed: "имейл не е потвърден"
+    emailUnconfirmed: "имейл не е потвърден",
+    twofa: "Двуфакторна защита",
+    enable2fa: "Включи 2FA (Google Authenticator)",
+    disable2fa: "Изключи 2FA",
+    twofaSetupTitle: "Настройка на 2FA",
+    twofaScanNote: "Сканирай QR в Google Authenticator или въведи секретния ключ ръчно.",
+    twofaCodePh: "TOTP код",
+    twofaEnabledNote: "2FA е включен",
+    twofaRequired: "Изисква се 2FA код"
   },
   en: {
     title: "Prestige RolePlay",
@@ -465,7 +497,15 @@ const translations = {
     smtpDisabledNote: "SMTP is not configured: registration works, but no email will arrive. After configuring, use 'Resend confirmation'."
     ,
     confirmEmail: "Confirm email",
-    emailUnconfirmed: "email unconfirmed"
+    emailUnconfirmed: "email unconfirmed",
+    twofa: "Two-factor auth",
+    enable2fa: "Enable 2FA (Google Authenticator)",
+    disable2fa: "Disable 2FA",
+    twofaSetupTitle: "2FA Setup",
+    twofaScanNote: "Scan QR in Google Authenticator or enter the secret manually.",
+    twofaCodePh: "TOTP code",
+    twofaEnabledNote: "2FA is enabled",
+    twofaRequired: "2FA code required"
   }
 };
 
@@ -560,6 +600,17 @@ const ui = {
     this.el.profileNotifications = document.getElementById("profileNotifications");
     this.el.profileNotificationsLabel = document.getElementById("profileNotificationsLabel");
     this.el.avatarUpload = document.getElementById("avatarUpload");
+    this.el.enable2faBtn = document.getElementById("enable2faBtn");
+    this.el.disable2faBtn = document.getElementById("disable2faBtn");
+    this.el.twofaDialog = document.getElementById("twofaDialog");
+    this.el.twofaForm = document.getElementById("twofaForm");
+    this.el.twofaTitle = document.getElementById("twofaTitle");
+    this.el.twofaNote = document.getElementById("twofaNote");
+    this.el.twofaSecret = document.getElementById("twofaSecret");
+    this.el.twofaUri = document.getElementById("twofaUri");
+    this.el.twofaCode = document.getElementById("twofaCode");
+    this.el.twofaCancel = document.getElementById("twofaCancel");
+    this.el.twofaActivate = document.getElementById("twofaActivate");
     this.el.profileCancel = document.getElementById("profileCancel");
     this.el.saveProfile = document.getElementById("saveProfile");
     this.el.loginDialog = document.getElementById("loginDialog");
@@ -569,6 +620,7 @@ const ui = {
     this.el.loginTitle = document.getElementById("loginTitle");
     this.el.loginEmail = document.getElementById("loginEmail");
     this.el.loginPassword = document.getElementById("loginPassword");
+    this.el.loginTotp = document.getElementById("loginTotp");
     this.el.loginCancel = document.getElementById("loginCancel");
     this.el.loginResendBtn = document.getElementById("loginResendBtn");
     this.el.loginSubmit = document.getElementById("loginSubmit");
@@ -717,6 +769,50 @@ const ui = {
         this.updateHeaderAuth();
       } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
     });
+    if (this.el.enable2faBtn) {
+      this.el.enable2faBtn.addEventListener("click", async () => {
+        try {
+          if (!this.state.user) return;
+          const r = await api.post("/api/auth/2fa/setup", {});
+          this.el.twofaTitle.textContent = this.t("twofaSetupTitle");
+          this.el.twofaNote.textContent = this.t("twofaScanNote");
+          this.el.twofaSecret.textContent = `Secret: ${r.secret}`;
+          this.el.twofaUri.textContent = `URI: ${r.uri}`;
+          this.el.twofaCode.value = "";
+          this.el.twofaDialog.showModal();
+          this.el.twofaForm.onsubmit = async (e2) => {
+            e2.preventDefault();
+            try {
+              await api.post("/api/auth/2fa/activate", { code: this.el.twofaCode.value.trim() });
+              this.el.twofaDialog.close();
+              alert(this.t("twofaEnabledNote"));
+            } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
+          };
+          this.el.twofaCancel.onclick = () => this.el.twofaDialog.close();
+        } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
+      });
+    }
+    if (this.el.disable2faBtn) {
+      this.el.disable2faBtn.addEventListener("click", async () => {
+        try {
+          this.el.twofaTitle.textContent = this.t("disable2fa");
+          this.el.twofaNote.textContent = this.t("twofaRequired");
+          this.el.twofaSecret.textContent = "";
+          this.el.twofaUri.textContent = "";
+          this.el.twofaCode.value = "";
+          this.el.twofaDialog.showModal();
+          this.el.twofaForm.onsubmit = async (e2) => {
+            e2.preventDefault();
+            try {
+              await api.post("/api/auth/2fa/disable", { code: this.el.twofaCode.value.trim() });
+              this.el.twofaDialog.close();
+              alert("OK");
+            } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
+          };
+          this.el.twofaCancel.onclick = () => this.el.twofaDialog.close();
+        } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
+      });
+    }
     this.el.cancelLabel.addEventListener("click", (e) => { e.preventDefault(); this.el.categoryDialog.close(); });
     this.el.cancelLabel2.addEventListener("click", (e) => { e.preventDefault(); this.el.threadDialog.close(); });
     this.el.cancelLabel3.addEventListener("click", (e) => { e.preventDefault(); this.el.postDialog.close(); });
@@ -737,7 +833,7 @@ const ui = {
       e.preventDefault();
       try {
         if (!captcha.verify(this.el.loginCaptcha)) return;
-        const r = await api.post("/api/auth/login", { email: this.el.loginEmail.value.trim(), password: this.el.loginPassword.value });
+        const r = await api.post("/api/auth/login", { email: this.el.loginEmail.value.trim(), password: this.el.loginPassword.value, totp: (this.el.loginTotp?.value || "").trim() || undefined });
         api.setToken(r.token);
         this.state.user = r.user;
         this.el.loginDialog.close();
@@ -958,6 +1054,7 @@ const ui = {
     this.el.loginTitle.textContent = this.t("loginTitle");
     this.el.loginEmail.placeholder = this.t("emailPh");
     this.el.loginPassword.placeholder = this.t("passwordPh");
+    if (this.el.loginTotp) this.el.loginTotp.placeholder = this.t("twofaCodePh");
     this.el.loginCancel.textContent = this.t("cancel");
     this.el.loginSubmit.textContent = this.t("login");
     this.el.loginTitle.textContent = this.t("loginTitle");
@@ -1000,6 +1097,11 @@ const ui = {
     this.el.profileTitle.textContent = this.t("profileTitle");
     this.el.profileUsername.placeholder = this.t("usernamePh");
     this.el.profileNotificationsLabel.textContent = this.t("notifications");
+    if (this.el.enable2faBtn) this.el.enable2faBtn.textContent = this.t("enable2fa");
+    if (this.el.disable2faBtn) this.el.disable2faBtn.textContent = this.t("disable2fa");
+    if (this.el.twofaTitle) this.el.twofaTitle.textContent = this.t("twofaSetupTitle");
+    if (this.el.twofaNote) this.el.twofaNote.textContent = this.t("twofaScanNote");
+    if (this.el.twofaCode) this.el.twofaCode.placeholder = this.t("twofaCodePh");
     this.el.profileCancel.textContent = this.t("cancel");
     this.el.saveProfile.textContent = this.t("save");
     const opts = this.el.lang.querySelectorAll("option");

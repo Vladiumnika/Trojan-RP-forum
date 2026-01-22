@@ -48,6 +48,7 @@
         <h3 id="loginTitle">Вход</h3>
         <input id="loginEmail" type="email" placeholder="Email" required>
         <input id="loginPassword" type="password" placeholder="Парола" required>
+        <input id="loginTotp" type="text" placeholder="TOTP код (ако е включен)">
         <div id="loginCaptcha" class="captcha"></div>
         <div id="loginNote" class="item-sub"></div>
         <div class="actions">
@@ -103,8 +104,25 @@
         </label>
         <input id="avatarUpload" type="file" accept="image/*">
         <div class="actions">
+          <button type="button" class="ghost" id="enable2faBtn">Включи 2FA (Google Authenticator)</button>
+          <button type="button" class="ghost" id="disable2faBtn">Изключи 2FA</button>
+        </div>
+        <div class="actions">
           <button type="button" class="ghost" id="profileCancel">Отказ</button>
           <button value="default" class="primary" id="saveProfile">Запази</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="twofaDialog">
+      <form method="dialog" id="twofaForm" class="form">
+        <h3 id="twofaTitle">Настройка на 2FA</h3>
+        <div id="twofaNote" class="item-sub">Сканирай QR в Google Authenticator или въведи секретния ключ ръчно.</div>
+        <div id="twofaSecret" class="item-sub"></div>
+        <div id="twofaUri" class="item-sub"></div>
+        <input id="twofaCode" type="text" placeholder="TOTP код" required>
+        <div class="actions">
+          <button type="button" class="ghost" id="twofaCancel">Отказ</button>
+          <button value="default" class="primary" id="twofaActivate">Активирай</button>
         </div>
       </form>
     </dialog>

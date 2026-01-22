@@ -11,6 +11,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import crypto from "crypto";
 import mysql from "mysql2/promise";
+import { authenticator } from "otplib";
 
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
@@ -540,6 +541,7 @@ app.post("/api/auth/resend-confirm", async (req, res) => {
 
 app.post("/api/auth/login", async (req, res) => {
   const { email, password } = req.body || {};
+  const totp = (req.body && req.body.totp) || null;
   if (!email || !password) return res.status(400).json({ error: "Missing fields" });
   if (MYSQL_READY) {
     const [rows] = await pool.query("SELECT * FROM users WHERE LOWER(email)=LOWER(:email)", { email });
@@ -549,6 +551,11 @@ app.post("/api/auth/login", async (req, res) => {
     if (!ok) return res.status(401).json({ error: "Invalid credentials" });
     if (u.banned) return res.status(403).json({ error: "User banned" });
     if (!u.is_confirmed) return res.status(403).json({ error: "Email not confirmed" });
+    if (u.twofa_enabled) {
+      if (!totp) return res.status(401).json({ error: "2FA required" });
+      const okTotp = authenticator.verify({ token: totp, secret: u.totp_secret });
+      if (!okTotp) return res.status(401).json({ error: "Invalid 2FA code" });
+    }
     const token = jwt.sign({ sub: u.id, role: u.role }, JWT_SECRET, { expiresIn: "7d" });
     return res.json({ token, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
   }
@@ -559,6 +566,11 @@ app.post("/api/auth/login", async (req, res) => {
   if (!ok) return res.status(401).json({ error: "Invalid credentials" });
   if (u.banned) return res.status(403).json({ error: "User banned" });
   if (!u.is_confirmed) return res.status(403).json({ error: "Email not confirmed" });
+  if (u.twofa_enabled) {
+    if (!totp) return res.status(401).json({ error: "2FA required" });
+    const okTotp = authenticator.verify({ token: totp, secret: u.totp_secret });
+    if (!okTotp) return res.status(401).json({ error: "Invalid 2FA code" });
+  }
   const token = jwt.sign({ sub: u.id, role: u.role }, JWT_SECRET, { expiresIn: "7d" });
   return res.json({ token, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
 });
@@ -572,7 +584,7 @@ app.get("/api/me", authMiddleware, async (req, res) => {
   const db = await readDB();
   const u = db.users.find(u => u.id === req.user.sub);
   if (!u) return res.status(404).json({ error: "User not found" });
-  return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed });
+  return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, twofa_enabled: !!u.twofa_enabled });
 });
 
 app.get("/api/categories", async (req, res) => {
@@ -993,6 +1005,50 @@ app.post("/api/users/:id/profile", authMiddleware, async (req, res) => {
   if (typeof notifications === "boolean") u.notifications = notifications;
   await writeDB(db);
   return res.json({ ok: true });
+});
+
+// 2FA (TOTP) endpoints
+app.post("/api/auth/2fa/setup", authMiddleware, async (req, res) => {
+  if (MYSQL_READY) return res.status(501).json({ error: "2FA not available in MySQL mode yet" });
+  const db = await readDB();
+  const u = db.users.find(x => x.id === req.user.sub);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  const secret = authenticator.generateSecret();
+  u.totp_secret = secret;
+  u.twofa_enabled = false;
+  await writeDB(db);
+  const issuer = "Prestige RP";
+  const uri = authenticator.keyuri(u.email, issuer, secret);
+  return res.json({ secret, uri });
+});
+app.post("/api/auth/2fa/activate", authMiddleware, async (req, res) => {
+  const { code } = req.body || {};
+  if (!code) return res.status(400).json({ error: "Missing code" });
+  if (MYSQL_READY) return res.status(501).json({ error: "2FA not available in MySQL mode yet" });
+  const db = await readDB();
+  const u = db.users.find(x => x.id === req.user.sub);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  if (!u.totp_secret) return res.status(400).json({ error: "2FA not initialized" });
+  const ok = authenticator.verify({ token: code, secret: u.totp_secret });
+  if (!ok) return res.status(401).json({ error: "Invalid 2FA code" });
+  u.twofa_enabled = true;
+  await writeDB(db);
+  return res.json({ ok: true, twofa_enabled: true });
+});
+app.post("/api/auth/2fa/disable", authMiddleware, async (req, res) => {
+  const { code } = req.body || {};
+  if (MYSQL_READY) return res.status(501).json({ error: "2FA not available in MySQL mode yet" });
+  const db = await readDB();
+  const u = db.users.find(x => x.id === req.user.sub);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  if (u.twofa_enabled) {
+    if (!code) return res.status(400).json({ error: "Missing code" });
+    const ok = authenticator.verify({ token: code, secret: u.totp_secret });
+    if (!ok) return res.status(401).json({ error: "Invalid 2FA code" });
+  }
+  u.twofa_enabled = false;
+  await writeDB(db);
+  return res.json({ ok: true, twofa_enabled: false });
 });
 
 app.get("/api/search/threads", async (req, res) => {
