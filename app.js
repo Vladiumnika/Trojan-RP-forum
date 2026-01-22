@@ -404,6 +404,10 @@ const translations = {
     twofaCodePh: "TOTP код",
     twofaEnabledNote: "2FA е включен",
     twofaRequired: "Изисква се 2FA код"
+    ,
+    logoutAll: "Изход от всички устройства"
+    ,
+    newPostInThread: "Нов пост в тема: {title}"
   },
   en: {
     title: "Prestige RolePlay",
@@ -506,26 +510,58 @@ const translations = {
     twofaCodePh: "TOTP code",
     twofaEnabledNote: "2FA is enabled",
     twofaRequired: "2FA code required"
+    ,
+    logoutAll: "Logout all devices"
+    ,
+    newPostInThread: "New post in thread: {title}"
   }
 };
 
 const api = {
   base: (typeof window !== "undefined" && (window.API_BASE || new URLSearchParams(window.location.search).get("apiBase") || (document.querySelector('meta[name="api-base"]') && document.querySelector('meta[name="api-base"]').content))) || "",
   token: localStorage.getItem("auth_token") || "",
+  refreshToken: localStorage.getItem("refresh_token") || "",
   setToken(t) { this.token = t; if (t) localStorage.setItem("auth_token", t); else localStorage.removeItem("auth_token"); },
+  setRefreshToken(t) { this.refreshToken = t || ""; if (t) localStorage.setItem("refresh_token", t); else localStorage.removeItem("refresh_token"); },
+  async refresh() {
+    if (!this.refreshToken) { this.setToken(""); return false; }
+    try {
+      const url = this.base ? `${this.base}/api/auth/refresh` : "/api/auth/refresh";
+      const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refresh_token: this.refreshToken }) });
+      if (!r.ok) return false;
+      const data = await r.json();
+      if (data && data.token) this.setToken(data.token);
+      if (data && data.refresh_token) this.setRefreshToken(data.refresh_token);
+      return !!(data && data.token);
+    } catch { return false; }
+  },
   async get(path) {
     const url = this.base ? `${this.base}${path}` : path;
-    const r = await fetch(url, { headers: this.token ? { Authorization: `Bearer ${this.token}` } : {} });
+    let r = await fetch(url, { headers: this.token ? { Authorization: `Bearer ${this.token}` } : {} });
+    if (r.status === 401) {
+      const ok = await this.refresh();
+      if (ok) r = await fetch(url, { headers: this.token ? { Authorization: `Bearer ${this.token}` } : {} });
+    }
     if (!r.ok) throw new Error(await r.text());
     return r.json();
   },
   async post(path, body) {
     const url = this.base ? `${this.base}${path}` : path;
-    const r = await fetch(url, {
+    let r = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
       body: JSON.stringify(body)
     });
+    if (r.status === 401) {
+      const ok = await this.refresh();
+      if (ok) {
+        r = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
+          body: JSON.stringify(body)
+        });
+      }
+    }
     if (!r.ok) throw new Error(await r.text());
     return r.json();
   }
@@ -577,6 +613,7 @@ const ui = {
     this.applyLang();
     this.refreshMeta();
     this.restoreAuth();
+    this.connectWs();
     this.renderCategories();
   },
   cache() {
@@ -602,6 +639,7 @@ const ui = {
     this.el.avatarUpload = document.getElementById("avatarUpload");
     this.el.enable2faBtn = document.getElementById("enable2faBtn");
     this.el.disable2faBtn = document.getElementById("disable2faBtn");
+    this.el.logoutAllBtn = document.getElementById("logoutAllBtn");
     this.el.twofaDialog = document.getElementById("twofaDialog");
     this.el.twofaForm = document.getElementById("twofaForm");
     this.el.twofaTitle = document.getElementById("twofaTitle");
@@ -813,6 +851,19 @@ const ui = {
         } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
       });
     }
+    if (this.el.logoutAllBtn) {
+      this.el.logoutAllBtn.addEventListener("click", async () => {
+        try {
+          await api.post("/api/auth/logout_all", {});
+        } catch {}
+        api.setToken("");
+        api.setRefreshToken("");
+        this.state.user = null;
+        this.updateHeaderAuth();
+        this.render();
+        this.el.profileDialog.close();
+      });
+    }
     this.el.cancelLabel.addEventListener("click", (e) => { e.preventDefault(); this.el.categoryDialog.close(); });
     this.el.cancelLabel2.addEventListener("click", (e) => { e.preventDefault(); this.el.threadDialog.close(); });
     this.el.cancelLabel3.addEventListener("click", (e) => { e.preventDefault(); this.el.postDialog.close(); });
@@ -825,6 +876,7 @@ const ui = {
     this.el.performResetCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.performResetDialog.close(); });
     this.el.logoutBtn.addEventListener("click", () => {
       api.setToken("");
+      api.setRefreshToken("");
       this.state.user = null;
       this.updateHeaderAuth();
       this.render();
@@ -835,6 +887,7 @@ const ui = {
         if (!captcha.verify(this.el.loginCaptcha)) return;
         const r = await api.post("/api/auth/login", { email: this.el.loginEmail.value.trim(), password: this.el.loginPassword.value, totp: (this.el.loginTotp?.value || "").trim() || undefined });
         api.setToken(r.token);
+        if (r.refresh_token) api.setRefreshToken(r.refresh_token);
         this.state.user = r.user;
         this.el.loginDialog.close();
         this.updateHeaderAuth();
@@ -1104,6 +1157,7 @@ const ui = {
     if (this.el.twofaCode) this.el.twofaCode.placeholder = this.t("twofaCodePh");
     this.el.profileCancel.textContent = this.t("cancel");
     this.el.saveProfile.textContent = this.t("save");
+    if (this.el.logoutAllBtn) this.el.logoutAllBtn.textContent = this.t("logoutAll");
     const opts = this.el.lang.querySelectorAll("option");
     opts.forEach(o => {
       if (o.value === "ru") o.textContent = "Русский";
@@ -1121,6 +1175,7 @@ const ui = {
       this.state.user = me;
     } catch {
       api.setToken("");
+      api.setRefreshToken("");
       this.state.user = null;
     }
     this.updateHeaderAuth();
@@ -1170,6 +1225,35 @@ const ui = {
       this.el.dbBadge.textContent = "";
       this.el.dbBadge.style.display = "none";
     }
+  },
+  connectWs() {
+    try {
+      const base = api.base || `${window.location.protocol}//${window.location.host}`;
+      const wsUrl = base.replace(/^http:/, "ws:").replace(/^https:/, "wss:");
+      const url = `${wsUrl.replace(/\/$/, "")}`;
+      this.ws?.close?.();
+      this.ws = new WebSocket(url);
+      this.ws.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data);
+          if (msg && msg.type === "new_post" && msg.thread) {
+            const title = msg.thread.title || "";
+            const txt = (this.t("newPostInThread") || "New post").replace("{title}", title);
+            if (this.el.searchMeta) {
+              this.el.searchMeta.textContent = txt;
+              setTimeout(() => { if (this.el.searchMeta.textContent === txt) this.el.searchMeta.textContent = ""; }, 5000);
+            }
+            if (this.state.current?.threadId && msg.thread.id === this.state.current.threadId) {
+              // Refresh posts if currently viewing the thread
+              this.renderPosts(this.state.current.threadId);
+            }
+          }
+        } catch {}
+      };
+      this.ws.onclose = () => {
+        setTimeout(() => this.connectWs(), 3000);
+      };
+    } catch {}
   },
   show(view) {
     this.el.viewCategories.classList.toggle("hidden", view !== "categories");

@@ -12,6 +12,8 @@ import { fileURLToPath } from "url";
 import crypto from "crypto";
 import mysql from "mysql2/promise";
 import { authenticator } from "otplib";
+import sharp from "sharp";
+import { WebSocketServer } from "ws";
 
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
@@ -572,9 +574,39 @@ app.post("/api/auth/login", async (req, res) => {
     if (!okTotp) return res.status(401).json({ error: "Invalid 2FA code" });
   }
   const token = jwt.sign({ sub: u.id, role: u.role }, JWT_SECRET, { expiresIn: "7d" });
-  return res.json({ token, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
+  const refresh_token = uid();
+  u.refresh_token = refresh_token;
+  u.refresh_expires = Date.now() + 1000 * 60 * 60 * 24 * 30;
+  await writeDB(db);
+  return res.json({ token, refresh_token, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
 });
 
+// Refresh and logout-all endpoints (JSON mode supported; MySQL returns 501)
+app.post("/api/auth/refresh", async (req, res) => {
+  const { refresh_token } = req.body || {};
+  if (!refresh_token) return res.status(400).json({ error: "Missing refresh token" });
+  if (MYSQL_READY) return res.status(501).json({ error: "Refresh not available in MySQL mode yet" });
+  const db = await readDB();
+  const u = db.users.find(x => x.refresh_token === refresh_token);
+  if (!u) return res.status(401).json({ error: "Invalid refresh token" });
+  if (!u.refresh_expires || u.refresh_expires < Date.now()) return res.status(401).json({ error: "Refresh token expired" });
+  const token = jwt.sign({ sub: u.id, role: u.role }, JWT_SECRET, { expiresIn: "7d" });
+  const newRefresh = uid();
+  u.refresh_token = newRefresh;
+  u.refresh_expires = Date.now() + 1000 * 60 * 60 * 24 * 30;
+  await writeDB(db);
+  return res.json({ token, refresh_token: newRefresh, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
+});
+app.post("/api/auth/logout_all", authMiddleware, async (req, res) => {
+  if (MYSQL_READY) return res.status(501).json({ error: "Logout-all not available in MySQL mode yet" });
+  const db = await readDB();
+  const u = db.users.find(x => x.id === req.user.sub);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  u.refresh_token = null;
+  u.refresh_expires = null;
+  await writeDB(db);
+  return res.json({ ok: true });
+});
 app.get("/api/me", authMiddleware, async (req, res) => {
   if (MYSQL_READY) {
     const [rows] = await pool.query("SELECT id,email,username,role,is_confirmed FROM users WHERE id=:id", { id: req.user.sub });
@@ -669,7 +701,7 @@ app.get("/api/categories/:id/threads", async (req, res) => {
   const withCounts = list.map(t => ({ ...t, posts_count: db.posts.filter(p => p.thread_id === t.id).length }));
   return res.json(withCounts);
 });
-app.post("/api/threads", authMiddleware, requireConfirmed, async (req, res) => {
+app.post("/api/threads", authMiddleware, requireConfirmed, rateLimit({ windowMs: 60_000, max: 5 }), async (req, res) => {
   const { categoryId, title, content } = req.body || {};
   if (!categoryId || !title || !content) return res.status(400).json({ error: "Missing fields" });
   if (MYSQL_READY) {
@@ -718,7 +750,7 @@ app.get("/api/threads/:id/posts", async (req, res) => {
   });
   return res.json(posts);
 });
-app.post("/api/posts", authMiddleware, requireConfirmed, async (req, res) => {
+app.post("/api/posts", authMiddleware, requireConfirmed, rateLimit({ windowMs: 60_000, max: 20 }), async (req, res) => {
   const { threadId, content, attachments } = req.body || {};
   if (!threadId || !content) return res.status(400).json({ error: "Missing fields" });
   if (MYSQL_READY) {
@@ -739,7 +771,9 @@ app.post("/api/posts", authMiddleware, requireConfirmed, async (req, res) => {
       const { subject, html } = mailTemplate(author.locale, "reply", { username: user.username, threadTitle: thread.title });
       await sendMail(author.email, subject, html);
     }
-    return res.json({ id, thread_id: threadId, author_id: req.user.sub, content, created_at: now, attachments: Array.isArray(attachments) ? attachments : [] });
+    const result = { id, thread_id: threadId, author_id: req.user.sub, content, created_at: now, attachments: Array.isArray(attachments) ? attachments : [] };
+    try { if (globalThis.wss) broadcast({ type: "new_post", post: result, thread: { id: thread.id, title: thread.title } }); } catch {}
+    return res.json(result);
   }
   const db = await readDB();
   const user = db.users.find(u => u.id === req.user.sub);
@@ -755,6 +789,7 @@ app.post("/api/posts", authMiddleware, requireConfirmed, async (req, res) => {
     const { subject, html } = mailTemplate(author.locale, "reply", { username: user.username, threadTitle: thread.title });
     await sendMail(author.email, subject, html);
   }
+  try { if (globalThis.wss) broadcast({ type: "new_post", post: p, thread: { id: thread.id, title: thread.title } }); } catch {}
   return res.json(p);
 });
 
@@ -863,8 +898,19 @@ app.post("/api/posts/:id/react", authMiddleware, async (req, res) => {
   return res.json({ count: p.reactions.filter(r => r.type === (type || "like")).length });
 });
 
-app.post("/api/upload", authMiddleware, upload.array("files", 4), async (req, res) => {
-  const files = (req.files || []).map(f => ({ url: `/uploads/${f.filename}`, name: f.originalname }));
+app.post("/api/upload", authMiddleware, rateLimit({ windowMs: 60_000, max: 5 }), upload.array("files", 4), async (req, res) => {
+  const files = [];
+  for (const f of (req.files || [])) {
+    const url = `/uploads/${f.filename}`;
+    let thumb = null;
+    try {
+      const thumbName = `thumb_${f.filename}`;
+      const thumbPath = path.join(UPLOAD_DIR, thumbName);
+      await sharp(path.join(UPLOAD_DIR, f.filename)).resize(256, 256, { fit: "inside" }).toFile(thumbPath);
+      thumb = `/uploads/${thumbName}`;
+    } catch {}
+    files.push({ url, name: f.originalname, thumb });
+  }
   return res.json({ files });
 });
 
@@ -1202,3 +1248,17 @@ server.on('error', (e) => {
     console.error("[Error] Server failed to start:", e);
   }
 });
+
+// WebSocket notifications
+let wss = null;
+try {
+  wss = new WebSocketServer({ server });
+  globalThis.wss = wss;
+} catch {}
+function broadcast(msg) {
+  if (!wss) return;
+  const payload = JSON.stringify(msg);
+  for (const client of wss.clients || []) {
+    try { client.send(payload); } catch {}
+  }
+}
