@@ -20,19 +20,25 @@ const __dirname = path.dirname(__filename);
 
 // Explicitly load .env from the script's directory
 const envPath = path.join(__dirname, ".env");
-console.log(`[Prestige RP] Loading .env from ${envPath}`);
+console.log(`[Prestige RP] Attempting to load .env from ${envPath}`);
 const envResult = dotenv.config({ path: envPath });
 
 if (envResult.error) {
-  console.error("[Prestige RP] Error loading .env:", envResult.error);
+  // Only log error if it's NOT a missing file error (ENOENT is common in prod)
+  if (envResult.error.code !== 'ENOENT') {
+    console.error("[Prestige RP] Error loading .env:", envResult.error);
+  } else {
+    console.log("[Prestige RP] .env file not found, relying on system environment variables.");
+  }
 } else {
   console.log("[Prestige RP] .env loaded successfully.");
-  console.log("[Prestige RP] SMTP Config:", {
-    host: process.env.SMTP_HOST,
-    user: process.env.SMTP_USER,
-    port: process.env.SMTP_PORT
-  });
 }
+
+console.log("[Prestige RP] SMTP Config Check:", {
+  host: process.env.SMTP_HOST ? "(set)" : "(missing)",
+  user: process.env.SMTP_USER ? "(set)" : "(missing)",
+  port: process.env.SMTP_PORT
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
