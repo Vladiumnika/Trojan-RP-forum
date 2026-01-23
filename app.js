@@ -874,7 +874,7 @@ const ui = {
     }
     if (this.el.groupBtn) {
       this.el.groupBtn.addEventListener("click", () => {
-        window.open("https://t.me/Tex_Prestige_RP", "_blank");
+        window.open("https://t.me/Prestige_RP", "_blank");
       });
     }
     this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
