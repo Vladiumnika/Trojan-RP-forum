@@ -414,7 +414,15 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
     const user = process.env.SMTP_USER;
     const pass = process.env.SMTP_PASS;
     const allowSelfSigned = (process.env.SMTP_ALLOW_SELF_SIGNED || "false").toLowerCase() === "true";
-    if (!host || !user || !pass) return res.status(400).json({ error: "SMTP not configured" });
+    if (!host || !user || !pass) {
+      const missing = [];
+      if (!host) missing.push("SMTP_HOST");
+      if (!user) missing.push("SMTP_USER");
+      if (!pass) missing.push("SMTP_PASS");
+      console.error("[SMTP] Missing config:", missing.join(", "));
+      return res.status(400).json({ error: "SMTP not configured: missing " + missing.join(", ") });
+    }
+    console.log(`[SMTP Diag] Testing with host=${host} user=${user} port=${port}`);
     const transporter = nodemailer.createTransport({
       host,
       port,

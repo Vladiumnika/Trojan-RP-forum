@@ -601,7 +601,11 @@ const api = {
       const ok = await this.refresh();
       if (ok) r = await fetch(url, { headers: this.token ? { Authorization: `Bearer ${this.token}` } : {} });
     }
-    if (!r.ok) throw new Error(await r.text());
+    if (!r.ok) {
+      let txt = await r.text();
+      try { const j = JSON.parse(txt); if (j.error) txt = j.error; } catch {}
+      throw new Error(txt);
+    }
     return r.json();
   },
   async post(path, body) {
@@ -621,7 +625,11 @@ const api = {
         });
       }
     }
-    if (!r.ok) throw new Error(await r.text());
+    if (!r.ok) {
+      let txt = await r.text();
+      try { const j = JSON.parse(txt); if (j.error) txt = j.error; } catch {}
+      throw new Error(txt);
+    }
     return r.json();
   }
 };
@@ -1209,6 +1217,9 @@ const ui = {
           const r = await api.post("/api/diag/mysql", {});
           if (r.ok && r.ready) {
             this.el.adminMeta.textContent = `DB: OK • MySQL ${r.host}:${r.port}/${r.db}`;
+          } else if (r.error === "MySQL not ready") {
+             // If MySQL is not ready, we are likely running on JSON
+            this.el.adminMeta.textContent = `DB: JSON (Active) • MySQL Inactive`;
           } else {
             this.el.adminMeta.textContent = `DB: неактивна • ${r.error || "unknown"}`;
           }
