@@ -318,7 +318,7 @@ async function sendViaBrevo(to, subject, html) {
     subject,
     htmlContent: html
   };
-  const doFetch = () => fetch("https://api.brevo.com/v3/smtp/email", {
+  const doFetch = () => safeFetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Accept": "application/json", "api-key": apiKey },
     body: JSON.stringify(payload)
@@ -339,7 +339,7 @@ async function sendViaResend(to, subject, html) {
   const apiKey = process.env.RESEND_API_KEY;
   const senderEmail = process.env.SMTP_USER || "noreply@prestige.local";
   if (!apiKey) throw new Error("RESEND_API_KEY missing");
-  const res = await fetch("https://api.resend.com/emails", {
+  const res = await safeFetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
     body: JSON.stringify({
@@ -357,7 +357,7 @@ async function sendViaSendGrid(to, subject, html) {
   const apiKey = process.env.SENDGRID_API_KEY;
   const senderEmail = process.env.SMTP_USER || "noreply@prestige.local";
   if (!apiKey) throw new Error("SENDGRID_API_KEY missing");
-  const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
+  const res = await safeFetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
     body: JSON.stringify({
@@ -546,6 +546,13 @@ const storage = multer.diskStorage({
     cb(null, name);
   }
 });
+const upload = multer({
+async function safeFetch(url, options) {
+  const f = globalThis.fetch;
+  if (typeof f === "function") return f(url, options);
+  const mod = await import("node-fetch");
+  return mod.default(url, options);
+}
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
