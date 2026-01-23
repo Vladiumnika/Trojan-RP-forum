@@ -15,9 +15,25 @@ import { authenticator } from "otplib";
 import sharp from "sharp";
 import { WebSocketServer } from "ws";
 
-dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Explicitly load .env from the script's directory
+const envPath = path.join(__dirname, ".env");
+console.log(`[Prestige RP] Loading .env from ${envPath}`);
+const envResult = dotenv.config({ path: envPath });
+
+if (envResult.error) {
+  console.error("[Prestige RP] Error loading .env:", envResult.error);
+} else {
+  console.log("[Prestige RP] .env loaded successfully.");
+  console.log("[Prestige RP] SMTP Config:", {
+    host: process.env.SMTP_HOST,
+    user: process.env.SMTP_USER,
+    port: process.env.SMTP_PORT
+  });
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
