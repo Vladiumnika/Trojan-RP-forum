@@ -600,6 +600,9 @@ const api = {
 if (typeof window !== "undefined") {
   try {
     const host = window.location && window.location.hostname;
+    if (typeof api.base === "string" && api.base.includes("__RUNTIME_API_BASE__")) {
+      api.base = "";
+    }
     if (/localhost|127\.0\.0\.1/.test(api.base) && host && !/localhost|127\.0\.0\.1/.test(host)) {
       api.base = "";
     }
@@ -839,6 +842,20 @@ const ui = {
       if (!this.state.user) return;
       this.el.profileUsername.value = this.state.user.username || "";
       this.el.profileNotifications.checked = !!this.state.user.notifications;
+      // Ensure stats elements exist even if HTML is older
+      if (!this.el.profileStatsThreads || !this.el.profileStatsPosts) {
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        this.el.profileStatsThreads = document.createElement("span");
+        this.el.profileStatsThreads.id = "profileStatsThreads";
+        this.el.profileStatsPosts = document.createElement("span");
+        this.el.profileStatsPosts.id = "profileStatsPosts";
+        this.el.profileStatsPosts.style.marginLeft = "12px";
+        meta.appendChild(this.el.profileStatsThreads);
+        meta.appendChild(this.el.profileStatsPosts);
+        const form = this.el.profileForm || document.getElementById("profileForm");
+        if (form) form.insertBefore(meta, form.querySelector(".actions"));
+      }
       this.el.profileDialog.showModal();
       const id = this.state.user?.id;
       if (id) {
