@@ -312,17 +312,26 @@ async function sendViaBrevo(to, subject, html) {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.SMTP_USER;
   if (!apiKey || !senderEmail) throw new Error("BREVO_API_KEY or SMTP_USER missing");
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+  const payload = {
+    sender: { email: senderEmail, name: "Prestige RP" },
+    to: [{ email: to }],
+    subject,
+    htmlContent: html
+  };
+  const doFetch = () => fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
-    headers: { "Content-Type": "application/json", "api-key": apiKey },
-    body: JSON.stringify({
-      sender: { email: senderEmail, name: "Prestige RP" },
-      to: [{ email: to }],
-      subject,
-      htmlContent: html
-    })
+    headers: { "Content-Type": "application/json", "Accept": "application/json", "api-key": apiKey },
+    body: JSON.stringify(payload)
   });
-  if (!res.ok) throw new Error(await res.text());
+  let res = await doFetch();
+  if (!res.ok && res.status === 502) {
+    await new Promise(r => setTimeout(r, 1000));
+    res = await doFetch();
+  }
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Brevo ${res.status}: ${text.slice(0, 200)}`);
+  }
   return res.json();
 }
 
@@ -369,6 +378,10 @@ async function sendMail(to, subject, html) {
   const pass = process.env.SMTP_PASS;
   const allowSelfSigned = (process.env.SMTP_ALLOW_SELF_SIGNED || "false").toLowerCase() === "true";
   if (!host || !user || !pass) {
+    if (process.env.BREVO_API_KEY) {
+      await sendViaBrevo(to, subject, html);
+      return;
+    }
     console.log("[MAIL DEV] to:", to, "subject:", subject, "link:", html.replace(/<[^>]+>/g, ""));
     return;
   }
