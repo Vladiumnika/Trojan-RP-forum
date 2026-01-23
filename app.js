@@ -107,7 +107,8 @@ const translations = {
     in: "в",
     quote: "Цитировать",
     report: "Пожаловаться",
-    views: "Просмотры"
+    views: "Просмотры",
+    support: "Поддержка"
   },
   kk: {
     title: "Prestige RolePlay",
@@ -217,7 +218,8 @@ const translations = {
     in: "тақырыпта",
     quote: "Дәйексөз",
     report: "Шағымдану",
-    views: "Қаралымдар"
+    views: "Қаралымдар",
+    support: "Қолдау"
   },
   uk: {
     title: "Prestige RolePlay",
@@ -325,7 +327,8 @@ const translations = {
     in: "в",
     quote: "Цитувати",
     report: "Поскаржитися",
-    views: "Перегляди"
+    views: "Перегляди",
+    support: "Підтримка"
   },
   bg: {
     title: "Prestige RolePlay",
@@ -433,17 +436,16 @@ const translations = {
     ,
     newPostInThread: "Нов пост в тема: {title}"
     ,
-    loginRequired: "Моля, влез, за да продължиш"
-    ,
-    afterLoginRedirect: "След вход ще те пренасочим"
-    ,
+    loginRequired: "Моля, влез, за да продължиш",
+    afterLoginRedirect: "След вход ще те пренасочим",
     latestPosts: "Последни публикации",
     by: "от",
     in: "в",
     loginWarning: "Администрация никога няма да Ви изпрати линк за авторизация, нито да иска данните Ви.",
     quote: "Цитирай",
     report: "Докладвай",
-    views: "Преглеждания"
+    views: "Преглеждания",
+    support: "Поддръжка"
   },
   en: {
     title: "Prestige RolePlay",
@@ -564,7 +566,8 @@ const translations = {
     loginWarning: "Administration will never send you an authorization link or ask for your login details.",
     quote: "Quote",
     report: "Report",
-    views: "Views"
+    views: "Views",
+    support: "Support"
   }
 };
 
@@ -696,6 +699,7 @@ const ui = {
     this.el.subtitle = document.getElementById("subtitle");
     this.el.langLabel = document.getElementById("langLabel");
     this.el.lang = document.getElementById("lang");
+    this.el.supportBtn = document.getElementById("supportBtn");
     this.el.themeToggle = document.getElementById("themeToggle");
     this.el.controls = document.getElementById("controls");
     this.el.burgerBtn = document.getElementById("burgerBtn");
@@ -855,6 +859,11 @@ const ui = {
     if (this.el.burgerBtn) {
       this.el.burgerBtn.addEventListener("click", () => {
         this.el.controls.classList.toggle("open");
+      });
+    }
+    if (this.el.supportBtn) {
+      this.el.supportBtn.addEventListener("click", () => {
+        window.open("https://t.me/Tex_Prestige_RP_bot", "_blank");
       });
     }
     this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
