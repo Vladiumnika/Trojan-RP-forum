@@ -303,8 +303,19 @@ async function sendMail(to, subject, html) {
     auth: { user, pass },
     tls: allowSelfSigned ? { rejectUnauthorized: false } : undefined
   });
-  await transporter.verify().catch(() => {});
-  await transporter.sendMail({ from: `"Prestige RP" <${user}>`, to, subject, html });
+  try {
+    await transporter.verify();
+    console.log("[SMTP] Connection verified");
+  } catch (err) {
+    console.error("[SMTP] Verify failed:", err.message);
+  }
+  try {
+    await transporter.sendMail({ from: `"Prestige RP" <${user}>`, to, subject, html });
+    console.log(`[SMTP] Email sent to ${to}`);
+  } catch (err) {
+    console.error("[SMTP] Send failed:", err);
+    throw err;
+  }
 }
 
 function mailTemplate(locale, type, data) {
