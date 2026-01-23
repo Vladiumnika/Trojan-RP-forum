@@ -413,13 +413,9 @@ const translations = {
     ,
     afterLoginRedirect: "След вход ще те пренасочим"
     ,
-    latestPosts: "Последни публикации"
-    ,
-    by: "от"
-    ,
-    in: "в"
-    ,
-    loginWarning: "Администрация никога няма да Ви изпрати линк за авторизация, нито да иска данните Ви.",
+    latestPosts: "Последни публикации",
+    by: "от",
+    in: "в",
     quote: "Цитирай",
     report: "Докладвай",
     views: "Преглеждания"
@@ -665,7 +661,6 @@ const ui = {
       if (reason) {
         this.state.loginReason = reason;
         captcha.mount(this.el.loginCaptcha, () => {});
-        this.el.loginNote.textContent = this.t("loginRequired") + (this.state.loginReferrer ? ` • ${this.t("afterLoginRedirect")}` : "");
         this.el.loginDialog.showModal();
       }
     } catch {}
@@ -836,7 +831,7 @@ const ui = {
         this.el.controls.classList.toggle("open");
       });
     }
-    this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
+    this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); });
     this.el.registerBtn.addEventListener("click", () => { this.el.registerDialog.showModal(); captcha.mount(this.el.registerCaptcha, () => {}); });
     this.el.profileBtn.addEventListener("click", () => {
       if (!this.state.user) return;
