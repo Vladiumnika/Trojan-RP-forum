@@ -472,7 +472,7 @@ app.post("/api/auth/register", async (req, res) => {
   const exists = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
   if (exists) return res.status(409).json({ error: "Email exists" });
   const password_hash = await bcrypt.hash(password, 10);
-  const user = { id: uid(), email, username, password_hash, role: db.users.length === 0 ? "admin" : "user", is_confirmed: false, banned: false, locale: locale || "ru", created_at: Date.now() };
+  const user = { id: uid(), email, username, password_hash, role: db.users.length === 0 ? "admin" : "user", is_confirmed: false, banned: false, locale: locale || "ru", created_at: Date.now(), twofa_enabled: false, twofa_prompt_required: true };
   db.users.push(user);
   const token = uid();
   const expires_at = Date.now() + 1000 * 60 * 60 * 24;
@@ -578,7 +578,7 @@ app.post("/api/auth/login", async (req, res) => {
   u.refresh_token = refresh_token;
   u.refresh_expires = Date.now() + 1000 * 60 * 60 * 24 * 30;
   await writeDB(db);
-  return res.json({ token, refresh_token, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
+  return res.json({ token, refresh_token, require_twofa_prompt: !u.twofa_enabled && !!u.twofa_prompt_required, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
 });
 
 // Refresh and logout-all endpoints (JSON mode supported; MySQL returns 501)
@@ -604,6 +604,15 @@ app.post("/api/auth/logout_all", authMiddleware, async (req, res) => {
   if (!u) return res.status(404).json({ error: "User not found" });
   u.refresh_token = null;
   u.refresh_expires = null;
+  await writeDB(db);
+  return res.json({ ok: true });
+});
+app.post("/api/auth/2fa/skip", authMiddleware, async (req, res) => {
+  if (MYSQL_READY) return res.status(501).json({ error: "2FA not available in MySQL mode yet" });
+  const db = await readDB();
+  const u = db.users.find(x => x.id === req.user.sub);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  u.twofa_prompt_required = false;
   await writeDB(db);
   return res.json({ ok: true });
 });

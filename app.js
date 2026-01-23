@@ -892,6 +892,30 @@ const ui = {
         this.el.loginDialog.close();
         this.updateHeaderAuth();
         this.render();
+        if (r.require_twofa_prompt) {
+          try {
+            const setup = await api.post("/api/auth/2fa/setup", {});
+            this.el.twofaTitle.textContent = this.t("twofaSetupTitle");
+            this.el.twofaNote.textContent = this.t("twofaScanNote");
+            this.el.twofaSecret.textContent = `Secret: ${setup.secret}`;
+            this.el.twofaUri.textContent = `URI: ${setup.uri}`;
+            this.el.twofaCode.value = "";
+            this.el.twofaDialog.showModal();
+            const onCancel = async () => {
+              try { await api.post("/api/auth/2fa/skip", {}); } catch {}
+              this.el.twofaDialog.close();
+            };
+            this.el.twofaCancel.onclick = onCancel;
+            this.el.twofaForm.onsubmit = async (e2) => {
+              e2.preventDefault();
+              try {
+                await api.post("/api/auth/2fa/activate", { code: this.el.twofaCode.value.trim() });
+                this.el.twofaDialog.close();
+                alert(this.t("twofaEnabledNote"));
+              } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
+            };
+          } catch {}
+        }
       } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
     });
     this.el.registerForm.addEventListener("submit", async (e) => {
