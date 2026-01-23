@@ -546,7 +546,6 @@ const storage = multer.diskStorage({
     cb(null, name);
   }
 });
-const upload = multer({
 async function safeFetch(url, options) {
   const f = globalThis.fetch;
   if (typeof f === "function") return f(url, options);
