@@ -634,16 +634,39 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
           greetingTimeout: 5000,
           socketTimeout: 10000
         });
-        await fallback.verify();
-        usedPort = fallbackPort;
-        const to = (req.body && req.body.email) || user;
-        await fallback.sendMail({
-          from: `"Prestige RP" <${user}>`,
-          to,
-          subject: "SMTP Test Prestige RP",
-          html: "<p>SMTP тест успешно (fallback).</p>"
-        });
-        return res.json({ ok: true, verified: true, sent_to: to, port: usedPort, fallback: true });
+        try {
+          await fallback.verify();
+          usedPort = fallbackPort;
+          const to = (req.body && req.body.email) || user;
+          await fallback.sendMail({
+            from: `"Prestige RP" <${user}>`,
+            to,
+            subject: "SMTP Test Prestige RP",
+            html: "<p>SMTP тест успешно (fallback).</p>"
+          });
+          return res.json({ ok: true, verified: true, sent_to: to, port: usedPort, fallback: true });
+        } catch (eFallback) {
+          console.warn(`[SMTP Diag] Fallback verify failed on ${fallbackPort}: ${eFallback?.message || eFallback}`);
+          const canResend = !!process.env.RESEND_API_KEY;
+          const canSendGrid = !!process.env.SENDGRID_API_KEY;
+          const canBrevo = !!process.env.BREVO_API_KEY;
+          if (canResend) {
+            const to = (req.body && req.body.email) || user;
+            await sendViaResend(to, "SMTP Test Prestige RP", "<p>SMTP тест успешно (Resend).</p>");
+            return res.json({ ok: true, verified: true, sent_to: to, provider: "resend" });
+          }
+          if (canSendGrid) {
+            const to = (req.body && req.body.email) || user;
+            await sendViaSendGrid(to, "SMTP Test Prestige RP", "<p>SMTP тест успешно (SendGrid).</p>");
+            return res.json({ ok: true, verified: true, sent_to: to, provider: "sendgrid" });
+          }
+          if (canBrevo) {
+            const to = (req.body && req.body.email) || user;
+            await sendViaBrevo(to, "SMTP Test Prestige RP", "<p>SMTP тест успешно (Brevo).</p>");
+            return res.json({ ok: true, verified: true, sent_to: to, provider: "brevo" });
+          }
+          throw eFallback;
+        }
       }
       const canResend = !!process.env.RESEND_API_KEY;
       const canSendGrid = !!process.env.SENDGRID_API_KEY;
