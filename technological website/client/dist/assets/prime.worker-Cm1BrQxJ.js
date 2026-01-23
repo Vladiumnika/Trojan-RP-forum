@@ -1,0 +1,1 @@
+(function(){"use strict";self.onmessage=i=>{const{action:o,limit:r}=i.data;if(o==="CALCULATE_PRIMES"){const a=performance.now();let e=0,t=2;for(;e<r;){let n=!0;for(let s=2;s<=Math.sqrt(t);s++)if(t%s===0){n=!1;break}n&&e++,t++}const c=performance.now();self.postMessage({type:"RESULT",primesFound:e,timeTaken:(c-a).toFixed(2)})}}})();
