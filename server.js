@@ -323,7 +323,10 @@ async function sendMail(to, subject, html) {
     port,
     secure: port === 465,
     auth: { user, pass },
-    tls: allowSelfSigned ? { rejectUnauthorized: false } : undefined
+    tls: allowSelfSigned ? { rejectUnauthorized: false } : undefined,
+    connectionTimeout: 10000,
+    greetingTimeout: 5000,
+    socketTimeout: 10000
   });
   try {
     await transporter.verify();
@@ -336,6 +339,31 @@ async function sendMail(to, subject, html) {
     console.log(`[SMTP] Email sent to ${to}`);
   } catch (err) {
     console.error("[SMTP] Send failed:", err);
+    const isTimeout = (err && (err.code === "ETIMEDOUT" || err.code === "ESOCKET")) || /timed out/i.test(String(err && err.message));
+    if (isTimeout || (port === 465 && err && err.code === "ECONNREFUSED")) {
+      const fallbackPort = port === 465 ? 587 : 465;
+      console.warn(`[SMTP] Retrying via fallback port ${fallbackPort}...`);
+      const fallbackTransporter = nodemailer.createTransport({
+        host,
+        port: fallbackPort,
+        secure: fallbackPort === 465,
+        auth: { user, pass },
+        tls: allowSelfSigned ? { rejectUnauthorized: false } : undefined,
+        connectionTimeout: 10000,
+        greetingTimeout: 5000,
+        socketTimeout: 10000
+      });
+      try {
+        await fallbackTransporter.verify();
+        console.log("[SMTP] Fallback connection verified");
+        await fallbackTransporter.sendMail({ from: `"Prestige RP" <${user}>`, to, subject, html });
+        console.log(`[SMTP] Email sent to ${to} via fallback port ${fallbackPort}`);
+        return;
+      } catch (e2) {
+        console.error("[SMTP] Fallback send failed:", e2);
+        throw e2;
+      }
+    }
     throw err;
   }
 }
@@ -455,7 +483,37 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
       greetingTimeout: 5000,
       socketTimeout: 10000
     });
-    await transporter.verify();
+    let usedPort = port;
+    try {
+      await transporter.verify();
+    } catch (eVerify) {
+      const isTimeout = (eVerify && (eVerify.code === "ETIMEDOUT" || eVerify.code === "ESOCKET")) || /timed out/i.test(String(eVerify && eVerify.message));
+      if (isTimeout || (port === 465 && eVerify && eVerify.code === "ECONNREFUSED")) {
+        const fallbackPort = port === 465 ? 587 : 465;
+        console.warn(`[SMTP Diag] Verify failed on ${port}, retrying on ${fallbackPort}...`);
+        const fallback = nodemailer.createTransport({
+          host,
+          port: fallbackPort,
+          secure: fallbackPort === 465,
+          auth: { user, pass },
+          tls: allowSelfSigned ? { rejectUnauthorized: false } : undefined,
+          connectionTimeout: 10000,
+          greetingTimeout: 5000,
+          socketTimeout: 10000
+        });
+        await fallback.verify();
+        usedPort = fallbackPort;
+        const to = (req.body && req.body.email) || user;
+        await fallback.sendMail({
+          from: `"Prestige RP" <${user}>`,
+          to,
+          subject: "SMTP Test Prestige RP",
+          html: "<p>SMTP тест успешно (fallback).</p>"
+        });
+        return res.json({ ok: true, verified: true, sent_to: to, port: usedPort, fallback: true });
+      }
+      throw eVerify;
+    }
     const to = (req.body && req.body.email) || user;
     await transporter.sendMail({
       from: `"Prestige RP" <${user}>`,
@@ -463,7 +521,7 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
       subject: "SMTP Test Prestige RP",
       html: "<p>SMTP тест успешно.</p>"
     });
-    return res.json({ ok: true, verified: true, sent_to: to });
+    return res.json({ ok: true, verified: true, sent_to: to, port: usedPort, fallback: false });
   } catch (e) {
     return res.status(500).json({ error: e?.message || "SMTP failed" });
   }
