@@ -326,6 +326,42 @@ async function sendViaBrevo(to, subject, html) {
   return res.json();
 }
 
+async function sendViaResend(to, subject, html) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const senderEmail = process.env.SMTP_USER || "noreply@prestige.local";
+  if (!apiKey) throw new Error("RESEND_API_KEY missing");
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      from: `Prestige RP <${senderEmail}>`,
+      to: [to],
+      subject,
+      html
+    })
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function sendViaSendGrid(to, subject, html) {
+  const apiKey = process.env.SENDGRID_API_KEY;
+  const senderEmail = process.env.SMTP_USER || "noreply@prestige.local";
+  if (!apiKey) throw new Error("SENDGRID_API_KEY missing");
+  const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      personalizations: [{ to: [{ email: to }] }],
+      from: { email: senderEmail, name: "Prestige RP" },
+      subject,
+      content: [{ type: "text/html", value: html }]
+    })
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.text();
+}
+
 async function sendMail(to, subject, html) {
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || "0", 10) || 587;
@@ -379,7 +415,27 @@ async function sendMail(to, subject, html) {
         return;
       } catch (e2) {
         console.error("[SMTP] Fallback send failed:", e2);
+        const canResend = !!process.env.RESEND_API_KEY;
+        const canSendGrid = !!process.env.SENDGRID_API_KEY;
         const canBrevo = !!process.env.BREVO_API_KEY;
+        if (canResend) {
+          try {
+            await sendViaResend(to, subject, html);
+            console.log(`[SMTP] Email sent to ${to} via Resend API`);
+            return;
+          } catch (eApi) {
+            console.error("[SMTP] Resend API send failed:", eApi);
+          }
+        }
+        if (canSendGrid) {
+          try {
+            await sendViaSendGrid(to, subject, html);
+            console.log(`[SMTP] Email sent to ${to} via SendGrid API`);
+            return;
+          } catch (eApi) {
+            console.error("[SMTP] SendGrid API send failed:", eApi);
+          }
+        }
         if (canBrevo) {
           try {
             await sendViaBrevo(to, subject, html);
@@ -387,13 +443,32 @@ async function sendMail(to, subject, html) {
             return;
           } catch (eApi) {
             console.error("[SMTP] Brevo API send failed:", eApi);
-            throw eApi;
           }
         }
         throw e2;
       }
     }
+    const canResend = !!process.env.RESEND_API_KEY;
+    const canSendGrid = !!process.env.SENDGRID_API_KEY;
     const canBrevo = !!process.env.BREVO_API_KEY;
+    if (canResend) {
+      try {
+        await sendViaResend(to, subject, html);
+        console.log(`[SMTP] Email sent to ${to} via Resend API`);
+        return;
+      } catch (eApi) {
+        console.error("[SMTP] Resend API send failed:", eApi);
+      }
+    }
+    if (canSendGrid) {
+      try {
+        await sendViaSendGrid(to, subject, html);
+        console.log(`[SMTP] Email sent to ${to} via SendGrid API`);
+        return;
+      } catch (eApi) {
+        console.error("[SMTP] SendGrid API send failed:", eApi);
+      }
+    }
     if (canBrevo) {
       try {
         await sendViaBrevo(to, subject, html);
@@ -401,7 +476,6 @@ async function sendMail(to, subject, html) {
         return;
       } catch (eApi) {
         console.error("[SMTP] Brevo API send failed:", eApi);
-        throw eApi;
       }
     }
     throw err;
@@ -552,7 +626,19 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
         });
         return res.json({ ok: true, verified: true, sent_to: to, port: usedPort, fallback: true });
       }
+      const canResend = !!process.env.RESEND_API_KEY;
+      const canSendGrid = !!process.env.SENDGRID_API_KEY;
       const canBrevo = !!process.env.BREVO_API_KEY;
+      if (canResend) {
+        const to = (req.body && req.body.email) || user;
+        await sendViaResend(to, "SMTP Test Prestige RP", "<p>SMTP тест успешно (Resend).</p>");
+        return res.json({ ok: true, verified: true, sent_to: to, provider: "resend" });
+      }
+      if (canSendGrid) {
+        const to = (req.body && req.body.email) || user;
+        await sendViaSendGrid(to, "SMTP Test Prestige RP", "<p>SMTP тест успешно (SendGrid).</p>");
+        return res.json({ ok: true, verified: true, sent_to: to, provider: "sendgrid" });
+      }
       if (canBrevo) {
         const to = (req.body && req.body.email) || user;
         await sendViaBrevo(to, "SMTP Test Prestige RP", "<p>SMTP тест успешно (Brevo).</p>");
