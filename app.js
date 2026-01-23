@@ -36,7 +36,7 @@ const translations = {
     loginTitle: "Вход",
     registerTitle: "Регистрация",
     registerNote: "Проверьте почту для подтверждения регистрации",
-    adminPanel: "Админ панел",
+    adminPanel: "Админ панель",
     adminCategories: "Категории",
     add: "Добавить",
     close: "Закрыть",
@@ -109,7 +109,9 @@ const translations = {
     report: "Пожаловаться",
     views: "Просмотры",
     support: "Поддержка",
-    group: "Группа"
+    group: "Группа",
+    logoutAll: "Выход со всех устройств",
+    discord: "Discord"
   },
   kk: {
     title: "Prestige RolePlay",
@@ -221,7 +223,9 @@ const translations = {
     report: "Шағымдану",
     views: "Қаралымдар",
     support: "Қолдау",
-    group: "Топ"
+    group: "Топ",
+    logoutAll: "Барлық құрылғылардан шығу",
+    discord: "Discord"
   },
   uk: {
     title: "Prestige RolePlay",
@@ -331,7 +335,9 @@ const translations = {
     report: "Поскаржитися",
     views: "Перегляди",
     support: "Підтримка",
-    group: "Група"
+    group: "Група",
+    logoutAll: "Вийти з усіх пристроїв",
+    discord: "Discord"
   },
   bg: {
     title: "Prestige RolePlay",
@@ -449,7 +455,8 @@ const translations = {
     report: "Докладвай",
     views: "Преглеждания",
     support: "Поддръжка",
-    group: "Група"
+    group: "Група",
+    discord: "Discord"
   },
   en: {
     title: "Prestige RolePlay",
@@ -572,7 +579,8 @@ const translations = {
     report: "Report",
     views: "Views",
     support: "Support",
-    group: "Group"
+    group: "Group",
+    discord: "Discord"
   }
 };
 
@@ -714,6 +722,7 @@ const ui = {
     this.el.lang = document.getElementById("lang");
     this.el.supportBtn = document.getElementById("supportBtn");
     this.el.groupBtn = document.getElementById("groupBtn");
+    this.el.discordBtn = document.getElementById("discordBtn");
     this.el.themeToggle = document.getElementById("themeToggle");
     this.el.controls = document.getElementById("controls");
     this.el.burgerBtn = document.getElementById("burgerBtn");
@@ -883,6 +892,11 @@ const ui = {
     if (this.el.groupBtn) {
       this.el.groupBtn.addEventListener("click", () => {
         window.open("https://t.me/Prestige_RP", "_blank");
+      });
+    }
+    if (this.el.discordBtn) {
+      this.el.discordBtn.addEventListener("click", () => {
+        window.open("https://discord.gg/7wW7k5N2E", "_blank");
       });
     }
     this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
@@ -1273,6 +1287,7 @@ const ui = {
     this.el.loginCancel.textContent = this.t("cancel");
     this.el.loginSubmit.textContent = this.t("login");
     this.el.loginTitle.textContent = this.t("loginTitle");
+    if (this.el.loginResendBtn) this.el.loginResendBtn.textContent = this.t("resendConfirm");
     this.el.registerTitle.textContent = this.t("registerTitle");
     this.el.registerEmail.placeholder = this.t("emailPh");
     this.el.registerUsername.placeholder = this.t("usernamePh");
@@ -1323,6 +1338,7 @@ const ui = {
     if (this.el.latestPostsTitle) this.el.latestPostsTitle.textContent = this.t("latestPosts");
     if (this.el.groupBtn) this.el.groupBtn.textContent = this.t("group");
     if (this.el.supportBtn) this.el.supportBtn.textContent = this.t("support");
+    if (this.el.discordBtn) this.el.discordBtn.textContent = this.t("discord");
     const opts = this.el.lang.querySelectorAll("option");
     opts.forEach(o => {
       if (o.value === "ru") o.textContent = "Русский";
