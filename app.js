@@ -408,6 +408,10 @@ const translations = {
     logoutAll: "Изход от всички устройства"
     ,
     newPostInThread: "Нов пост в тема: {title}"
+    ,
+    loginRequired: "Моля, влез, за да продължиш"
+    ,
+    afterLoginRedirect: "След вход ще те пренасочим"
   },
   en: {
     title: "Prestige RolePlay",
@@ -514,6 +518,10 @@ const translations = {
     logoutAll: "Logout all devices"
     ,
     newPostInThread: "New post in thread: {title}"
+    ,
+    loginRequired: "Please log in to continue"
+    ,
+    afterLoginRedirect: "You will be redirected after login"
   }
 };
 
@@ -601,7 +609,7 @@ const store = {
 };
 
 const ui = {
-  state: { lang: "ru", theme: "dark", current: { categoryId: null, threadId: null }, user: null },
+  state: { lang: "ru", theme: "dark", current: { categoryId: null, threadId: null }, user: null, loginReferrer: null, loginReason: null },
   t(k) {
     const cur = translations[this.state.lang] || translations.ru;
     return (cur && cur[k] !== undefined) ? cur[k] : (translations.ru[k] !== undefined ? translations.ru[k] : k);
@@ -615,6 +623,27 @@ const ui = {
     this.restoreAuth();
     this.connectWs();
     this.renderCategories();
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const reason = params.get("reason");
+      const refb64 = params.get("referrer");
+      let ref = null;
+      if (refb64) {
+        try { ref = atob(refb64); } catch {}
+      }
+      if (ref) {
+        try {
+          const u = new URL(ref, window.location.origin);
+          if (u.origin === window.location.origin) this.state.loginReferrer = u.href;
+        } catch {}
+      }
+      if (reason) {
+        this.state.loginReason = reason;
+        captcha.mount(this.el.loginCaptcha, () => {});
+        this.el.loginNote.textContent = this.t("loginRequired") + (this.state.loginReferrer ? ` • ${this.t("afterLoginRedirect")}` : "");
+        this.el.loginDialog.showModal();
+      }
+    } catch {}
   },
   cache() {
     this.el.title = document.getElementById("title");
@@ -892,6 +921,12 @@ const ui = {
         this.el.loginDialog.close();
         this.updateHeaderAuth();
         this.render();
+        if (this.state.loginReferrer) {
+          const u = this.state.loginReferrer;
+          this.state.loginReferrer = null;
+          window.location.href = u;
+          return;
+        }
         if (r.require_twofa_prompt) {
           try {
             const setup = await api.post("/api/auth/2fa/setup", {});
