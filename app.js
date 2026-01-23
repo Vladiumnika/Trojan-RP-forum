@@ -108,7 +108,8 @@ const translations = {
     quote: "Цитировать",
     report: "Пожаловаться",
     views: "Просмотры",
-    support: "Поддержка"
+    support: "Поддержка",
+    group: "Группа"
   },
   kk: {
     title: "Prestige RolePlay",
@@ -219,7 +220,8 @@ const translations = {
     quote: "Дәйексөз",
     report: "Шағымдану",
     views: "Қаралымдар",
-    support: "Қолдау"
+    support: "Қолдау",
+    group: "Топ"
   },
   uk: {
     title: "Prestige RolePlay",
@@ -328,7 +330,8 @@ const translations = {
     quote: "Цитувати",
     report: "Поскаржитися",
     views: "Перегляди",
-    support: "Підтримка"
+    support: "Підтримка",
+    group: "Група"
   },
   bg: {
     title: "Prestige RolePlay",
@@ -445,7 +448,8 @@ const translations = {
     quote: "Цитирай",
     report: "Докладвай",
     views: "Преглеждания",
-    support: "Поддръжка"
+    support: "Поддръжка",
+    group: "Група"
   },
   en: {
     title: "Prestige RolePlay",
@@ -567,7 +571,8 @@ const translations = {
     quote: "Quote",
     report: "Report",
     views: "Views",
-    support: "Support"
+    support: "Support",
+    group: "Group"
   }
 };
 
@@ -700,6 +705,7 @@ const ui = {
     this.el.langLabel = document.getElementById("langLabel");
     this.el.lang = document.getElementById("lang");
     this.el.supportBtn = document.getElementById("supportBtn");
+    this.el.groupBtn = document.getElementById("groupBtn");
     this.el.themeToggle = document.getElementById("themeToggle");
     this.el.controls = document.getElementById("controls");
     this.el.burgerBtn = document.getElementById("burgerBtn");
@@ -864,6 +870,11 @@ const ui = {
     if (this.el.supportBtn) {
       this.el.supportBtn.addEventListener("click", () => {
         window.open("https://t.me/Tex_Prestige_RP_bot", "_blank");
+      });
+    }
+    if (this.el.groupBtn) {
+      this.el.groupBtn.addEventListener("click", () => {
+        window.open("https://t.me/Tex_Prestige_RP", "_blank");
       });
     }
     this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
@@ -1299,6 +1310,8 @@ const ui = {
     this.el.saveProfile.textContent = this.t("save");
     if (this.el.logoutAllBtn) this.el.logoutAllBtn.textContent = this.t("logoutAll");
     if (this.el.latestPostsTitle) this.el.latestPostsTitle.textContent = this.t("latestPosts");
+    if (this.el.groupBtn) this.el.groupBtn.textContent = this.t("group");
+    if (this.el.supportBtn) this.el.supportBtn.textContent = this.t("support");
     const opts = this.el.lang.querySelectorAll("option");
     opts.forEach(o => {
       if (o.value === "ru") o.textContent = "Русский";
