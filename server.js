@@ -448,9 +448,12 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
     const transporter = nodemailer.createTransport({
       host,
       port,
-      secure: port === 465,
+      secure: port === 465, // true for 465, false for other ports
       auth: { user, pass },
-      tls: allowSelfSigned ? { rejectUnauthorized: false } : undefined
+      tls: allowSelfSigned ? { rejectUnauthorized: false } : undefined,
+      connectionTimeout: 10000, // 10s timeout
+      greetingTimeout: 5000,
+      socketTimeout: 10000
     });
     await transporter.verify();
     const to = (req.body && req.body.email) || user;
