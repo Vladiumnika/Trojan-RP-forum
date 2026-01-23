@@ -419,7 +419,10 @@ const translations = {
     ,
     in: "в"
     ,
-    loginWarning: "Администрация никога няма да Ви изпрати линк за авторизация, нито да иска данните Ви."
+    loginWarning: "Администрация никога няма да Ви изпрати линк за авторизация, нито да иска данните Ви.",
+    quote: "Цитирай",
+    report: "Докладвай",
+    views: "Преглеждания"
   },
   en: {
     title: "Prestige RolePlay",
@@ -537,7 +540,10 @@ const translations = {
     ,
     in: "in"
     ,
-    loginWarning: "Administration will never send you an authorization link or ask for your login details."
+    loginWarning: "Administration will never send you an authorization link or ask for your login details.",
+    quote: "Quote",
+    report: "Report",
+    views: "Views"
   }
 };
 
@@ -682,6 +688,8 @@ const ui = {
     this.el.profileNotifications = document.getElementById("profileNotifications");
     this.el.profileNotificationsLabel = document.getElementById("profileNotificationsLabel");
     this.el.avatarUpload = document.getElementById("avatarUpload");
+    this.el.profileStatsThreads = document.getElementById("profileStatsThreads");
+    this.el.profileStatsPosts = document.getElementById("profileStatsPosts");
     this.el.enable2faBtn = document.getElementById("enable2faBtn");
     this.el.disable2faBtn = document.getElementById("disable2faBtn");
     this.el.logoutAllBtn = document.getElementById("logoutAllBtn");
@@ -832,6 +840,13 @@ const ui = {
       this.el.profileUsername.value = this.state.user.username || "";
       this.el.profileNotifications.checked = !!this.state.user.notifications;
       this.el.profileDialog.showModal();
+      const id = this.state.user?.id;
+      if (id) {
+        api.get(`/api/users/${id}/stats`).then(s => {
+          if (this.el.profileStatsThreads) this.el.profileStatsThreads.textContent = `${this.t("threadsCount")}: ${s.threads}`;
+          if (this.el.profileStatsPosts) this.el.profileStatsPosts.textContent = `${this.t("postsCount")}: ${s.posts}`;
+        }).catch(()=>{});
+      }
     });
     this.el.loginCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.loginDialog.close(); });
     this.el.registerCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.registerDialog.close(); });
@@ -1494,6 +1509,9 @@ const ui = {
   renderPosts(threadId) {
     const ul = this.el.postList;
     ul.innerHTML = "";
+    api.get(`/api/threads/${threadId}/meta`).then(meta => {
+      if (this.el.threadMeta) this.el.threadMeta.textContent = `${escapeHtml(meta.category_name || "")} > ${escapeHtml(meta.title || "")} • ${this.t("views")}: ${meta.views || 0}`;
+    }).catch(()=>{});
     const page = this.state.postsPage || 1;
     api.get(`/api/threads/${threadId}/posts_paginated?page=${page}&size=10`).then(res => {
       const list = res.items;
@@ -1521,6 +1539,26 @@ const ui = {
           api.post(`/api/posts/${p.id}/react`, { type: "like" }).then(r => { likeBtn.textContent = `${this.t("likes")}: ${r.count}`; });
         });
         actions.appendChild(likeBtn);
+        const quoteBtn = document.createElement("button");
+        quoteBtn.className = "ghost";
+        quoteBtn.textContent = this.t("quote");
+        quoteBtn.addEventListener("click", () => {
+          if (!this.state.user) { this.el.loginDialog.showModal(); return }
+          this.el.postDialog.showModal();
+          const author = p.author_username || "unknown";
+          this.el.postContentInput.value = `> ${author}\n\n${p.content}\n\n`;
+        });
+        actions.appendChild(quoteBtn);
+        const reportBtn = document.createElement("button");
+        reportBtn.className = "ghost";
+        reportBtn.textContent = this.t("report");
+        reportBtn.addEventListener("click", () => {
+          if (!this.state.user) { this.el.loginDialog.showModal(); return }
+          const reason = prompt(this.t("report"));
+          if (reason === null) return;
+          api.post(`/api/posts/${p.id}/report`, { reason }).then(() => {}).catch(err => alert(ui.t("apiError") + ": " + err.message));
+        });
+        actions.appendChild(reportBtn);
         if (this.state.user && (this.state.user.role === "admin" || this.state.user.role === "moderator" || this.state.user.username === p.author_username)) {
           const editBtn = document.createElement("button");
           editBtn.className = "ghost";

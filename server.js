@@ -54,6 +54,7 @@ async function ensureTables() {
     category_id VARCHAR(36) NOT NULL,
     title VARCHAR(255) NOT NULL,
     author_id VARCHAR(36) NOT NULL,
+    views BIGINT NOT NULL DEFAULT 0,
     locked TINYINT(1) DEFAULT 0,
     pinned TINYINT(1) DEFAULT 0,
     created_at BIGINT NOT NULL,
@@ -84,6 +85,16 @@ async function ensureTables() {
     CONSTRAINT fk_react_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     CONSTRAINT fk_react_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS post_reports (
+    id VARCHAR(36) PRIMARY KEY,
+    post_id VARCHAR(36) NOT NULL,
+    reporter_id VARCHAR(36) NOT NULL,
+    reason VARCHAR(255),
+    created_at BIGINT NOT NULL,
+    CONSTRAINT fk_report_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_report_user FOREIGN KEY (reporter_id) REFERENCES users(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  try { await pool.query(`ALTER TABLE threads ADD COLUMN views BIGINT NOT NULL DEFAULT 0`); } catch (e) {}
   await pool.query(`CREATE TABLE IF NOT EXISTS email_verifications (
     token VARCHAR(64) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
@@ -240,7 +251,7 @@ async function readDB() {
     const raw = await fs.readFile(DATA_PATH, "utf-8");
     return JSON.parse(raw);
   } catch (e) {
-    const db = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [] };
+    const db = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [] };
     await fs.writeFile(DATA_PATH, JSON.stringify(db, null, 2), "utf-8");
     return db;
   }
@@ -806,6 +817,7 @@ app.post("/api/threads", authMiddleware, requireConfirmed, rateLimit({ windowMs:
 
 app.get("/api/threads/:id/posts", async (req, res) => {
   if (MYSQL_READY) {
+    await pool.query("UPDATE threads SET views=views+1 WHERE id=:tid", { tid: req.params.id });
     const [rows] = await pool.query(`
       SELECT p.id, p.thread_id, p.author_id, p.content, p.created_at,
              COALESCE(u.username,'unknown') AS author_username
@@ -817,10 +829,13 @@ app.get("/api/threads/:id/posts", async (req, res) => {
     return res.json(rows.map(r => ({ ...r, attachments: JSON.parse(r.attachments || "[]") })));
   }
   const db = await readDB();
+  const t = db.threads.find(x => x.id === req.params.id);
+  if (t) t.views = (t.views || 0) + 1;
   const posts = db.posts.filter(p => p.thread_id === req.params.id).map(p => {
     const author = db.users.find(u => u.id === p.author_id);
     return { ...p, author_username: author?.username || "unknown" };
   });
+  await writeDB(db);
   return res.json(posts);
 });
 app.post("/api/posts", authMiddleware, requireConfirmed, rateLimit({ windowMs: 60_000, max: 20 }), async (req, res) => {
@@ -971,6 +986,22 @@ app.post("/api/posts/:id/react", authMiddleware, async (req, res) => {
   return res.json({ count: p.reactions.filter(r => r.type === (type || "like")).length });
 });
 
+app.post("/api/posts/:id/report", authMiddleware, async (req, res) => {
+  const { reason } = req.body || {};
+  if (MYSQL_READY) {
+    const id = uid();
+    await pool.query("INSERT INTO post_reports (id,post_id,reporter_id,reason,created_at) VALUES (:id,:pid,:rid,:reason,:ts)", { id, pid: req.params.id, rid: req.user.sub, reason: (reason || "").slice(0,255), ts: Date.now() });
+    return res.json({ ok: true });
+  }
+  const db = await readDB();
+  const p = db.posts.find(x => x.id === req.params.id);
+  if (!p) return res.status(404).json({ error: "Post not found" });
+  const r = { id: uid(), post_id: p.id, reporter_id: req.user.sub, reason: (reason || ""), created_at: Date.now() };
+  db.post_reports = db.post_reports || [];
+  db.post_reports.push(r);
+  await writeDB(db);
+  return res.json({ ok: true });
+});
 app.post("/api/upload", authMiddleware, rateLimit({ windowMs: 60_000, max: 5 }), upload.array("files", 4), async (req, res) => {
   const files = [];
   for (const f of (req.files || [])) {
@@ -1211,6 +1242,7 @@ app.get("/api/threads/:id/posts_paginated", async (req, res) => {
   const page = parseInt(req.query.page || "1", 10);
   const size = Math.min(parseInt(req.query.size || "10", 10), 50);
   if (MYSQL_READY) {
+    await pool.query("UPDATE threads SET views=views+1 WHERE id=:tid", { tid: req.params.id });
     const [[{ cnt }]] = await pool.query("SELECT COUNT(*) as cnt FROM posts WHERE thread_id=:tid", { tid: req.params.id });
     const total = cnt;
     const offset = (page - 1) * size;
@@ -1227,6 +1259,8 @@ app.get("/api/threads/:id/posts_paginated", async (req, res) => {
     return res.json({ items, page, size, total, pages: Math.ceil(total / size) });
   }
   const db = await readDB();
+  const th = db.threads.find(x => x.id === req.params.id);
+  if (th) th.views = (th.views || 0) + 1;
   const all = db.posts.filter(p => p.thread_id === req.params.id);
   const total = all.length;
   const start = (page - 1) * size;
@@ -1234,9 +1268,22 @@ app.get("/api/threads/:id/posts_paginated", async (req, res) => {
     const author = db.users.find(u => u.id === p.author_id);
     return { ...p, author_username: author?.username || "unknown" };
   });
+  await writeDB(db);
   return res.json({ items: posts, page, size, total, pages: Math.ceil(total / size) });
 });
 
+app.get("/api/threads/:id/meta", async (req, res) => {
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT t.id,t.title,t.category_id,t.views,c.name AS category_name FROM threads t LEFT JOIN categories c ON c.id=t.category_id WHERE t.id=:id", { id: req.params.id });
+    if (!rows.length) return res.status(404).json({ error: "Thread not found" });
+    return res.json(rows[0]);
+  }
+  const db = await readDB();
+  const t = db.threads.find(x => x.id === req.params.id);
+  if (!t) return res.status(404).json({ error: "Thread not found" });
+  const c = db.categories.find(x => x.id === t.category_id);
+  return res.json({ id: t.id, title: t.title, category_id: t.category_id, views: t.views || 0, category_name: c?.name || "" });
+});
 app.post("/api/auth/reset/request", async (req, res) => {
   try {
     const { email } = req.body || {};
