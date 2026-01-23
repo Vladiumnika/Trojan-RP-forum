@@ -100,7 +100,14 @@ const translations = {
     twofaCodePh: "TOTP код",
     twofaEnabledNote: "2FA включен",
     twofaRequired: "Требуется 2FA код",
-    loginWarning: "Администрация никогда не пришлет ссылку на авторизацию и не запросит ваши данные для входа."
+    loginWarning: "Администрация никогда не пришлет ссылку на авторизацию и не запросит ваши данные для входа.",
+    newPostInThread: "Новый пост в теме: {title}",
+    latestPosts: "Последние публикации",
+    by: "от",
+    in: "в",
+    quote: "Цитировать",
+    report: "Пожаловаться",
+    views: "Просмотры"
   },
   kk: {
     title: "Prestige RolePlay",
@@ -202,7 +209,15 @@ const translations = {
     twofaScanNote: "Google Authenticator-де QR скандеңіз немесе құпияны қолмен енгізіңіз.",
     twofaCodePh: "TOTP код",
     twofaEnabledNote: "2FA қосылған",
-    twofaRequired: "2FA коды қажет"
+    twofaRequired: "2FA коды қажет",
+    loginWarning: "Әкімшілік ешқашан авторизация сілтемесін жібермейді және кіру деректеріңізді сұрамайды.",
+    newPostInThread: "Жаңа пост: {title}",
+    latestPosts: "Соңғы посттар",
+    by: "автор",
+    in: "тақырыпта",
+    quote: "Дәйексөз",
+    report: "Шағымдану",
+    views: "Қаралымдар"
   },
   uk: {
     title: "Prestige RolePlay",
@@ -302,7 +317,15 @@ const translations = {
     twofaScanNote: "Скануйте QR у Google Authenticator або введіть секрет вручну.",
     twofaCodePh: "TOTP код",
     twofaEnabledNote: "2FA увімкнено",
-    twofaRequired: "Потрібен 2FA код"
+    twofaRequired: "Потрібен 2FA код",
+    loginWarning: "Адміністрація ніколи не надішле вам посилання на авторизацію та не попросить ваші дані для входу.",
+    newPostInThread: "Новий пост у темі: {title}",
+    latestPosts: "Останні публікації",
+    by: "від",
+    in: "в",
+    quote: "Цитувати",
+    report: "Поскаржитися",
+    views: "Перегляди"
   },
   bg: {
     title: "Prestige RolePlay",
