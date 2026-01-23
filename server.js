@@ -308,6 +308,24 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+async function sendViaBrevo(to, subject, html) {
+  const apiKey = process.env.BREVO_API_KEY;
+  const senderEmail = process.env.SMTP_USER;
+  if (!apiKey || !senderEmail) throw new Error("BREVO_API_KEY or SMTP_USER missing");
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "api-key": apiKey },
+    body: JSON.stringify({
+      sender: { email: senderEmail, name: "Prestige RP" },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html
+    })
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 async function sendMail(to, subject, html) {
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || "0", 10) || 587;
@@ -361,7 +379,29 @@ async function sendMail(to, subject, html) {
         return;
       } catch (e2) {
         console.error("[SMTP] Fallback send failed:", e2);
+        const canBrevo = !!process.env.BREVO_API_KEY;
+        if (canBrevo) {
+          try {
+            await sendViaBrevo(to, subject, html);
+            console.log(`[SMTP] Email sent to ${to} via Brevo API`);
+            return;
+          } catch (eApi) {
+            console.error("[SMTP] Brevo API send failed:", eApi);
+            throw eApi;
+          }
+        }
         throw e2;
+      }
+    }
+    const canBrevo = !!process.env.BREVO_API_KEY;
+    if (canBrevo) {
+      try {
+        await sendViaBrevo(to, subject, html);
+        console.log(`[SMTP] Email sent to ${to} via Brevo API`);
+        return;
+      } catch (eApi) {
+        console.error("[SMTP] Brevo API send failed:", eApi);
+        throw eApi;
       }
     }
     throw err;
@@ -511,6 +551,12 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
           html: "<p>SMTP тест успешно (fallback).</p>"
         });
         return res.json({ ok: true, verified: true, sent_to: to, port: usedPort, fallback: true });
+      }
+      const canBrevo = !!process.env.BREVO_API_KEY;
+      if (canBrevo) {
+        const to = (req.body && req.body.email) || user;
+        await sendViaBrevo(to, "SMTP Test Prestige RP", "<p>SMTP тест успешно (Brevo).</p>");
+        return res.json({ ok: true, verified: true, sent_to: to, provider: "brevo" });
       }
       throw eVerify;
     }
