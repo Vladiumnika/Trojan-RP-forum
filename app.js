@@ -412,6 +412,14 @@ const translations = {
     loginRequired: "Моля, влез, за да продължиш"
     ,
     afterLoginRedirect: "След вход ще те пренасочим"
+    ,
+    latestPosts: "Последни публикации"
+    ,
+    by: "от"
+    ,
+    in: "в"
+    ,
+    loginWarning: "Администрация никога няма да Ви изпрати линк за авторизация, нито да иска данните Ви."
   },
   en: {
     title: "Prestige RolePlay",
@@ -522,6 +530,14 @@ const translations = {
     loginRequired: "Please log in to continue"
     ,
     afterLoginRedirect: "You will be redirected after login"
+    ,
+    latestPosts: "Latest posts"
+    ,
+    by: "by"
+    ,
+    in: "in"
+    ,
+    loginWarning: "Administration will never send you an authorization link or ask for your login details."
   }
 };
 
@@ -718,6 +734,9 @@ const ui = {
     this.el.categoriesTitle = document.getElementById("categoriesTitle");
     this.el.addCategoryBtn = document.getElementById("addCategoryBtn");
     this.el.categoryList = document.getElementById("categoryList");
+    this.el.latestPostsSection = document.getElementById("latestPostsSection");
+    this.el.latestPostsTitle = document.getElementById("latestPostsTitle");
+    this.el.latestPostsList = document.getElementById("latestPostsList");
     this.el.categoryDialog = document.getElementById("categoryDialog");
     this.el.categoryForm = document.getElementById("categoryForm");
     this.el.categoryNameInput = document.getElementById("categoryNameInput");
@@ -806,7 +825,7 @@ const ui = {
         this.el.controls.classList.toggle("open");
       });
     }
-    this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); });
+    this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
     this.el.registerBtn.addEventListener("click", () => { this.el.registerDialog.showModal(); captcha.mount(this.el.registerCaptcha, () => {}); });
     this.el.profileBtn.addEventListener("click", () => {
       if (!this.state.user) return;
@@ -1217,6 +1236,7 @@ const ui = {
     this.el.profileCancel.textContent = this.t("cancel");
     this.el.saveProfile.textContent = this.t("save");
     if (this.el.logoutAllBtn) this.el.logoutAllBtn.textContent = this.t("logoutAll");
+    if (this.el.latestPostsTitle) this.el.latestPostsTitle.textContent = this.t("latestPosts");
     const opts = this.el.lang.querySelectorAll("option");
     opts.forEach(o => {
       if (o.value === "ru") o.textContent = "Русский";
@@ -1355,11 +1375,39 @@ const ui = {
         li.appendChild(actions);
         ul.appendChild(li);
       });
+      this.renderLatestPosts();
     }).catch(err => {
       const li = document.createElement("li");
       li.textContent = this.t("apiError");
       ul.appendChild(li);
     });
+  },
+  renderLatestPosts() {
+    const ul = this.el.latestPostsList;
+    if (!ul) return;
+    ul.innerHTML = "";
+    api.get("/api/latest_posts?size=10").then(items => {
+      if (!items.length) {
+        const li = document.createElement("li");
+        li.textContent = this.t("empty");
+        ul.appendChild(li);
+        return;
+      }
+      items.forEach(p => {
+        const li = document.createElement("li");
+        const author = escapeHtml(p.author_username || "unknown");
+        const title = escapeHtml(p.thread_title || "");
+        li.innerHTML = `<div class="item-title">${title}</div><div class="item-sub">${this.t("by")} ${author}</div>`;
+        li.onclick = () => {
+          if (p.thread_id) {
+            this.state.current.categoryId = p.category_id || null;
+            this.show("posts");
+            this.openThread?.(p.thread_id);
+          }
+        };
+        ul.appendChild(li);
+      });
+    }).catch(()=>{});
   },
   renderThreads(categoryId) {
     const ul = this.el.threadList;

@@ -652,6 +652,54 @@ app.get("/api/categories", async (req, res) => {
   const db = await readDB();
   return res.json(db.categories);
 });
+app.get("/api/stats", async (req, res) => {
+  if (MYSQL_READY) {
+    const [[{ c: categories }]] = await pool.query("SELECT COUNT(*) as c FROM categories");
+    const [[{ c: threads }]] = await pool.query("SELECT COUNT(*) as c FROM threads");
+    const [[{ c: posts }]] = await pool.query("SELECT COUNT(*) as c FROM posts");
+    const [[{ c: users }]] = await pool.query("SELECT COUNT(*) as c FROM users");
+    const [catRows] = await pool.query("SELECT c.id,c.name,c.locked,(SELECT COUNT(*) FROM threads t WHERE t.category_id=c.id) AS threads_count FROM categories c ORDER BY name");
+    return res.json({ totals: { categories, threads, posts, users }, categories: catRows });
+  }
+  const db = await readDB();
+  const totals = { categories: db.categories.length, threads: db.threads.length, posts: db.posts.length, users: db.users.length };
+  const categories = db.categories.map(c => ({ id: c.id, name: c.name, locked: !!c.locked, threads_count: db.threads.filter(t => t.category_id === c.id).length }));
+  return res.json({ totals, categories });
+});
+app.get("/api/latest_posts", async (req, res) => {
+  const size = Math.min(parseInt(req.query.size || "10", 10), 50);
+  if (MYSQL_READY) {
+    const [rows] = await pool.query(`
+      SELECT p.id, p.thread_id, p.author_id, p.content, p.created_at,
+             COALESCE(u.username,'unknown') AS author_username,
+             t.title AS thread_title, t.category_id AS category_id
+      FROM posts p
+      LEFT JOIN users u ON u.id=p.author_id
+      LEFT JOIN threads t ON t.id=p.thread_id
+      ORDER BY p.created_at DESC
+      LIMIT :size
+    `, { size });
+    return res.json(rows);
+  }
+  const db = await readDB();
+  const posts = [...db.posts].sort((a,b)=>b.created_at - a.created_at).slice(0, size).map(p => {
+    const author = db.users.find(u => u.id === p.author_id);
+    const thread = db.threads.find(t => t.id === p.thread_id);
+    return { ...p, author_username: author?.username || "unknown", thread_title: thread?.title || "", category_id: thread?.category_id || null };
+  });
+  return res.json(posts);
+});
+app.get("/api/users/:id/stats", async (req, res) => {
+  if (MYSQL_READY) {
+    const [[{ c: threads }]] = await pool.query("SELECT COUNT(*) as c FROM threads WHERE author_id=:id", { id: req.params.id });
+    const [[{ c: posts }]] = await pool.query("SELECT COUNT(*) as c FROM posts WHERE author_id=:id", { id: req.params.id });
+    return res.json({ threads, posts });
+  }
+  const db = await readDB();
+  const threads = db.threads.filter(t => t.author_id === req.params.id).length;
+  const posts = db.posts.filter(p => p.author_id === req.params.id).length;
+  return res.json({ threads, posts });
+});
 app.post("/api/categories", authMiddleware, requireAdmin, async (req, res) => {
   const { name } = req.body || {};
   if (!name) return res.status(400).json({ error: "Missing name" });
