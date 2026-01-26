@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="api-base" content="__RUNTIME_API_BASE__">
+  <title>Prestige RolePlay Форум</title>
+  <!-- <link rel="icon" type="image/jpeg" href="photo_2025-05-20_12-55-04.jpg"> -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <!-- <img class="logo" src="photo_2025-05-20_12-55-04.jpg" alt="Trojan RP"> -->
+      <div class="titles">
+        <h1 id="title">Prestige RolePlay</h1>
+        <p id="subtitle">Форум</p>
+      </div>
+    </div>
+    <button id="burgerBtn" class="ghost burger" aria-label="Меню" title="Меню">☰</button>
+    <div class="controls" id="controls">
+      <label for="lang" id="langLabel">Език</label>
+      <select id="lang">
+        <option value="ru" selected>Русский</option>
+        <option value="kk">Қазақша</option>
+        <option value="uk">Українська</option>
+        <option value="bg">Български</option>
+        <option value="en">English</option>
+      </select>
+      <button id="groupBtn" class="ghost"></button>
+      <button id="supportBtn" class="ghost"></button>
+      <button id="discordBtn" class="ghost">Discord</button>
+      <button id="themeToggle" class="ghost"></button>
+      <button id="loginBtn" class="ghost">Вход</button>
+      <button id="registerBtn" class="primary">Регистрация</button>
+      <span id="userBadge" class="badge" style="display:none"></span>
+      <button id="logoutBtn" class="ghost" style="display:none">Изход</button>
+      <button id="profileBtn" class="ghost" style="display:none">Профил</button>
+      <button id="adminBtn" class="ghost" style="display:none">Админ</button>
+      <span id="dbBadge" class="badge"></span>
+    </div>
+  </header>
+  <main class="container">
+    <dialog id="loginDialog">
+      <form method="dialog" id="loginForm" class="form">
+        <h3 id="loginTitle">Вход</h3>
+        <input id="loginEmail" type="email" placeholder="Email" required>
+        <input id="loginPassword" type="password" placeholder="Парола" required>
+        <input id="loginTotp" type="text" placeholder="TOTP код (ако е включен)">
+        <div id="loginCaptcha" class="captcha"></div>
+        <div id="loginNote" class="item-sub"></div>
+        <div class="actions">
+          <button type="button" class="ghost" id="loginCancel">Отказ</button>
+          <button type="button" class="ghost" id="loginResendBtn">Изпрати наново потвърждение</button>
+          <button value="default" class="primary" id="loginSubmit">Вход</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="registerDialog">
+      <form method="dialog" id="registerForm" class="form">
+        <h3 id="registerTitle">Регистрация</h3>
+        <input id="registerEmail" type="email" placeholder="Email" required>
+        <input id="registerUsername" type="text" placeholder="Потребител" required>
+        <input id="registerPassword" type="password" placeholder="Парола" required>
+        <div id="registerCaptcha" class="captcha"></div>
+        <div class="actions">
+          <button type="button" class="ghost" id="registerCancel">Отказ</button>
+          <button value="default" class="primary" id="registerSubmit">Регистрация</button>
+        </div>
+        <div id="registerNote" class="item-sub"></div>
+      </form>
+    </dialog>
+    <dialog id="resetDialog">
+      <form method="dialog" id="resetForm" class="form">
+        <h3 id="resetTitle">Възстановяване на парола</h3>
+        <input id="resetEmail" type="email" placeholder="Email" required>
+        <div class="actions">
+          <button type="button" class="ghost" id="resetCancel">Отказ</button>
+          <button value="default" class="primary" id="resetSubmit">Изпрати</button>
+        </div>
+        <div id="resetNote" class="item-sub"></div>
+      </form>
+    </dialog>
+    <dialog id="performResetDialog">
+      <form method="dialog" id="performResetForm" class="form">
+        <h3 id="performResetTitle">Смяна на парола</h3>
+        <input id="performResetToken" type="text" placeholder="Token" required>
+        <input id="performResetPassword" type="password" placeholder="Нова парола" required>
+        <div class="actions">
+          <button type="button" class="ghost" id="performResetCancel">Отказ</button>
+          <button value="default" class="primary" id="performResetSubmit">Смени</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="profileDialog">
+      <form method="dialog" id="profileForm" class="form">
+        <h3 id="profileTitle">Профил</h3>
+        <input id="profileUsername" type="text" placeholder="Потребител">
+        <label class="checkbox">
+          <input id="profileNotifications" type="checkbox">
+          <span id="profileNotificationsLabel">Уведомления по имейл</span>
+        </label>
+        <input id="avatarUpload" type="file" accept="image/*">
+        <div class="meta">
+          <span id="profileStatsThreads"></span>
+          <span id="profileStatsPosts" style="margin-left:12px"></span>
+        </div>
+        <div class="actions">
+          <button type="button" class="ghost" id="enable2faBtn">Включи 2FA (Google Authenticator)</button>
+          <button type="button" class="ghost" id="disable2faBtn">Изключи 2FA</button>
+          <button type="button" class="ghost" id="logoutAllBtn">Изход от всички устройства</button>
+        </div>
+        <div class="actions">
+          <button type="button" class="ghost" id="profileCancel">Отказ</button>
+          <button value="default" class="primary" id="saveProfile">Запази</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="twofaDialog">
+      <form method="dialog" id="twofaForm" class="form">
+        <h3 id="twofaTitle">Настройка на 2FA</h3>
+        <div id="twofaNote" class="item-sub">Сканирай QR в Google Authenticator или въведи секретния ключ ръчно.</div>
+        <div id="twofaSecret" class="item-sub"></div>
+        <div id="twofaUri" class="item-sub"></div>
+        <input id="twofaCode" type="text" placeholder="TOTP код" required>
+        <div class="actions">
+          <button type="button" class="ghost" id="twofaCancel">Отказ</button>
+          <button value="default" class="primary" id="twofaActivate">Активирай</button>
+        </div>
+      </form>
+    </dialog>
+    <section id="view-categories" class="panel">
+      <div class="panel-header">
+        <h2 id="categoriesTitle">Категории</h2>
+        <button id="addCategoryBtn" class="primary"></button>
+      </div>
+      <ul id="categoryList" class="list"></ul>
+      <section id="latestPostsSection" style="margin-top:16px">
+        <div class="panel-header">
+          <h3 id="latestPostsTitle">Последни публикации</h3>
+        </div>
+        <ul id="latestPostsList" class="list"></ul>
+      </section>
+      <dialog id="categoryDialog">
+        <form method="dialog" id="categoryForm" class="form">
+          <h3 id="categoryDialogTitle">Нова категория</h3>
+          <input id="categoryNameInput" type="text" required>
+          <div class="actions">
+            <button type="button" class="ghost" id="cancelLabel">Отказ</button>
+            <button value="default" class="primary" id="createLabel">Създай</button>
+          </div>
+        </form>
+      </dialog>
+    </section>
+
+    <section id="view-threads" class="panel hidden">
+      <div class="panel-header">
+        <h2 id="threadsTitle">Теми</h2>
+        <div class="panel-actions">
+          <button id="backToCategories" class="ghost"></button>
+          <button id="addThreadBtn" class="primary"></button>
+        </div>
+      </div>
+      <div class="actions" style="margin-bottom:8px">
+        <input id="searchInput" type="text" placeholder="Търсене">
+        <button id="searchBtn" class="ghost">Търси</button>
+        <span id="searchMeta" class="item-sub"></span>
+      </div>
+      <ul id="threadList" class="list"></ul>
+      <div class="actions">
+        <button id="threadsPrev" class="ghost">Назад</button>
+        <button id="threadsNext" class="ghost">Напред</button>
+      </div>
+      <dialog id="threadDialog">
+        <form method="dialog" id="threadForm" class="form">
+          <h3 id="threadDialogTitle">Нова тема</h3>
+          <input id="threadTitleInput" type="text" required>
+          <textarea id="threadContentInput" rows="6" required></textarea>
+          <input id="threadTagsInput" type="text" placeholder="Тагове (разделени със запетая)">
+          <input id="threadAuthorInput" type="text" required>
+          <div class="actions">
+            <button type="button" class="ghost" id="cancelLabel2">Отказ</button>
+            <button value="default" class="primary" id="publishLabel">Публикувай</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="editThreadDialog">
+        <form method="dialog" id="editThreadForm" class="form">
+          <h3 id="editThreadTitle">Редакция на тема</h3>
+          <input id="editThreadTitleInput" type="text" required>
+          <input id="editThreadTagsInput" type="text" placeholder="Тагове (разделени със запетая)">
+          <div class="actions">
+            <button type="button" class="ghost" id="editThreadCancel">Отказ</button>
+            <button value="default" class="primary" id="editThreadSubmit">Запази</button>
+          </div>
+        </form>
+      </dialog>
+    </section>
+
+    <section id="view-posts" class="panel hidden">
+      <div class="panel-header">
+        <h2 id="postsTitle">Публикации</h2>
+        <div class="panel-actions">
+          <button id="backToThreads" class="ghost"></button>
+          <button id="addPostBtn" class="primary"></button>
+        </div>
+      </div>
+      <div id="threadMeta" class="meta"></div>
+      <ul id="postList" class="list"></ul>
+      <div class="actions">
+        <button id="postsPrev" class="ghost">Назад</button>
+        <button id="postsNext" class="ghost">Напред</button>
+      </div>
+      <dialog id="postDialog">
+        <form method="dialog" id="postForm" class="form">
+          <h3 id="postDialogTitle">Нова публикация</h3>
+          <textarea id="postContentInput" rows="6" required></textarea>
+          <input id="postFiles" type="file" accept="image/*" multiple>
+          <div class="actions">
+            <button type="button" class="ghost" id="cancelLabel3">Отказ</button>
+            <button value="default" class="primary" id="replyLabel">Отговори</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="editPostDialog">
+        <form method="dialog" id="editPostForm" class="form">
+          <h3 id="editPostTitle">Редакция на публикация</h3>
+          <textarea id="editPostContentInput" rows="6" required></textarea>
+          <div class="actions">
+            <button type="button" class="ghost" id="editPostCancel">Отказ</button>
+            <button value="default" class="primary" id="editPostSubmit">Запази</button>
+          </div>
+        </form>
+      </dialog>
+    </section>
+    <section id="view-admin" class="panel hidden">
+      <div class="panel-header">
+        <h2 id="adminTitle">Админ панел</h2>
+        <div class="panel-actions">
+          <button id="backAdminClose" class="ghost">Затвори</button>
+          <button id="adminDiagSMTPBtn" class="ghost">Диагностика SMTP</button>
+          <button id="adminDiagDBBtn" class="ghost">Диагностика DB</button>
+        </div>
+      </div>
+      <div class="meta" id="adminMeta"></div>
+      <h3 id="adminCategoriesTitle">Категории</h3>
+      <div class="actions">
+        <input id="adminCategoryName" type="text" placeholder="Име на категория">
+        <button id="adminAddCategory" class="primary">Добави</button>
+      </div>
+      <ul id="adminCategoryList" class="list"></ul>
+      <h3 id="adminUsersTitle">Потребители</h3>
+      <ul id="adminUserList" class="list"></ul>
+    </section>
+  </main>
+  <footer class="footer">
+    <span id="footerText">Prestige RolePlay • GTA RolePlay</span>
+    <span id="copyrightText"></span>
+  </footer>
+  <script src="app.js?v=20260122-2"></script>
+</body>
+</html>
+
