@@ -41,6 +41,7 @@ console.log("[Prestige RP] SMTP Config Check:", {
 });
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Render/Nginx)
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
