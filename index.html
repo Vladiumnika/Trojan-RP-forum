@@ -38,6 +38,7 @@
       <button id="supportBtn" class="ghost"></button>
       <button id="discordBtn" class="ghost">Discord</button>
       <button id="themeToggle" class="ghost"></button>
+      <button id="themeEditor" class="ghost"></button>
       <button id="loginBtn" class="ghost">Вход</button>
       <button id="registerBtn" class="primary">Регистрация</button>
       <span id="userBadge" class="badge" style="display:none"></span>
@@ -48,6 +49,37 @@
     </div>
   </header>
   <main class="container">
+    <dialog id="themeDialog">
+      <form method="dialog" id="themeForm" class="form">
+        <h3 id="themeDialogTitle">Настройки на тема</h3>
+        <div class="actions" style="gap:12px; flex-wrap:wrap">
+          <label class="checkbox">
+            <span id="themePrimaryLabel">Основен цвят</span>
+            <input id="themePrimary" type="color" value="#7c3aed">
+          </label>
+          <label class="checkbox">
+            <span id="themeAccentLabel">Акцент</span>
+            <input id="themeAccent" type="color" value="#a855f7">
+          </label>
+          <label class="checkbox">
+            <span id="themeBgLabel">Фон</span>
+            <input id="themeBg" type="color" value="#0b0b10">
+          </label>
+          <label class="checkbox">
+            <span id="themeTextLabel">Текст</span>
+            <input id="themeText" type="color" value="#f2f2f7">
+          </label>
+          <label class="checkbox">
+            <span id="themeBorderLabel">Рамка</span>
+            <input id="themeBorder" type="color" value="#26263a">
+          </label>
+        </div>
+        <div class="actions">
+          <button type="button" class="ghost" id="themeCancel">Отказ</button>
+          <button value="default" class="primary" id="themeSave">Запази</button>
+        </div>
+      </form>
+    </dialog>
     <dialog id="loginDialog">
       <form method="dialog" id="loginForm" class="form">
         <h3 id="loginTitle">Вход</h3>

@@ -114,7 +114,14 @@ const translations = {
     support: "Поддержка",
     group: "Группа",
     logoutAll: "Выход со всех устройств",
-    discord: "Discord"
+    discord: "Discord",
+    themeSettings: "Настройки темы",
+    themePrimary: "Основной цвет",
+    themeAccent: "Акцент",
+    themeBg: "Фон",
+    themeText: "Текст",
+    themeBorder: "Рамка",
+    save: "Сохранить"
   },
   kk: {
     title: "Prestige RolePlay",
@@ -231,7 +238,14 @@ const translations = {
     support: "Қолдау",
     group: "Топ",
     logoutAll: "Барлық құрылғылардан шығу",
-    discord: "Discord"
+    discord: "Discord",
+    themeSettings: "Тақырып баптауы",
+    themePrimary: "Негізгі түс",
+    themeAccent: "Акцент",
+    themeBg: "Фон",
+    themeText: "Мәтін",
+    themeBorder: "Шекара",
+    save: "Сақтау"
   },
   uk: {
     title: "Prestige RolePlay",
@@ -346,7 +360,14 @@ const translations = {
     support: "Підтримка",
     group: "Група",
     logoutAll: "Вийти з усіх пристроїв",
-    discord: "Discord"
+    discord: "Discord",
+    themeSettings: "Налаштування теми",
+    themePrimary: "Основний колір",
+    themeAccent: "Акцент",
+    themeBg: "Фон",
+    themeText: "Текст",
+    themeBorder: "Рамка",
+    save: "Зберегти"
   },
   bg: {
     title: "Prestige RolePlay",
@@ -468,7 +489,14 @@ const translations = {
     views: "Преглеждания",
     support: "Поддръжка",
     group: "Група",
-    discord: "Discord"
+    discord: "Discord",
+    themeSettings: "Настройки на тема",
+    themePrimary: "Основен цвят",
+    themeAccent: "Акцент",
+    themeBg: "Фон",
+    themeText: "Текст",
+    themeBorder: "Рамка",
+    save: "Запази"
   },
   en: {
     title: "Prestige RolePlay",
@@ -595,7 +623,14 @@ const translations = {
     views: "Views",
     support: "Support",
     group: "Group",
-    discord: "Discord"
+    discord: "Discord",
+    themeSettings: "Theme Settings",
+    themePrimary: "Primary",
+    themeAccent: "Accent",
+    themeBg: "Background",
+    themeText: "Text",
+    themeBorder: "Border",
+    save: "Save"
   }
 };
 
@@ -702,6 +737,7 @@ const ui = {
   el: {},
   init() {
     this.cache();
+    this.loadThemeFromStorage();
     this.bind();
     this.applyLang();
     this.refreshMeta();
@@ -739,6 +775,7 @@ const ui = {
     this.el.groupBtn = document.getElementById("groupBtn");
     this.el.discordBtn = document.getElementById("discordBtn");
     this.el.themeToggle = document.getElementById("themeToggle");
+    this.el.themeEditor = document.getElementById("themeEditor");
     this.el.controls = document.getElementById("controls");
     this.el.burgerBtn = document.getElementById("burgerBtn");
     this.el.loginBtn = document.getElementById("loginBtn");
@@ -884,6 +921,21 @@ const ui = {
     this.el.adminExportDBBtn = document.getElementById("adminExportDBBtn");
     this.el.adminImportDBBtn = document.getElementById("adminImportDBBtn");
     this.el.adminImportFile = document.getElementById("adminImportFile");
+    this.el.themeDialog = document.getElementById("themeDialog");
+    this.el.themeForm = document.getElementById("themeForm");
+    this.el.themeDialogTitle = document.getElementById("themeDialogTitle");
+    this.el.themePrimaryLabel = document.getElementById("themePrimaryLabel");
+    this.el.themeAccentLabel = document.getElementById("themeAccentLabel");
+    this.el.themeBgLabel = document.getElementById("themeBgLabel");
+    this.el.themeTextLabel = document.getElementById("themeTextLabel");
+    this.el.themeBorderLabel = document.getElementById("themeBorderLabel");
+    this.el.themePrimary = document.getElementById("themePrimary");
+    this.el.themeAccent = document.getElementById("themeAccent");
+    this.el.themeBg = document.getElementById("themeBg");
+    this.el.themeText = document.getElementById("themeText");
+    this.el.themeBorder = document.getElementById("themeBorder");
+    this.el.themeCancel = document.getElementById("themeCancel");
+    this.el.themeSave = document.getElementById("themeSave");
   },
   bind() {
     this.el.lang.addEventListener("change", () => {
@@ -915,6 +967,47 @@ const ui = {
     if (this.el.discordBtn) {
       this.el.discordBtn.addEventListener("click", () => {
         window.open("https://discord.gg/7wW7k5N2E", "_blank");
+      });
+    }
+    if (this.el.themeEditor && this.el.themeDialog) {
+      this.el.themeEditor.addEventListener("click", () => {
+        this.loadThemeFromStorage();
+        this.el.themeDialog.showModal();
+      });
+    }
+    if (this.el.themePrimary) {
+      this.el.themePrimary.addEventListener("input", () => {
+        this.applyThemeVars({ primary: this.el.themePrimary.value });
+      });
+    }
+    if (this.el.themeAccent) {
+      this.el.themeAccent.addEventListener("input", () => {
+        this.applyThemeVars({ accent: this.el.themeAccent.value });
+      });
+    }
+    if (this.el.themeBg) {
+      this.el.themeBg.addEventListener("input", () => {
+        this.applyThemeVars({ bg: this.el.themeBg.value });
+      });
+    }
+    if (this.el.themeText) {
+      this.el.themeText.addEventListener("input", () => {
+        this.applyThemeVars({ text: this.el.themeText.value });
+      });
+    }
+    if (this.el.themeBorder) {
+      this.el.themeBorder.addEventListener("input", () => {
+        this.applyThemeVars({ border: this.el.themeBorder.value });
+      });
+    }
+    if (this.el.themeCancel && this.el.themeDialog) {
+      this.el.themeCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.themeDialog.close(); });
+    }
+    if (this.el.themeForm && this.el.themeDialog) {
+      this.el.themeForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.saveThemeToStorage();
+        this.el.themeDialog.close();
       });
     }
     this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
@@ -1299,6 +1392,43 @@ const ui = {
       });
     }
   },
+  applyThemeVars(vars) {
+    const root = document.documentElement;
+    if (vars.primary) root.style.setProperty("--primary", vars.primary);
+    if (vars.accent) root.style.setProperty("--accent", vars.accent);
+    if (vars.bg) root.style.setProperty("--bg", vars.bg);
+    if (vars.text) root.style.setProperty("--text", vars.text);
+    if (vars.border) root.style.setProperty("--border", vars.border);
+  },
+  saveThemeToStorage() {
+    const vars = {
+      primary: this.el.themePrimary ? this.el.themePrimary.value : "",
+      accent: this.el.themeAccent ? this.el.themeAccent.value : "",
+      bg: this.el.themeBg ? this.el.themeBg.value : "",
+      text: this.el.themeText ? this.el.themeText.value : "",
+      border: this.el.themeBorder ? this.el.themeBorder.value : ""
+    };
+    try { localStorage.setItem("theme_vars", JSON.stringify(vars)); } catch {}
+  },
+  loadThemeFromStorage() {
+    let vars = {};
+    try { vars = JSON.parse(localStorage.getItem("theme_vars") || "{}") || {}; } catch {}
+    const cs = getComputedStyle(document.documentElement);
+    const defaults = {
+      primary: cs.getPropertyValue("--primary").trim(),
+      accent: cs.getPropertyValue("--accent").trim(),
+      bg: cs.getPropertyValue("--bg").trim(),
+      text: cs.getPropertyValue("--text").trim(),
+      border: cs.getPropertyValue("--border").trim()
+    };
+    const merged = { ...defaults, ...vars };
+    this.applyThemeVars(merged);
+    if (this.el.themePrimary) this.el.themePrimary.value = merged.primary;
+    if (this.el.themeAccent) this.el.themeAccent.value = merged.accent;
+    if (this.el.themeBg) this.el.themeBg.value = merged.bg;
+    if (this.el.themeText) this.el.themeText.value = merged.text;
+    if (this.el.themeBorder) this.el.themeBorder.value = merged.border;
+  },
   applyLang() {
     this.el.title.textContent = this.t("title");
     this.el.subtitle.textContent = this.t("subtitle");
@@ -1397,6 +1527,15 @@ const ui = {
     if (this.el.groupBtn) this.el.groupBtn.textContent = this.t("group");
     if (this.el.supportBtn) this.el.supportBtn.textContent = this.t("support");
     if (this.el.discordBtn) this.el.discordBtn.textContent = this.t("discord");
+    if (this.el.themeEditor) this.el.themeEditor.textContent = this.t("themeSettings");
+    if (this.el.themeDialogTitle) this.el.themeDialogTitle.textContent = this.t("themeSettings");
+    if (this.el.themePrimaryLabel) this.el.themePrimaryLabel.textContent = this.t("themePrimary");
+    if (this.el.themeAccentLabel) this.el.themeAccentLabel.textContent = this.t("themeAccent");
+    if (this.el.themeBgLabel) this.el.themeBgLabel.textContent = this.t("themeBg");
+    if (this.el.themeTextLabel) this.el.themeTextLabel.textContent = this.t("themeText");
+    if (this.el.themeBorderLabel) this.el.themeBorderLabel.textContent = this.t("themeBorder");
+    if (this.el.themeCancel) this.el.themeCancel.textContent = this.t("cancel");
+    if (this.el.themeSave) this.el.themeSave.textContent = this.t("save");
     const opts = this.el.lang.querySelectorAll("option");
     opts.forEach(o => {
       if (o.value === "ru") o.textContent = "Русский";
@@ -1586,8 +1725,9 @@ const ui = {
         }
         list.forEach(t => {
           const li = document.createElement("li");
+          li.classList.add("thread-card");
           const left = document.createElement("div");
-          const tags = (t.tags || []).map(x => `#${escapeHtml(x)}`).join(" ");
+          const tags = (t.tags || []).map(x => `<span class="tag-chip">#${escapeHtml(x)}</span>`).join(" ");
           left.innerHTML = `<div class="item-title">${escapeHtml(t.title)}${tags ? " • "+tags : ""}</div>
                             <div class="item-sub">${t.posts_count} ${this.t("postsCount")}</div>`;
           const actions = document.createElement("div");
