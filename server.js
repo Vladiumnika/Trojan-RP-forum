@@ -41,6 +41,7 @@ console.log("[Prestige RP] SMTP Config Check:", {
 });
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Render/Nginx)
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
@@ -269,17 +270,56 @@ function linkBaseFor(req) {
 }
 
 async function readDB() {
+  const remoteUrl = (process.env.JSON_REMOTE_URL || "").trim();
+  if (remoteUrl) {
+    try {
+      const headers = buildRemoteHeaders();
+      const r = await safeFetch(remoteUrl, { method: "GET", headers });
+      if (r.ok) {
+        let body = await r.json();
+        if (body && typeof body === "object" && body.record && typeof body.record === "object") {
+          body = body.record;
+        }
+        const norm = normalizeDb(body);
+        try {
+          const tmp = DATA_PATH + ".tmp";
+          await fs.writeFile(tmp, JSON.stringify(norm, null, 2), "utf-8");
+          await fs.rename(tmp, DATA_PATH);
+        } catch {}
+        return norm;
+      }
+    } catch (e) {
+      console.warn("[Prestige RP] Remote JSON read failed:", e?.message || e);
+    }
+  }
   try {
     const raw = await fs.readFile(DATA_PATH, "utf-8");
     return JSON.parse(raw);
   } catch (e) {
+    if (e.code !== 'ENOENT') {
+      console.error("[Prestige RP] DB Read Error (backing up):", e.message);
+      try { await fs.copyFile(DATA_PATH, DATA_PATH + ".bak"); } catch {}
+    }
     const db = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [] };
-    await fs.writeFile(DATA_PATH, JSON.stringify(db, null, 2), "utf-8");
+    await writeDB(db);
     return db;
   }
 }
 async function writeDB(db) {
-  await fs.writeFile(DATA_PATH, JSON.stringify(db, null, 2), "utf-8");
+  const json = JSON.stringify(db, null, 2);
+  const tmp = DATA_PATH + ".tmp";
+  await fs.writeFile(tmp, json, "utf-8");
+  await fs.rename(tmp, DATA_PATH);
+  const remoteUrl = (process.env.JSON_REMOTE_URL || "").trim();
+  if (remoteUrl) {
+    try {
+      const method = (process.env.JSON_REMOTE_METHOD || "PUT").toUpperCase();
+      const headers = { "Content-Type": "application/json", ...buildRemoteHeaders() };
+      await safeFetch(remoteUrl, { method, headers, body: json });
+    } catch (e) {
+      console.warn("[Prestige RP] Remote JSON write failed:", e?.message || e);
+    }
+  }
 }
 
 function uid() {
@@ -308,6 +348,29 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+function buildRemoteHeaders() {
+  const h = {};
+  const headerName = (process.env.JSON_REMOTE_HEADER || "").trim();
+  const headerValue = (process.env.JSON_REMOTE_KEY || "").trim();
+  const token = (process.env.JSON_REMOTE_TOKEN || "").trim();
+  if (headerName && headerValue) h[headerName] = headerValue;
+  if (token) h["Authorization"] = `Bearer ${token}`;
+  return h;
+}
+function normalizeDb(db) {
+  const empty = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [] };
+  try {
+    return {
+      users: Array.isArray(db?.users) ? db.users : [],
+      categories: Array.isArray(db?.categories) ? db.categories : [],
+      threads: Array.isArray(db?.threads) ? db.threads : [],
+      posts: Array.isArray(db?.posts) ? db.posts : [],
+      email_verifications: Array.isArray(db?.email_verifications) ? db.email_verifications : [],
+      password_resets: Array.isArray(db?.password_resets) ? db.password_resets : [],
+      post_reports: Array.isArray(db?.post_reports) ? db.post_reports : []
+    };
+  } catch { return empty }
+}
 async function sendViaBrevo(to, subject, html) {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.SMTP_USER;
@@ -698,6 +761,36 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
     return res.json({ ok: true, verified: true, sent_to: to, port: usedPort, fallback: false });
   } catch (e) {
     return res.status(500).json({ error: e?.message || "SMTP failed" });
+  }
+});
+
+// Admin JSON export/import (only for JSON storage mode)
+app.get("/api/db/export", authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const db = await readDB();
+    res.set("Content-Type", "application/json");
+    res.json(db);
+  } catch (e) {
+    res.status(500).json({ error: e?.message || "Export failed" });
+  }
+});
+app.post("/api/db/import", authMiddleware, requireAdmin, async (req, res) => {
+  const { db } = req.body || {};
+  if (!db || typeof db !== "object") return res.status(400).json({ error: "Invalid payload" });
+  const norm = {
+    users: Array.isArray(db.users) ? db.users : [],
+    categories: Array.isArray(db.categories) ? db.categories : [],
+    threads: Array.isArray(db.threads) ? db.threads : [],
+    posts: Array.isArray(db.posts) ? db.posts : [],
+    email_verifications: Array.isArray(db.email_verifications) ? db.email_verifications : [],
+    password_resets: Array.isArray(db.password_resets) ? db.password_resets : [],
+    post_reports: Array.isArray(db.post_reports) ? db.post_reports : []
+  };
+  try {
+    await writeDB(norm);
+    return res.json({ ok: true });
+  } catch (e) {
+    return res.status(500).json({ error: e?.message || "Import failed" });
   }
 });
 

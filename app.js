@@ -79,6 +79,9 @@ const translations = {
     copyright: "© {year} {brand}. Все права защищены.",
     adminDiagSMTP: "Диагностика SMTP",
     adminDiagDB: "Диагностика БД",
+    exportDB: "Экспорт базы",
+    importDB: "Импорт базы",
+    chooseFile: "Избери файл",
     dbLabel: "База данных",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
@@ -193,6 +196,9 @@ const translations = {
     copyright: "© {year} {brand}. Барлық құқықтар қорғалған.",
     adminDiagSMTP: "SMTP диагностикасы",
     adminDiagDB: "DB диагностикасы",
+    exportDB: "Базаны экспорттау",
+    importDB: "Базаны импорттау",
+    chooseFile: "Файл таңдау",
     dbLabel: "Дерекқор",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
@@ -305,6 +311,9 @@ const translations = {
     copyright: "© {year} {brand}. Усі права захищені.",
     adminDiagSMTP: "Діагностика SMTP",
     adminDiagDB: "Діагностика БД",
+    exportDB: "Експорт бази",
+    importDB: "Імпорт бази",
+    chooseFile: "Вибрати файл",
     dbLabel: "База даних",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
@@ -419,6 +428,9 @@ const translations = {
     copyright: "© {year} {brand}. Всички права запазени.",
     adminDiagSMTP: "Диагностика на SMTP",
     adminDiagDB: "Диагностика на база данни",
+    exportDB: "Експорт база",
+    importDB: "Импорт база",
+    chooseFile: "Избери файл",
     dbLabel: "База данни",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
@@ -538,6 +550,9 @@ const translations = {
     copyright: "© {year} {brand}. All rights reserved.",
     adminDiagSMTP: "SMTP Diagnostics",
     adminDiagDB: "DB Diagnostics",
+    exportDB: "Export DB",
+    importDB: "Import DB",
+    chooseFile: "Choose file",
     dbLabel: "Database",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
@@ -866,6 +881,9 @@ const ui = {
     this.el.dbBadge = document.getElementById("dbBadge");
     this.el.adminDiagSMTPBtn = document.getElementById("adminDiagSMTPBtn");
     this.el.adminDiagDBBtn = document.getElementById("adminDiagDBBtn");
+    this.el.adminExportDBBtn = document.getElementById("adminExportDBBtn");
+    this.el.adminImportDBBtn = document.getElementById("adminImportDBBtn");
+    this.el.adminImportFile = document.getElementById("adminImportFile");
   },
   bind() {
     this.el.lang.addEventListener("change", () => {
@@ -1242,6 +1260,44 @@ const ui = {
         }
       });
     }
+    if (this.el.adminExportDBBtn) {
+      this.el.adminExportDBBtn.addEventListener("click", async () => {
+        try {
+          const url = api.base ? `${api.base}/api/db/export` : "/api/db/export";
+          const r = await fetch(url, { headers: api.token ? { Authorization: `Bearer ${api.token}` } : {} });
+          if (!r.ok) throw new Error(await r.text());
+          const db = await r.json();
+          const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `prestige_forum_${new Date().toISOString().slice(0,19).replace(/[:T]/g,"-")}.json`;
+          a.click();
+          setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+          this.el.adminMeta.textContent = "Export OK";
+        } catch (err) {
+          this.el.adminMeta.textContent = `${this.t("apiError")}: ${err.message || err}`;
+        }
+      });
+    }
+    if (this.el.adminImportDBBtn && this.el.adminImportFile) {
+      this.el.adminImportDBBtn.addEventListener("click", () => {
+        this.el.adminImportFile.value = "";
+        this.el.adminImportFile.click();
+      });
+      this.el.adminImportFile.addEventListener("change", async () => {
+        const f = this.el.adminImportFile.files?.[0];
+        if (!f) return;
+        try {
+          const txt = await f.text();
+          const db = JSON.parse(txt);
+          await api.post("/api/db/import", { db });
+          this.el.adminMeta.textContent = "Import OK";
+          this.renderAdmin();
+        } catch (err) {
+          this.el.adminMeta.textContent = `${this.t("apiError")}: ${err.message || err}`;
+        }
+      });
+    }
   },
   applyLang() {
     this.el.title.textContent = this.t("title");
@@ -1301,6 +1357,8 @@ const ui = {
     this.el.adminCategoryName.placeholder = this.t("categoryNamePh");
     if (this.el.adminDiagSMTPBtn) this.el.adminDiagSMTPBtn.textContent = this.t("adminDiagSMTP");
     if (this.el.adminDiagDBBtn) this.el.adminDiagDBBtn.textContent = this.t("adminDiagDB");
+    if (this.el.adminExportDBBtn) this.el.adminExportDBBtn.textContent = this.t("exportDB");
+    if (this.el.adminImportDBBtn) this.el.adminImportDBBtn.textContent = this.t("importDB");
     this.el.resetTitle.textContent = this.t("resetPassword");
     this.el.resetEmail.placeholder = this.t("emailPh");
     this.el.resetCancel.textContent = this.t("cancel");
