@@ -35,6 +35,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
+  backdrop-filter: blur(10px);
 }
 .brand { display: flex; align-items: center; gap: 14px }
 .logo {
@@ -55,6 +56,19 @@ body {
 select, input, textarea, button {
   font: inherit; color: var(--text);
   transition: all .18s ease;
+}
+img.avatar {
+  width: 32px; height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+img.avatar:hover { 
+  border-color: var(--accent);
+  transform: scale(1.1);
 }
 select, input, textarea {
   background: var(--bg2);
@@ -82,7 +96,7 @@ button.ghost {
   border: 1px solid var(--border);
   box-shadow: none;
 }
-button.ghost:hover { border-color: var(--primary) }
+button.ghost:hover { border-color: var(--primary); background: rgba(124,58,237,0.1); }
 .btn-danger { background: var(--danger) }
 .btn-danger:hover { background: #dc2626 }
 .btn-success { background: var(--success) }
@@ -108,6 +122,7 @@ button.ghost:hover { border-color: var(--primary) }
   align-items: center; gap: 12px;
   padding: 14px 12px; border-bottom: 1px solid var(--border);
   border-radius: 12px;
+  transition: background 0.15s ease;
 }
 .list li:last-child { border-bottom: none }
 .list li:hover { background: rgba(124,58,237,0.08) }
@@ -117,10 +132,14 @@ button.ghost:hover { border-color: var(--primary) }
   color: #d9d3ff;
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 4px 10px; font-size: 12px;
+  padding: 4px 10px; font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 .badge-success { background: rgba(34,197,94,0.18); color: #d2f7d9; border-color: #245c38 }
 .badge-warning { background: rgba(234,179,8,0.18); color: #fff3c4; border-color: #5a4a1a }
+.badge-error { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: #7f1d1d; }
+
 dialog {
   border: none; border-radius: 16px;
   background: var(--bg2); color: var(--text);
@@ -142,8 +161,8 @@ dialog {
   background: linear-gradient(0deg, var(--bg2), transparent);
 }
 .hidden { display: none }
-.item-title { font-weight: 600 }
-.item-sub { color: var(--muted); font-size: 13px }
+.item-title { font-weight: 700; font-size: 16px; color: var(--text); }
+.item-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
 .inline-actions { display: flex; gap: 8px }
 
 /* Responsive tweaks */
@@ -185,16 +204,26 @@ dialog::backdrop { background: rgba(0,0,0,0.45) }
   display: inline-block;
   margin-left: 6px;
   padding: 2px 8px;
-  font-size: 12px;
-  color: #e9e6ff;
-  background: rgba(168,85,247,0.18);
-  border: 1px solid var(--border);
-  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(124,58,237,0.1);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: 6px;
 }
 .thread-card {
-  background: rgba(124,58,237,0.06);
+  background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  padding: 16px;
+  margin-bottom: 8px;
+}
+.thread-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary);
+  background: rgba(18, 18, 32, 0.8);
 }
 .like-btn { background: rgba(124,58,237,0.15); color: #e9e6ff; border: 1px solid var(--border) }
 .like-btn:hover { border-color: var(--accent) }
@@ -204,3 +233,38 @@ dialog::backdrop { background: rgba(0,0,0,0.45) }
 *::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px }
 *::-webkit-scrollbar-thumb { background: #1a1a28; border: 2px solid var(--bg); border-radius: 10px }
 *::-webkit-scrollbar-thumb:hover { background: #24243a }
+
+/* Post List Layout */
+#postList li {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+#postList li:hover { background: rgba(18, 18, 32, 0.8); }
+
+/* Avatar Roles */
+.avatar-admin { border-color: var(--danger) !important; box-shadow: 0 0 0 2px rgba(239,68,68,0.3); }
+.avatar-mod { border-color: #eab308 !important; box-shadow: 0 0 0 2px rgba(234,179,8,0.3); }
+
+.avatar-badge-icon {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg2);
+}
+.avatar-badge-icon.admin { background: var(--danger); }
+.avatar-badge-icon.mod { background: #eab308; color: black; }

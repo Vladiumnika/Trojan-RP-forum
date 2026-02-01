@@ -68,6 +68,7 @@ const translations = {
     unlock: "Разблокировать",
     pin: "Закрепить",
     unpin: "Открепить",
+    pinned: "Закреплено",
     locked: "Заблокировано",
     likes: "Лайки",
     bannedLabel: "Забанен",
@@ -121,7 +122,13 @@ const translations = {
     themeBg: "Фон",
     themeText: "Текст",
     themeBorder: "Рамка",
-    save: "Сохранить"
+    save: "Сохранить",
+    themePresets: "Пресеты",
+    presetDark: "Темная",
+    presetLight: "Светлая",
+    presetOcean: "Океан",
+    presetSolar: "Солнечная",
+    pinned: "Закреплено"
   },
   kk: {
     title: "Prestige RolePlay",
@@ -367,7 +374,13 @@ const translations = {
     themeBg: "Фон",
     themeText: "Текст",
     themeBorder: "Рамка",
-    save: "Зберегти"
+    save: "Зберегти",
+    themePresets: "Пресети",
+    presetDark: "Темна",
+    presetLight: "Світла",
+    presetOcean: "Океан",
+    presetSolar: "Сонячна",
+    pinned: "Закріплено"
   },
   bg: {
     title: "Prestige RolePlay",
@@ -438,6 +451,7 @@ const translations = {
     unlock: "Отключи",
     pin: "Закачи",
     unpin: "Откачи",
+    pinned: "Закачено",
     locked: "Заключено",
     likes: "Харесвания",
     bannedLabel: "Блокиран",
@@ -491,12 +505,18 @@ const translations = {
     group: "Група",
     discord: "Discord",
     themeSettings: "Настройки на тема",
+    themeSettings: "Настройки на тема",
     themePrimary: "Основен цвят",
     themeAccent: "Акцент",
     themeBg: "Фон",
     themeText: "Текст",
     themeBorder: "Рамка",
-    save: "Запази"
+    save: "Запази",
+    themePresets: "Пресети",
+    presetDark: "Тъмна",
+    presetLight: "Светла",
+    presetOcean: "Океан",
+    presetSolar: "Слънчева"
   },
   en: {
     title: "Prestige RolePlay",
@@ -630,7 +650,13 @@ const translations = {
     themeBg: "Background",
     themeText: "Text",
     themeBorder: "Border",
-    save: "Save"
+    save: "Save",
+    themePresets: "Presets",
+    presetDark: "Dark",
+    presetLight: "Light",
+    presetOcean: "Ocean",
+    presetSolar: "Solar",
+    pinned: "Pinned"
   }
 };
 
@@ -709,8 +735,8 @@ const store = {
   async categories() {
     return api.get("/api/categories");
   },
-  async addCategory(name) {
-    return api.post("/api/categories", { name });
+  async addCategory(name, parent_id) {
+    return api.post("/api/categories", { name, parent_id });
   },
   async threadsByCategory(categoryId) {
     return api.get(`/api/categories/${categoryId}/threads`);
@@ -727,6 +753,23 @@ const store = {
     return res;
   }
 };
+
+function buildCategoryTree(categories) {
+  const map = {};
+  const tree = [];
+  categories.forEach(c => {
+    c.children = [];
+    map[c.id] = c;
+  });
+  categories.forEach(c => {
+    if (c.parent_id && map[c.parent_id]) {
+      map[c.parent_id].children.push(c);
+    } else {
+      tree.push(c);
+    }
+  });
+  return tree;
+}
 
 const ui = {
   state: { lang: "ru", theme: "dark", current: { categoryId: null, threadId: null }, user: null, loginReferrer: null, loginReason: null },
@@ -781,6 +824,7 @@ const ui = {
     this.el.loginBtn = document.getElementById("loginBtn");
     this.el.registerBtn = document.getElementById("registerBtn");
     this.el.userBadge = document.getElementById("userBadge");
+    this.el.headerAvatar = document.getElementById("headerAvatar");
     this.el.logoutBtn = document.getElementById("logoutBtn");
     this.el.adminBtn = document.getElementById("adminBtn");
     this.el.profileBtn = document.getElementById("profileBtn");
@@ -865,6 +909,8 @@ const ui = {
     this.el.searchInput = document.getElementById("searchInput");
     this.el.searchBtn = document.getElementById("searchBtn");
     this.el.searchMeta = document.getElementById("searchMeta");
+    this.el.threadBreadcrumbs = document.getElementById("threadBreadcrumbs");
+    this.el.subCategoryList = document.getElementById("subCategoryList");
     this.el.threadList = document.getElementById("threadList");
     this.el.threadDialog = document.getElementById("threadDialog");
     this.el.threadForm = document.getElementById("threadForm");
@@ -911,10 +957,17 @@ const ui = {
     this.el.adminMeta = document.getElementById("adminMeta");
     this.el.adminCategoriesTitle = document.getElementById("adminCategoriesTitle");
     this.el.adminCategoryName = document.getElementById("adminCategoryName");
+    this.el.adminCategoryParent = document.getElementById("adminCategoryParent");
     this.el.adminAddCategory = document.getElementById("adminAddCategory");
     this.el.adminCategoryList = document.getElementById("adminCategoryList");
     this.el.adminUsersTitle = document.getElementById("adminUsersTitle");
     this.el.adminUserList = document.getElementById("adminUserList");
+    this.el.editCategoryDialog = document.getElementById("editCategoryDialog");
+    this.el.editCategoryForm = document.getElementById("editCategoryForm");
+    this.el.editCategoryNameInput = document.getElementById("editCategoryNameInput");
+    this.el.editCategoryParentInput = document.getElementById("editCategoryParentInput");
+    this.el.editCategoryCancel = document.getElementById("editCategoryCancel");
+    this.el.editCategorySubmit = document.getElementById("editCategorySubmit");
     this.el.dbBadge = document.getElementById("dbBadge");
     this.el.adminDiagSMTPBtn = document.getElementById("adminDiagSMTPBtn");
     this.el.adminDiagDBBtn = document.getElementById("adminDiagDBBtn");
@@ -936,6 +989,15 @@ const ui = {
     this.el.themeBorder = document.getElementById("themeBorder");
     this.el.themeCancel = document.getElementById("themeCancel");
     this.el.themeSave = document.getElementById("themeSave");
+    this.el.themePresetsLabel = document.getElementById("themePresetsLabel");
+    this.el.presetDark = document.getElementById("presetDark");
+    this.el.presetLight = document.getElementById("presetLight");
+    this.el.presetOcean = document.getElementById("presetOcean");
+    this.el.presetSolar = document.getElementById("presetSolar");
+    this.el.cropDialog = document.getElementById("cropDialog");
+    this.el.cropImage = document.getElementById("cropImage");
+    this.el.cropSave = document.getElementById("cropSave");
+    this.el.cropCancel = document.getElementById("cropCancel");
   },
   bind() {
     this.el.lang.addEventListener("change", () => {
@@ -967,6 +1029,12 @@ const ui = {
     if (this.el.discordBtn) {
       this.el.discordBtn.addEventListener("click", () => {
         window.open("https://discord.gg/7wW7k5N2E", "_blank");
+      });
+    }
+    if (this.el.headerAvatar) {
+      this.el.headerAvatar.addEventListener("click", () => {
+        if (!this.state.user) { this.el.loginDialog.showModal(); return }
+        this.el.profileDialog.showModal();
       });
     }
     if (this.el.themeEditor && this.el.themeDialog) {
@@ -1008,6 +1076,34 @@ const ui = {
         e.preventDefault();
         this.saveThemeToStorage();
         this.el.themeDialog.close();
+      });
+    }
+    const applyPreset = (vars) => {
+      this.applyThemeVars(vars);
+      if (this.el.themePrimary) this.el.themePrimary.value = vars.primary;
+      if (this.el.themeAccent) this.el.themeAccent.value = vars.accent;
+      if (this.el.themeBg) this.el.themeBg.value = vars.bg;
+      if (this.el.themeText) this.el.themeText.value = vars.text;
+      if (this.el.themeBorder) this.el.themeBorder.value = vars.border;
+    };
+    if (this.el.presetDark) {
+      this.el.presetDark.addEventListener("click", () => {
+        applyPreset({ primary: "#7c3aed", accent: "#a855f7", bg: "#0b0b10", text: "#f2f2f7", border: "#26263a" });
+      });
+    }
+    if (this.el.presetLight) {
+      this.el.presetLight.addEventListener("click", () => {
+        applyPreset({ primary: "#2563eb", accent: "#38bdf8", bg: "#f5f5f5", text: "#111827", border: "#d1d5db" });
+      });
+    }
+    if (this.el.presetOcean) {
+      this.el.presetOcean.addEventListener("click", () => {
+        applyPreset({ primary: "#0ea5e9", accent: "#22d3ee", bg: "#0b1220", text: "#e5f6ff", border: "#17324d" });
+      });
+    }
+    if (this.el.presetSolar) {
+      this.el.presetSolar.addEventListener("click", () => {
+        applyPreset({ primary: "#f59e0b", accent: "#fde047", bg: "#0f0e0c", text: "#fff7ed", border: "#3b2f1a" });
       });
     }
     this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
@@ -1536,6 +1632,11 @@ const ui = {
     if (this.el.themeBorderLabel) this.el.themeBorderLabel.textContent = this.t("themeBorder");
     if (this.el.themeCancel) this.el.themeCancel.textContent = this.t("cancel");
     if (this.el.themeSave) this.el.themeSave.textContent = this.t("save");
+    if (this.el.themePresetsLabel) this.el.themePresetsLabel.textContent = this.t("themePresets");
+    if (this.el.presetDark) this.el.presetDark.textContent = this.t("presetDark");
+    if (this.el.presetLight) this.el.presetLight.textContent = this.t("presetLight");
+    if (this.el.presetOcean) this.el.presetOcean.textContent = this.t("presetOcean");
+    if (this.el.presetSolar) this.el.presetSolar.textContent = this.t("presetSolar");
     const opts = this.el.lang.querySelectorAll("option");
     opts.forEach(o => {
       if (o.value === "ru") o.textContent = "Русский";
@@ -1564,9 +1665,25 @@ const ui = {
     this.el.registerBtn.style.display = logged ? "none" : "";
     this.el.logoutBtn.style.display = logged ? "" : "none";
     this.el.userBadge.style.display = logged ? "" : "none";
+    if (this.el.headerAvatar) {
+      this.el.headerAvatar.style.display = logged ? "" : "none";
+      if (logged) {
+        const src = this.avatarUrlOrFallback(this.state.user);
+        if (src) this.el.headerAvatar.src = src;
+        this.el.headerAvatar.alt = this.state.user.username || "profile";
+        this.el.headerAvatar.title = this.state.user.username || "";
+      }
+    }
     this.el.adminBtn.style.display = logged && this.state.user.role === "admin" ? "" : "none";
     this.el.profileBtn.style.display = logged ? "" : "none";
     this.el.userBadge.textContent = logged ? `${this.state.user.username} • ${this.state.user.role}` : "";
+  },
+  avatarUrlOrFallback(user) {
+    if (user && user.avatar_url) return user.avatar_url;
+    const name = (user && user.username) ? String(user.username).trim() : "";
+    const ch = (name && name[0]) ? name[0].toUpperCase() : "?";
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${getComputedStyle(document.documentElement).getPropertyValue("--primary").trim() || "#7c3aed"}'/><stop offset='1' stop-color='${getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#a855f7"}'/></linearGradient></defs><rect width='100%' height='100%' rx='32' fill='url(#g)'/><text x='50%' y='55%' text-anchor='middle' font-size='32' font-family='Inter, system-ui, sans-serif' fill='white'>${ch}</text></svg>`;
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   },
   async refreshMeta() {
     try {
@@ -1655,25 +1772,46 @@ const ui = {
         ul.appendChild(li);
         return;
       }
-      categories.forEach(c => {
-        const li = document.createElement("li");
-        const left = document.createElement("div");
-        left.innerHTML = `<div class="item-title">${escapeHtml(c.name)}</div>`;
-        const actions = document.createElement("div");
-        actions.className = "inline-actions";
-        const openBtn = document.createElement("button");
-        openBtn.className = "ghost";
-        openBtn.textContent = this.t("threads");
-        openBtn.addEventListener("click", () => {
-          this.state.current.categoryId = c.id;
-          this.show("threads");
-          this.renderThreads(c.id);
+      const tree = buildCategoryTree(categories);
+      const renderNode = (nodes, container) => {
+        nodes.forEach(c => {
+          const li = document.createElement("li");
+          const left = document.createElement("div");
+          left.innerHTML = `<div class="item-title">${escapeHtml(c.name)}</div>`;
+          const actions = document.createElement("div");
+          actions.className = "inline-actions";
+          const openBtn = document.createElement("button");
+          openBtn.className = "ghost";
+          openBtn.textContent = this.t("threads");
+          openBtn.addEventListener("click", () => {
+            this.state.current.categoryId = c.id;
+            this.show("threads");
+            this.renderThreads(c.id);
+          });
+          actions.appendChild(openBtn);
+          
+          const row = document.createElement("div");
+          row.style.display = "flex";
+          row.style.justifyContent = "space-between";
+          row.style.alignItems = "center";
+          row.appendChild(left);
+          row.appendChild(actions);
+          li.appendChild(row);
+
+          if (c.children && c.children.length > 0) {
+            const subUl = document.createElement("ul");
+            subUl.className = "list";
+            subUl.style.marginTop = "8px";
+            subUl.style.marginLeft = "20px";
+            subUl.style.borderLeft = "2px solid var(--border)";
+            subUl.style.paddingLeft = "12px";
+            renderNode(c.children, subUl);
+            li.appendChild(subUl);
+          }
+          container.appendChild(li);
         });
-        actions.appendChild(openBtn);
-        li.appendChild(left);
-        li.appendChild(actions);
-        ul.appendChild(li);
-      });
+      };
+      renderNode(tree, ul);
       this.renderLatestPosts();
     }).catch(err => {
       const li = document.createElement("li");
@@ -1708,12 +1846,105 @@ const ui = {
       });
     }).catch(()=>{});
   },
+  async renderBreadcrumbs(categoryId) {
+    if (!this.el.threadBreadcrumbs) return;
+    this.el.threadBreadcrumbs.innerHTML = "";
+    if (!categoryId) return;
+
+    try {
+      const categories = await store.categories();
+      const trail = [];
+      let current = categories.find(c => c.id === categoryId);
+      while (current) {
+        trail.unshift(current);
+        if (!current.parent_id) break;
+        current = categories.find(c => c.id === current.parent_id);
+      }
+
+      const home = document.createElement("span");
+      home.className = "breadcrumb-item";
+      home.textContent = this.t("categories");
+      home.style.cursor = "pointer";
+      home.style.textDecoration = "underline";
+      home.onclick = () => {
+        this.show("categories");
+        this.renderCategories();
+      };
+      this.el.threadBreadcrumbs.appendChild(home);
+
+      const sep = document.createElement("span");
+      sep.textContent = " / ";
+      sep.style.margin = "0 8px";
+      this.el.threadBreadcrumbs.appendChild(sep);
+
+      trail.forEach((c, index) => {
+        const span = document.createElement("span");
+        span.className = "breadcrumb-item";
+        span.textContent = c.name;
+        if (index < trail.length - 1) {
+          span.style.cursor = "pointer";
+          span.style.textDecoration = "underline";
+          span.onclick = () => {
+            this.renderThreads(c.id);
+          };
+        } else {
+          span.style.fontWeight = "bold";
+        }
+        this.el.threadBreadcrumbs.appendChild(span);
+
+        if (index < trail.length - 1) {
+          const s = document.createElement("span");
+          s.textContent = " / ";
+          s.style.margin = "0 8px";
+          this.el.threadBreadcrumbs.appendChild(s);
+        }
+      });
+    } catch (e) { console.error(e); }
+  },
+  async renderSubcategories(categoryId) {
+    if (!this.el.subCategoryList) return;
+    this.el.subCategoryList.innerHTML = "";
+    this.el.subCategoryList.style.display = "none";
+    if (!categoryId) return;
+
+    try {
+      const categories = await store.categories();
+      const children = categories.filter(c => c.parent_id === categoryId);
+      if (children.length === 0) return;
+
+      this.el.subCategoryList.style.display = "block";
+      children.forEach(c => {
+        const li = document.createElement("li");
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+        li.style.alignItems = "center";
+        li.style.padding = "12px";
+        li.style.borderBottom = "1px solid var(--border)";
+        li.style.cursor = "pointer";
+        li.style.backgroundColor = "var(--bg)";
+        li.onmouseover = () => li.style.backgroundColor = "rgba(255,255,255,0.05)";
+        li.onmouseout = () => li.style.backgroundColor = "var(--bg)";
+        
+        const left = document.createElement("div");
+        left.innerHTML = `<div class="item-title" style="font-weight:600">📂 ${escapeHtml(c.name)}</div>`;
+        
+        li.appendChild(left);
+        li.onclick = () => {
+          this.renderThreads(c.id);
+        };
+        this.el.subCategoryList.appendChild(li);
+      });
+    } catch (e) { console.error(e); }
+  },
   renderThreads(categoryId) {
+    this.renderBreadcrumbs(categoryId);
+    this.renderSubcategories(categoryId);
     const ul = this.el.threadList;
     ul.innerHTML = "";
     const q = this.el.searchInput.value.trim();
     const page = this.state.searchPage || 1;
-    api.get(`/api/search/threads?q=${encodeURIComponent(q)}&categoryId=${encodeURIComponent(categoryId)}&page=${page}&size=10`)
+    const catParam = categoryId ? encodeURIComponent(categoryId) : "";
+    api.get(`/api/search/threads?q=${encodeURIComponent(q)}&categoryId=${catParam}&page=${page}&size=10`)
       .then(res => {
         const list = res.items;
         this.el.searchMeta.textContent = `${res.page}/${res.pages} • ${res.total}`;
@@ -1728,8 +1959,22 @@ const ui = {
           li.classList.add("thread-card");
           const left = document.createElement("div");
           const tags = (t.tags || []).map(x => `<span class="tag-chip">#${escapeHtml(x)}</span>`).join(" ");
-          left.innerHTML = `<div class="item-title">${escapeHtml(t.title)}${tags ? " • "+tags : ""}</div>
-                            <div class="item-sub">${t.posts_count} ${this.t("postsCount")}</div>`;
+          const avatarSrc = this.avatarUrlOrFallback({ username: t.author_username, avatar_url: t.author_avatar });
+          const role = t.author_role || "user";
+          const roleClass = role === "admin" ? "avatar-admin" : (role === "moderator" ? "avatar-mod" : "");
+          const pinnedIcon = t.pinned ? `<span style="margin-right:4px" title="${this.t("pinned") || "Pinned"}">📌</span>` : "";
+          const lockedIcon = t.locked ? `<span style="margin-right:4px" title="${this.t("locked") || "Locked"}">🔒</span>` : "";
+
+          left.innerHTML = `<div style="display:flex; align-items:center; gap:12px;">
+                              <div style="position:relative;">
+                                <img src="${avatarSrc}" class="avatar ${roleClass}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                                ${role === "admin" ? '<div class="avatar-badge-icon admin">A</div>' : (role === "moderator" ? '<div class="avatar-badge-icon mod">M</div>' : '')}
+                              </div>
+                              <div>
+                                <div class="item-title">${pinnedIcon}${lockedIcon}${escapeHtml(t.title)}${tags ? " • "+tags : ""}</div>
+                                <div class="item-sub">${t.posts_count} ${this.t("postsCount")} • ${escapeHtml(t.author_username || "unknown")}</div>
+                              </div>
+                            </div>`;
           const actions = document.createElement("div");
           actions.className = "inline-actions";
           const openBtn = document.createElement("button");
@@ -1810,8 +2055,24 @@ const ui = {
         const li = document.createElement("li");
         const left = document.createElement("div");
         const date = new Date(p.created_at).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
-        left.innerHTML = `<div class="item-title">${escapeHtml(p.author_username || "unknown")}</div>
-                          <div class="item-sub">${date}</div>`;
+        const avatarSrc = this.avatarUrlOrFallback({ username: p.author_username, avatar_url: p.author_avatar });
+        const role = p.author_role || "user";
+        const roleClass = role === "admin" ? "avatar-admin" : (role === "moderator" ? "avatar-mod" : "");
+        const roleBadge = role === "admin" ? `<span class="badge badge-error">ADMIN</span>` : (role === "moderator" ? `<span class="badge badge-warning">MOD</span>` : "");
+        
+        left.innerHTML = `<div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                            <div style="position:relative;">
+                              <img src="${avatarSrc}" class="avatar ${roleClass}" style="width:48px; height:48px; border-radius:50%; object-fit:cover;">
+                              ${role === "admin" ? '<div class="avatar-badge-icon admin">A</div>' : (role === "moderator" ? '<div class="avatar-badge-icon mod">M</div>' : '')}
+                            </div>
+                            <div>
+                              <div class="item-title" style="display:flex; align-items:center; gap:8px;">
+                                ${escapeHtml(p.author_username || "unknown")}
+                                ${roleBadge}
+                              </div>
+                              <div class="item-sub">${date}</div>
+                            </div>
+                          </div>`;
         const content = document.createElement("div");
         content.innerHTML = renderMarkdownSafe(p.content);
         const actions = document.createElement("div");
@@ -1889,45 +2150,115 @@ const ui = {
     this.el.adminCategoryList.innerHTML = "";
     this.refreshMeta();
     store.categories().then(categories => {
-      categories.forEach(c => {
-        const li = document.createElement("li");
-        const left = document.createElement("div");
-        left.innerHTML = `<div class="item-title">${escapeHtml(c.name)}${c.locked ? " • "+this.t("locked") : ""}</div>`;
-        const actions = document.createElement("div");
-        actions.className = "inline-actions";
-        const editBtn = document.createElement("button");
-        editBtn.className = "ghost";
-        editBtn.textContent = this.t("edit");
-        editBtn.addEventListener("click", () => {
-          const name = prompt(this.t("edit"), c.name);
-          if (!name) return;
-          api.post(`/api/categories/${c.id}/edit`, { name }).then(()=>this.renderAdmin());
+      const tree = buildCategoryTree(categories);
+      
+      // Populate parent selects
+      const noParentText = "-- " + (this.t("noParent") || "Без родител") + " --";
+      this.el.adminCategoryParent.innerHTML = "";
+      this.el.editCategoryParentInput.innerHTML = "";
+      
+      const defaultOpt1 = document.createElement("option");
+      defaultOpt1.value = "";
+      defaultOpt1.textContent = noParentText;
+      this.el.adminCategoryParent.appendChild(defaultOpt1);
+      
+      const defaultOpt2 = document.createElement("option");
+      defaultOpt2.value = "";
+      defaultOpt2.textContent = noParentText;
+      this.el.editCategoryParentInput.appendChild(defaultOpt2);
+
+      const addTreeOptions = (nodes, prefix = "") => {
+        nodes.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.textContent = prefix + c.name;
+          this.el.adminCategoryParent.appendChild(opt.cloneNode(true));
+          this.el.editCategoryParentInput.appendChild(opt);
+          if (c.children && c.children.length > 0) addTreeOptions(c.children, prefix + "-- ");
         });
-        const delBtn = document.createElement("button");
-        delBtn.className = "ghost";
-        delBtn.textContent = this.t("delete");
-        delBtn.addEventListener("click", () => {
-          api.post(`/api/categories/${c.id}/delete`, {}).then(()=>this.renderAdmin());
+      };
+      addTreeOptions(tree);
+
+      const renderNode = (nodes, container) => {
+        nodes.forEach(c => {
+          const li = document.createElement("li");
+          const left = document.createElement("div");
+          left.innerHTML = `<div class="item-title">${escapeHtml(c.name)}${c.locked ? " • "+this.t("locked") : ""}</div>`;
+          const actions = document.createElement("div");
+          actions.className = "inline-actions";
+          const editBtn = document.createElement("button");
+          editBtn.className = "ghost";
+          editBtn.textContent = this.t("edit");
+          editBtn.addEventListener("click", () => {
+             this.el.editCategoryNameInput.value = c.name;
+             this.el.editCategoryParentInput.value = c.parent_id || "";
+             Array.from(this.el.editCategoryParentInput.options).forEach(o => {
+               o.disabled = (o.value === c.id);
+             });
+             this.el.editCategoryDialog.showModal();
+             this.el.editCategoryForm.onsubmit = (e) => {
+               e.preventDefault();
+               const name = this.el.editCategoryNameInput.value.trim();
+               const parent_id = this.el.editCategoryParentInput.value || null;
+               if (!name) return;
+               api.post(`/api/categories/${c.id}/edit`, { name, parent_id }).then(() => {
+                 this.el.editCategoryDialog.close();
+                 this.renderAdmin();
+               });
+             };
+             this.el.editCategoryCancel.onclick = () => this.el.editCategoryDialog.close();
+          });
+          const delBtn = document.createElement("button");
+          delBtn.className = "ghost";
+          delBtn.textContent = this.t("delete");
+          delBtn.addEventListener("click", () => {
+            if (confirm(this.t("delete") + "?")) {
+              api.post(`/api/categories/${c.id}/delete`, {}).then(()=>this.renderAdmin());
+            }
+          });
+          const lockBtn = document.createElement("button");
+          lockBtn.className = "ghost";
+          lockBtn.textContent = c.locked ? this.t("unlock") : this.t("lock");
+          lockBtn.addEventListener("click", () => {
+            api.post(`/api/categories/${c.id}/lock`, { locked: !c.locked }).then(()=>this.renderAdmin());
+          });
+          actions.appendChild(editBtn);
+          actions.appendChild(delBtn);
+          actions.appendChild(lockBtn);
+          
+          const row = document.createElement("div");
+          row.style.display = "flex";
+          row.style.justifyContent = "space-between";
+          row.style.alignItems = "center";
+          row.appendChild(left);
+          row.appendChild(actions);
+          li.appendChild(row);
+
+          if (c.children && c.children.length > 0) {
+            const subUl = document.createElement("ul");
+            subUl.className = "list";
+            subUl.style.marginTop = "8px";
+            subUl.style.marginLeft = "20px";
+            subUl.style.borderLeft = "2px solid var(--border)";
+            subUl.style.paddingLeft = "12px";
+            renderNode(c.children, subUl);
+            li.appendChild(subUl);
+          }
+          container.appendChild(li);
         });
-        const lockBtn = document.createElement("button");
-        lockBtn.className = "ghost";
-        lockBtn.textContent = c.locked ? this.t("unlock") : this.t("lock");
-        lockBtn.addEventListener("click", () => {
-          api.post(`/api/categories/${c.id}/lock`, { locked: !c.locked }).then(()=>this.renderAdmin());
-        });
-        actions.appendChild(editBtn);
-        actions.appendChild(delBtn);
-        actions.appendChild(lockBtn);
-        li.appendChild(left);
-        li.appendChild(actions);
-        this.el.adminCategoryList.appendChild(li);
-      });
+      };
+      renderNode(tree, this.el.adminCategoryList);
     });
     this.el.adminAddCategory.onclick = () => {
       const name = this.el.adminCategoryName.value.trim();
+      const parent_id = this.el.adminCategoryParent.value || null;
       if (!name) return;
-      store.addCategory(name)
-        .then(() => { this.el.adminCategoryName.value = ""; this.renderAdmin(); })
+      store.addCategory(name, parent_id)
+        .then(() => { 
+          this.el.adminCategoryName.value = ""; 
+          this.el.adminCategoryParent.value = "";
+          this.renderAdmin(); 
+        })
         .catch(err => alert(this.t("apiError") + ": " + err.message));
     };
     api.get("/api/users").then(users => {

@@ -69,9 +69,11 @@ async function ensureTables() {
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
   await pool.query(`CREATE TABLE IF NOT EXISTS categories (
     id VARCHAR(36) PRIMARY KEY,
+    parent_id VARCHAR(36) NULL,
     name VARCHAR(255) NOT NULL,
     locked TINYINT(1) DEFAULT 0
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  try { await pool.query(`ALTER TABLE categories ADD COLUMN parent_id VARCHAR(36) NULL`); } catch (e) {}
   await pool.query(`CREATE TABLE IF NOT EXISTS threads (
     id VARCHAR(36) PRIMARY KEY,
     category_id VARCHAR(36) NOT NULL,
@@ -1014,14 +1016,14 @@ app.post("/api/auth/2fa/skip", authMiddleware, async (req, res) => {
 });
 app.get("/api/me", authMiddleware, async (req, res) => {
   if (MYSQL_READY) {
-    const [rows] = await pool.query("SELECT id,email,username,role,is_confirmed FROM users WHERE id=:id", { id: req.user.sub });
+    const [rows] = await pool.query("SELECT id,email,username,role,is_confirmed,avatar_url FROM users WHERE id=:id", { id: req.user.sub });
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     return res.json(rows[0]);
   }
   const db = await readDB();
   const u = db.users.find(u => u.id === req.user.sub);
   if (!u) return res.status(404).json({ error: "User not found" });
-  return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, twofa_enabled: !!u.twofa_enabled });
+  return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, twofa_enabled: !!u.twofa_enabled, avatar_url: u.avatar_url || null });
 });
 
 app.get("/api/categories", async (req, res) => {
@@ -1038,12 +1040,12 @@ app.get("/api/stats", async (req, res) => {
     const [[{ c: threads }]] = await pool.query("SELECT COUNT(*) as c FROM threads");
     const [[{ c: posts }]] = await pool.query("SELECT COUNT(*) as c FROM posts");
     const [[{ c: users }]] = await pool.query("SELECT COUNT(*) as c FROM users");
-    const [catRows] = await pool.query("SELECT c.id,c.name,c.locked,(SELECT COUNT(*) FROM threads t WHERE t.category_id=c.id) AS threads_count FROM categories c ORDER BY name");
+    const [catRows] = await pool.query("SELECT c.id,c.parent_id,c.name,c.locked,(SELECT COUNT(*) FROM threads t WHERE t.category_id=c.id) AS threads_count FROM categories c ORDER BY name");
     return res.json({ totals: { categories, threads, posts, users }, categories: catRows });
   }
   const db = await readDB();
   const totals = { categories: db.categories.length, threads: db.threads.length, posts: db.posts.length, users: db.users.length };
-  const categories = db.categories.map(c => ({ id: c.id, name: c.name, locked: !!c.locked, threads_count: db.threads.filter(t => t.category_id === c.id).length }));
+  const categories = db.categories.map(c => ({ id: c.id, parent_id: c.parent_id || null, name: c.name, locked: !!c.locked, threads_count: db.threads.filter(t => t.category_id === c.id).length }));
   return res.json({ totals, categories });
 });
 app.get("/api/latest_posts", async (req, res) => {
@@ -1081,26 +1083,28 @@ app.get("/api/users/:id/stats", async (req, res) => {
   return res.json({ threads, posts });
 });
 app.post("/api/categories", authMiddleware, requireAdmin, async (req, res) => {
-  const { name } = req.body || {};
+  const { name, parent_id } = req.body || {};
   if (!name) return res.status(400).json({ error: "Missing name" });
+  const pid = (typeof parent_id === "string" && parent_id) ? parent_id : null;
   if (MYSQL_READY) {
     const id = uid();
-    await pool.query("INSERT INTO categories (id,name,locked) VALUES (:id,:name,0)", { id, name });
-    return res.json({ id, name, locked: 0 });
+    await pool.query("INSERT INTO categories (id,parent_id,name,locked) VALUES (:id,:pid,:name,0)", { id, pid, name });
+    return res.json({ id, parent_id: pid, name, locked: 0 });
   }
   const db = await readDB();
-  const c = { id: uid(), name };
+  const c = { id: uid(), parent_id: pid, name };
   db.categories.push(c);
   await writeDB(db);
   return res.json(c);
 });
 
 app.post("/api/categories/:id/edit", authMiddleware, requireAdmin, async (req, res) => {
-  const { name } = req.body || {};
+  const { name, parent_id } = req.body || {};
   if (MYSQL_READY) {
     const [rows] = await pool.query("SELECT * FROM categories WHERE id=:id", { id: req.params.id });
     if (!rows.length) return res.status(404).json({ error: "Category not found" });
-    await pool.query("UPDATE categories SET name=:name WHERE id=:id", { id: req.params.id, name: name || rows[0].name });
+    const pid = parent_id !== undefined ? (parent_id || null) : rows[0].parent_id;
+    await pool.query("UPDATE categories SET name=:name, parent_id=:pid WHERE id=:id", { id: req.params.id, name: name || rows[0].name, pid });
     const [rows2] = await pool.query("SELECT * FROM categories WHERE id=:id", { id: req.params.id });
     return res.json(rows2[0]);
   }
@@ -1108,6 +1112,7 @@ app.post("/api/categories/:id/edit", authMiddleware, requireAdmin, async (req, r
   const c = db.categories.find(x => x.id === req.params.id);
   if (!c) return res.status(404).json({ error: "Category not found" });
   if (name) c.name = name;
+  if (parent_id !== undefined) c.parent_id = parent_id || null;
   await writeDB(db);
   return res.json(c);
 });
@@ -1588,8 +1593,10 @@ app.get("/api/search/threads", async (req, res) => {
     const offset = (page - 1) * size;
     const [items] = await pool.query(`
       SELECT t.id, t.category_id, t.title, t.author_id, t.locked, t.pinned, t.created_at,
-             (SELECT COUNT(*) FROM posts p WHERE p.thread_id=t.id) AS posts_count
+             (SELECT COUNT(*) FROM posts p WHERE p.thread_id=t.id) AS posts_count,
+             u.username AS author_username, u.avatar_url AS author_avatar, u.role AS author_role
       FROM threads t
+      LEFT JOIN users u ON u.id=t.author_id
       ${whereSql}
       ORDER BY t.pinned DESC, t.created_at DESC
       LIMIT :limit OFFSET :offset
@@ -1603,7 +1610,16 @@ app.get("/api/search/threads", async (req, res) => {
   if (tag) list = list.filter(t => (t.tags || []).map(x => x.toLowerCase()).includes(tag));
   const total = list.length;
   const start = (page - 1) * size;
-  const items = list.slice(start, start + size).map(t => ({ ...t, posts_count: db.posts.filter(p => p.thread_id === t.id).length }));
+  const items = list.slice(start, start + size).map(t => {
+    const u = db.users.find(u => u.id === t.author_id);
+    return {
+      ...t,
+      posts_count: db.posts.filter(p => p.thread_id === t.id).length,
+      author_username: u?.username || "unknown",
+      author_avatar: u?.avatar_url || null,
+      author_role: u?.role || "user"
+    };
+  });
   return res.json({ items, page, size, total, pages: Math.ceil(total / size) });
 });
 
@@ -1616,15 +1632,16 @@ app.get("/api/threads/:id/posts_paginated", async (req, res) => {
     const total = cnt;
     const offset = (page - 1) * size;
     const [rows] = await pool.query(`
-      SELECT p.id, p.thread_id, p.author_id, p.content, p.attachments, p.created_at,
-             COALESCE(u.username,'unknown') AS author_username
+      SELECT p.id, p.thread_id, p.author_id, p.content, p.attachments, p.reactions, p.created_at,
+             COALESCE(u.username,'unknown') AS author_username,
+             u.avatar_url AS author_avatar, u.role AS author_role
       FROM posts p
       LEFT JOIN users u ON u.id=p.author_id
       WHERE p.thread_id=:tid
       ORDER BY p.created_at ASC
       LIMIT :limit OFFSET :offset
     `, { tid: req.params.id, limit: size, offset });
-    const items = rows.map(r => ({ ...r, attachments: JSON.parse(r.attachments || "[]") }));
+    const items = rows.map(r => ({ ...r, attachments: JSON.parse(r.attachments || "[]"), reactions: JSON.parse(r.reactions || "[]") }));
     return res.json({ items, page, size, total, pages: Math.ceil(total / size) });
   }
   const db = await readDB();
@@ -1635,7 +1652,12 @@ app.get("/api/threads/:id/posts_paginated", async (req, res) => {
   const start = (page - 1) * size;
   const posts = all.slice(start, start + size).map(p => {
     const author = db.users.find(u => u.id === p.author_id);
-    return { ...p, author_username: author?.username || "unknown" };
+    return {
+      ...p,
+      author_username: author?.username || "unknown",
+      author_avatar: author?.avatar_url || null,
+      author_role: author?.role || "user"
+    };
   });
   await writeDB(db);
   return res.json({ items: posts, page, size, total, pages: Math.ceil(total / size) });

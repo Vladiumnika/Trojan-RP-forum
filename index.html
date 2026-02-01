@@ -42,6 +42,7 @@
       <button id="loginBtn" class="ghost">Вход</button>
       <button id="registerBtn" class="primary">Регистрация</button>
       <span id="userBadge" class="badge" style="display:none"></span>
+      <img id="headerAvatar" class="avatar" alt="" style="display:none">
       <button id="logoutBtn" class="ghost" style="display:none">Изход</button>
       <button id="profileBtn" class="ghost" style="display:none">Профил</button>
       <button id="adminBtn" class="ghost" style="display:none">Админ</button>
@@ -73,6 +74,13 @@
             <span id="themeBorderLabel">Рамка</span>
             <input id="themeBorder" type="color" value="#26263a">
           </label>
+        </div>
+        <div class="actions" style="gap:8px; flex-wrap:wrap; align-items:center">
+          <span id="themePresetsLabel">Пресети</span>
+          <button type="button" class="ghost" id="presetDark">Тъмна</button>
+          <button type="button" class="ghost" id="presetLight">Светла</button>
+          <button type="button" class="ghost" id="presetOcean">Океан</button>
+          <button type="button" class="ghost" id="presetSolar">Слънце</button>
         </div>
         <div class="actions">
           <button type="button" class="ghost" id="themeCancel">Отказ</button>
@@ -201,6 +209,8 @@
         </div>
       </div>
       <div class="actions" style="margin-bottom:8px">
+        <div id="threadBreadcrumbs" class="meta" style="margin-bottom:8px"></div>
+        <ul id="subCategoryList" class="list" style="margin-bottom:16px; display:none"></ul>
         <input id="searchInput" type="text" placeholder="Търсене">
         <button id="searchBtn" class="ghost">Търси</button>
         <span id="searchMeta" class="item-sub"></span>
@@ -288,17 +298,34 @@
       <h3 id="adminCategoriesTitle">Категории</h3>
       <div class="actions">
         <input id="adminCategoryName" type="text" placeholder="Име на категория">
+        <select id="adminCategoryParent" style="padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+          <option value="">-- Без родител --</option>
+        </select>
         <button id="adminAddCategory" class="primary">Добави</button>
       </div>
       <ul id="adminCategoryList" class="list"></ul>
       <h3 id="adminUsersTitle">Потребители</h3>
       <ul id="adminUserList" class="list"></ul>
     </section>
+    <dialog id="editCategoryDialog">
+      <form method="dialog" id="editCategoryForm" class="form">
+        <h3 id="editCategoryTitle">Редакция на категория</h3>
+        <input id="editCategoryNameInput" type="text" required placeholder="Име">
+        <select id="editCategoryParentInput" style="width:100%; padding: 8px; margin-top: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+          <option value="">-- Без родител --</option>
+        </select>
+        <div class="actions">
+          <button type="button" class="ghost" id="editCategoryCancel">Отказ</button>
+          <button value="default" class="primary" id="editCategorySubmit">Запази</button>
+        </div>
+      </form>
+    </dialog>
   </main>
   <footer class="footer">
     <span id="footerText">Prestige RolePlay • GTA RolePlay</span>
     <span id="copyrightText"></span>
   </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="app.js?v=20260122-2"></script>
 </body>
 </html>
