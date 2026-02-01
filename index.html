@@ -208,17 +208,26 @@
           <button id="addThreadBtn" class="primary"></button>
         </div>
       </div>
-      <div class="actions" style="margin-bottom:8px">
-        <div id="threadBreadcrumbs" class="meta" style="margin-bottom:8px"></div>
-        <ul id="subCategoryList" class="list" style="margin-bottom:16px; display:none"></ul>
-        <input id="searchInput" type="text" placeholder="Търсене">
-        <button id="searchBtn" class="ghost">Търси</button>
-        <span id="searchMeta" class="item-sub"></span>
-      </div>
-      <ul id="threadList" class="list"></ul>
-      <div class="actions">
-        <button id="threadsPrev" class="ghost">Назад</button>
-        <button id="threadsNext" class="ghost">Напред</button>
+      <div id="threadBreadcrumbs" class="meta" style="margin-bottom:16px"></div>
+
+      <div class="forum-split-view">
+        <aside id="subCategorySidebar" class="subforum-sidebar">
+          <h3 id="subforumsTitle">Подфоруми</h3>
+          <ul id="subCategoryList" class="list"></ul>
+        </aside>
+
+        <div class="forum-main">
+          <div class="actions" style="margin-bottom:8px">
+            <input id="searchInput" type="text" placeholder="Търсене">
+            <button id="searchBtn" class="ghost">Търси</button>
+            <span id="searchMeta" class="item-sub"></span>
+          </div>
+          <ul id="threadList" class="list"></ul>
+          <div class="actions">
+            <button id="threadsPrev" class="ghost">Назад</button>
+            <button id="threadsNext" class="ghost">Напред</button>
+          </div>
+        </div>
       </div>
       <dialog id="threadDialog">
         <form method="dialog" id="threadForm" class="form">

@@ -911,6 +911,7 @@ const ui = {
     this.el.searchMeta = document.getElementById("searchMeta");
     this.el.threadBreadcrumbs = document.getElementById("threadBreadcrumbs");
     this.el.subCategoryList = document.getElementById("subCategoryList");
+    this.el.subCategorySidebar = document.getElementById("subCategorySidebar");
     this.el.threadList = document.getElementById("threadList");
     this.el.threadDialog = document.getElementById("threadDialog");
     this.el.threadForm = document.getElementById("threadForm");
@@ -1904,7 +1905,7 @@ const ui = {
   async renderSubcategories(categoryId) {
     if (!this.el.subCategoryList) return;
     this.el.subCategoryList.innerHTML = "";
-    this.el.subCategoryList.style.display = "none";
+    if (this.el.subCategorySidebar) this.el.subCategorySidebar.style.display = "none";
     if (!categoryId) return;
 
     try {
@@ -1912,7 +1913,7 @@ const ui = {
       const children = categories.filter(c => c.parent_id === categoryId);
       if (children.length === 0) return;
 
-      this.el.subCategoryList.style.display = "block";
+      if (this.el.subCategorySidebar) this.el.subCategorySidebar.style.display = "block";
       children.forEach(c => {
         const li = document.createElement("li");
         li.style.display = "flex";
@@ -1921,9 +1922,9 @@ const ui = {
         li.style.padding = "12px";
         li.style.borderBottom = "1px solid var(--border)";
         li.style.cursor = "pointer";
-        li.style.backgroundColor = "var(--bg)";
+        li.style.backgroundColor = "transparent";
         li.onmouseover = () => li.style.backgroundColor = "rgba(255,255,255,0.05)";
-        li.onmouseout = () => li.style.backgroundColor = "var(--bg)";
+        li.onmouseout = () => li.style.backgroundColor = "transparent";
         
         const left = document.createElement("div");
         left.innerHTML = `<div class="item-title" style="font-weight:600">📂 ${escapeHtml(c.name)}</div>`;
