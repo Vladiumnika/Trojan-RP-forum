@@ -32,7 +32,7 @@ a:hover { text-decoration: underline; }
   align-items: center;
   justify-content: space-between;
   padding: 12px 24px;
-  background: rgba(11, 11, 16, 0.85);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
   position: sticky;
