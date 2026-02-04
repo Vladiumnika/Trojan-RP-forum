@@ -1909,11 +1909,26 @@ const ui = {
     if (!categoryId) return;
 
     try {
+      const container = this.el.subCategorySidebar ? this.el.subCategorySidebar.parentElement : null;
+      const forumMain = container ? container.querySelector(".forum-main") : null;
       const categories = await store.categories();
       const children = categories.filter(c => c.parent_id === categoryId);
-      if (children.length === 0) return;
+      if (children.length === 0) {
+        if (container) container.style.display = "";
+        return;
+      }
 
-      if (this.el.subCategorySidebar) this.el.subCategorySidebar.style.display = "block";
+      if (container) {
+        container.style.display = "flex";
+        container.style.alignItems = "flex-start";
+        container.style.gap = "16px";
+      }
+      if (forumMain) forumMain.style.flexGrow = "1";
+      if (this.el.subCategorySidebar) {
+        this.el.subCategorySidebar.style.display = "block";
+        this.el.subCategorySidebar.style.width = "280px";
+        this.el.subCategorySidebar.style.flexShrink = "0";
+      }
       children.forEach(c => {
         const li = document.createElement("li");
         li.style.display = "flex";
