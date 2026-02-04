@@ -1799,16 +1799,6 @@ const ui = {
           row.appendChild(actions);
           li.appendChild(row);
 
-          if (c.children && c.children.length > 0) {
-            const subUl = document.createElement("ul");
-            subUl.className = "list";
-            subUl.style.marginTop = "8px";
-            subUl.style.marginLeft = "20px";
-            subUl.style.borderLeft = "2px solid var(--border)";
-            subUl.style.paddingLeft = "12px";
-            renderNode(c.children, subUl);
-            li.appendChild(subUl);
-          }
           container.appendChild(li);
         });
       };
