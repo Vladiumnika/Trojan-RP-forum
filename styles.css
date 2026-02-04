@@ -14,7 +14,7 @@
 }
 
 /* Light Theme Overrides */
-body[data-theme="light"] {
+:root[data-theme="light"] {
   --primary: #2563eb;
   --accent: #3b82f6;
   --bg: #f9fafb;
@@ -231,7 +231,6 @@ dialog::backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
   padding: 16px;
   margin-bottom: 12px;
 }
-#postList li:hover { background: rgba(18, 18, 32, 0.8); }
 #postList li:hover { background: var(--hover-bg); }
 
 /* Avatar Roles */

@@ -1530,7 +1530,7 @@ const ui = {
     this.el.title.textContent = this.t("title");
     this.el.subtitle.textContent = this.t("subtitle");
     this.el.langLabel.textContent = this.t("language");
-    this.el.themeToggle.textContent = "☾";
+    this.el.themeToggle.textContent = this.state.theme === "dark" ? "☾" : "☼";
     if (this.el.burgerBtn) this.el.burgerBtn.textContent = "☰";
     this.el.loginBtn.textContent = this.t("login");
     this.el.registerBtn.textContent = this.t("register");
