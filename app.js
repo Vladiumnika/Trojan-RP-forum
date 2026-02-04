@@ -1673,6 +1673,11 @@ const ui = {
         if (src) this.el.headerAvatar.src = src;
         this.el.headerAvatar.alt = this.state.user.username || "profile";
         this.el.headerAvatar.title = this.state.user.username || "";
+        this.el.headerAvatar.style.width = "40px";
+        this.el.headerAvatar.style.height = "40px";
+        this.el.headerAvatar.style.borderRadius = "50%";
+        this.el.headerAvatar.style.objectFit = "cover";
+        this.el.headerAvatar.style.display = "";
       }
     }
     this.el.adminBtn.style.display = logged && this.state.user.role === "admin" ? "" : "none";
