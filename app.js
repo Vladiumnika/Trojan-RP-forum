@@ -1903,43 +1903,35 @@ const ui = {
       const forumMain = container ? container.querySelector(".forum-main") : null;
       const categories = await store.categories();
       const children = categories.filter(c => c.parent_id === categoryId);
+      const inlineUlId = "inlineSubCategoryList";
+      const existingInline = forumMain ? forumMain.querySelector(`#${inlineUlId}`) : null;
       if (children.length === 0) {
-        if (container) container.style.display = "";
+        if (existingInline) existingInline.remove();
         return;
       }
 
-      if (container) {
-        container.style.display = "flex";
-        container.style.alignItems = "flex-start";
-        container.style.gap = "16px";
+      // Ensure inline subcategory list above threads, hide sidebar
+      if (forumMain) {
+        const inline = existingInline || document.createElement("ul");
+        inline.id = inlineUlId;
+        inline.className = "list";
+        if (!existingInline) {
+          forumMain.insertBefore(inline, this.el.threadList);
+        }
+        inline.innerHTML = "";
+        children.forEach(c => {
+          const li = document.createElement("li");
+          const left = document.createElement("div");
+          left.innerHTML = `<div class="item-title" style="font-weight:600">📂 ${escapeHtml(c.name)}</div>`;
+          li.appendChild(left);
+          li.style.cursor = "pointer";
+          li.onclick = () => {
+            this.renderThreads(c.id);
+          };
+          inline.appendChild(li);
+        });
       }
-      if (forumMain) forumMain.style.flexGrow = "1";
-      if (this.el.subCategorySidebar) {
-        this.el.subCategorySidebar.style.display = "block";
-        this.el.subCategorySidebar.style.width = "280px";
-        this.el.subCategorySidebar.style.flexShrink = "0";
-      }
-      children.forEach(c => {
-        const li = document.createElement("li");
-        li.style.display = "flex";
-        li.style.justifyContent = "space-between";
-        li.style.alignItems = "center";
-        li.style.padding = "12px";
-        li.style.borderBottom = "1px solid var(--border)";
-        li.style.cursor = "pointer";
-        li.style.backgroundColor = "transparent";
-        li.onmouseover = () => li.style.backgroundColor = "rgba(255,255,255,0.05)";
-        li.onmouseout = () => li.style.backgroundColor = "transparent";
-        
-        const left = document.createElement("div");
-        left.innerHTML = `<div class="item-title" style="font-weight:600">📂 ${escapeHtml(c.name)}</div>`;
-        
-        li.appendChild(left);
-        li.onclick = () => {
-          this.renderThreads(c.id);
-        };
-        this.el.subCategoryList.appendChild(li);
-      });
+      if (this.el.subCategorySidebar) this.el.subCategorySidebar.style.display = "none";
     } catch (e) { console.error(e); }
   },
   renderThreads(categoryId) {
