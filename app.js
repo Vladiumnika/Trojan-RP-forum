@@ -975,6 +975,7 @@ const ui = {
     this.el.adminExportDBBtn = document.getElementById("adminExportDBBtn");
     this.el.adminImportDBBtn = document.getElementById("adminImportDBBtn");
     this.el.adminImportFile = document.getElementById("adminImportFile");
+    this.el.adminDialog = document.getElementById("adminDialog");
     this.el.themeDialog = document.getElementById("themeDialog");
     this.el.themeForm = document.getElementById("themeForm");
     this.el.themeDialogTitle = document.getElementById("themeDialogTitle");
@@ -1401,11 +1402,22 @@ const ui = {
     });
     this.el.adminBtn.addEventListener("click", () => {
       if (this.state.user?.role !== "admin") return;
-      this.show("admin");
+      if (this.el.adminDialog && this.el.viewAdmin) {
+        this.el.viewAdmin.classList.remove("hidden");
+        this.el.adminDialog.appendChild(this.el.viewAdmin);
+        this.el.adminDialog.showModal();
+      } else {
+        this.show("admin");
+      }
       this.refreshMeta();
       this.renderAdmin();
     });
     this.el.backAdminClose.addEventListener("click", () => {
+      if (this.el.adminDialog && this.el.viewAdmin) {
+        try { this.el.adminDialog.close(); } catch {}
+        const main = document.querySelector("main.container") || document.querySelector("main");
+        if (main) main.appendChild(this.el.viewAdmin);
+      }
       this.show("categories");
     });
     if (this.el.adminDiagSMTPBtn) {
