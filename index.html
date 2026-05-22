@@ -291,32 +291,43 @@
         </form>
       </dialog>
     </section>
-    <section id="view-admin" class="panel hidden">
-      <div class="panel-header">
-        <h2 id="adminTitle">Админ панел</h2>
-        <div class="panel-actions">
-          <button id="backAdminClose" class="ghost">Затвори</button>
-          <button id="adminDiagSMTPBtn" class="ghost">Диагностика SMTP</button>
-          <button id="adminDiagDBBtn" class="ghost">Диагностика DB</button>
-          <button id="adminExportDBBtn" class="ghost">Експорт база</button>
-          <button id="adminImportDBBtn" class="ghost">Импорт база</button>
-          <input id="adminImportFile" type="file" accept="application/json" style="display:none">
+    <dialog id="admin-modal-dialog">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 id="adminTitle">Админ панел</h2>
+          <div class="panel-actions">
+            <button id="adminDiagSMTPBtn" class="ghost">SMTP</button>
+            <button id="adminDiagDBBtn" class="ghost">DB</button>
+            <button id="adminExportDBBtn" class="ghost">Експорт</button>
+            <button id="adminImportDBBtn" class="ghost">Импорт</button>
+            <button id="backAdminClose" class="primary">Затвори</button>
+            <input id="adminImportFile" type="file" accept="application/json" style="display:none">
+          </div>
+        </div>
+        <div class="admin-content">
+          <div class="meta" id="adminMeta" style="margin-bottom:20px; padding:12px; background:rgba(124,58,237,0.05); border-radius:8px"></div>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px">
+            <div>
+              <h3 id="adminCategoriesTitle" style="margin-top:0">Категории</h3>
+              <div class="actions" style="margin-bottom:16px; flex-wrap:wrap">
+                <input id="adminCategoryName" type="text" placeholder="Име на категория" style="flex:1">
+                <select id="adminCategoryParent">
+                  <option value="">-- Без родител --</option>
+                </select>
+                <button id="adminAddCategory" class="primary">Добави</button>
+              </div>
+              <ul id="adminCategoryList" class="list"></ul>
+            </div>
+            
+            <div>
+              <h3 id="adminUsersTitle" style="margin-top:0">Потребители</h3>
+              <ul id="adminUserList" class="list"></ul>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="meta" id="adminMeta"></div>
-      <h3 id="adminCategoriesTitle">Категории</h3>
-      <div class="actions">
-        <input id="adminCategoryName" type="text" placeholder="Име на категория">
-        <select id="adminCategoryParent" style="padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
-          <option value="">-- Без родител --</option>
-        </select>
-        <button id="adminAddCategory" class="primary">Добави</button>
-      </div>
-      <ul id="adminCategoryList" class="list"></ul>
-      <h3 id="adminUsersTitle">Потребители</h3>
-      <ul id="adminUserList" class="list"></ul>
-    </section>
-    <dialog id="adminDialog"></dialog>
+    </dialog>
     <dialog id="editCategoryDialog">
       <form method="dialog" id="editCategoryForm" class="form">
         <h3 id="editCategoryTitle">Редакция на категория</h3>

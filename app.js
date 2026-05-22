@@ -969,6 +969,7 @@ const ui = {
     this.el.editCategoryParentInput = document.getElementById("editCategoryParentInput");
     this.el.editCategoryCancel = document.getElementById("editCategoryCancel");
     this.el.editCategorySubmit = document.getElementById("editCategorySubmit");
+    this.el.adminModalDialog = document.getElementById("admin-modal-dialog");
     this.el.dbBadge = document.getElementById("dbBadge");
     this.el.adminDiagSMTPBtn = document.getElementById("adminDiagSMTPBtn");
     this.el.adminDiagDBBtn = document.getElementById("adminDiagDBBtn");
@@ -1030,7 +1031,7 @@ const ui = {
     }
     if (this.el.discordBtn) {
       this.el.discordBtn.addEventListener("click", () => {
-        window.open("https://discord.gg/7wW7k5N2E", "_blank");
+        window.open("https://discord.gg/evYda7aU8S", "_blank");
       });
     }
     if (this.el.headerAvatar) {
@@ -1402,10 +1403,8 @@ const ui = {
     });
     this.el.adminBtn.addEventListener("click", () => {
       if (this.state.user?.role !== "admin") return;
-      if (this.el.adminDialog && this.el.viewAdmin) {
-        this.el.viewAdmin.classList.remove("hidden");
-        this.el.adminDialog.appendChild(this.el.viewAdmin);
-        this.el.adminDialog.showModal();
+      if (this.el.adminModalDialog) {
+        this.el.adminModalDialog.showModal();
       } else {
         this.show("admin");
       }
@@ -1413,12 +1412,11 @@ const ui = {
       this.renderAdmin();
     });
     this.el.backAdminClose.addEventListener("click", () => {
-      if (this.el.adminDialog && this.el.viewAdmin) {
-        try { this.el.adminDialog.close(); } catch {}
-        const main = document.querySelector("main.container") || document.querySelector("main");
-        if (main) main.appendChild(this.el.viewAdmin);
+      if (this.el.adminModalDialog) {
+        this.el.adminModalDialog.close();
+      } else {
+        this.show("categories");
       }
-      this.show("categories");
     });
     if (this.el.adminDiagSMTPBtn) {
       this.el.adminDiagSMTPBtn.addEventListener("click", async () => {
@@ -1794,27 +1792,24 @@ const ui = {
       const renderNode = (nodes, container) => {
         nodes.forEach(c => {
           const li = document.createElement("li");
-          const left = document.createElement("div");
-          left.innerHTML = `<div class="item-title">${escapeHtml(c.name)}</div>`;
-          const actions = document.createElement("div");
-          actions.className = "inline-actions";
-          const openBtn = document.createElement("button");
-          openBtn.className = "ghost";
-          openBtn.textContent = this.t("threads");
-          openBtn.addEventListener("click", () => {
+          li.innerHTML = `
+            <div style="display:flex; align-items:center; gap:16px; width:100%">
+              <div style="background:rgba(124, 58, 237, 0.1); padding:10px; border-radius:10px; color:var(--primary); font-size:20px">📁</div>
+              <div style="flex:1">
+                <div class="item-title" style="font-size:16px; margin-bottom:2px">${escapeHtml(c.name)}</div>
+                <div class="item-sub">${c.children?.length || 0} подфорума</div>
+              </div>
+              <div class="inline-actions">
+                <button class="ghost">${this.t("threads")}</button>
+              </div>
+            </div>
+          `;
+          
+          li.onclick = () => {
             this.state.current.categoryId = c.id;
             this.show("threads");
             this.renderThreads(c.id);
-          });
-          actions.appendChild(openBtn);
-          
-          const row = document.createElement("div");
-          row.style.display = "flex";
-          row.style.justifyContent = "space-between";
-          row.style.alignItems = "center";
-          row.appendChild(left);
-          row.appendChild(actions);
-          li.appendChild(row);
+          };
 
           container.appendChild(li);
         });
@@ -1938,9 +1933,13 @@ const ui = {
         inline.innerHTML = "";
         children.forEach(c => {
           const li = document.createElement("li");
-          const left = document.createElement("div");
-          left.innerHTML = `<div class="item-title" style="font-weight:600">📂 ${escapeHtml(c.name)}</div>`;
-          li.appendChild(left);
+          li.innerHTML = `
+            <div style="display:flex; align-items:center; gap:12px; width:100%">
+              <div style="color:var(--primary); font-size:16px">↳</div>
+              <div class="item-title" style="font-weight:600; flex:1">${escapeHtml(c.name)}</div>
+              <div class="item-sub">${this.t("threads")}</div>
+            </div>
+          `;
           li.style.cursor = "pointer";
           li.onclick = () => {
             this.renderThreads(c.id);
@@ -1971,77 +1970,57 @@ const ui = {
         }
         list.forEach(t => {
           const li = document.createElement("li");
-          li.classList.add("thread-card");
-          const left = document.createElement("div");
-          const tags = (t.tags || []).map(x => `<span class="tag-chip">#${escapeHtml(x)}</span>`).join(" ");
+          const tags = (t.tags || []).map(x => `<span class="tag-chip" style="font-size:10px; background:rgba(124,58,237,0.1); color:var(--primary); padding:2px 6px; border-radius:4px; margin-left:4px">#${escapeHtml(x)}</span>`).join("");
           const avatarSrc = this.avatarUrlOrFallback({ username: t.author_username, avatar_url: t.author_avatar });
           const role = t.author_role || "user";
           const roleClass = role === "admin" ? "avatar-admin" : (role === "moderator" ? "avatar-mod" : "");
-          const pinnedIcon = t.pinned ? `<span style="margin-right:4px" title="${this.t("pinned") || "Pinned"}">📌</span>` : "";
-          const lockedIcon = t.locked ? `<span style="margin-right:4px" title="${this.t("locked") || "Locked"}">🔒</span>` : "";
+          const pinnedIcon = t.pinned ? `<span style="margin-right:6px" title="${this.t("pinned") || "Pinned"}">📌</span>` : "";
+          const lockedIcon = t.locked ? `<span style="margin-right:6px" title="${this.t("locked") || "Locked"}">🔒</span>` : "";
 
-          left.innerHTML = `<div style="display:flex; align-items:center; gap:12px;">
-                              <div style="position:relative;">
-                                <img src="${avatarSrc}" class="avatar ${roleClass}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                                ${role === "admin" ? '<div class="avatar-badge-icon admin">A</div>' : (role === "moderator" ? '<div class="avatar-badge-icon mod">M</div>' : '')}
-                              </div>
-                              <div>
-                                <div class="item-title">${pinnedIcon}${lockedIcon}${escapeHtml(t.title)}${tags ? " • "+tags : ""}</div>
-                                <div class="item-sub">${t.posts_count} ${this.t("postsCount")} • ${escapeHtml(t.author_username || "unknown")}</div>
-                              </div>
-                            </div>`;
-          const actions = document.createElement("div");
-          actions.className = "inline-actions";
+          li.innerHTML = `
+            <div style="display:flex; align-items:center; gap:16px; width:100%">
+              <div style="position:relative; flex-shrink:0">
+                <img src="${avatarSrc}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--border)">
+                ${role === "admin" ? '<div class="avatar-badge-icon admin" style="position:absolute; bottom:-2px; right:-2px; background:var(--danger); color:white; width:16px; height:16px; border-radius:50%; font-size:9px; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg2)">A</div>' : (role === "moderator" ? '<div class="avatar-badge-icon mod" style="position:absolute; bottom:-2px; right:-2px; background:var(--success); color:white; width:16px; height:16px; border-radius:50%; font-size:9px; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg2)">M</div>' : '')}
+              </div>
+              <div style="flex:1; min-width:0">
+                <div class="item-title" style="font-size:15px; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap">
+                  ${pinnedIcon}${lockedIcon}${escapeHtml(t.title)}${tags}
+                </div>
+                <div class="item-sub" style="display:flex; align-items:center; gap:8px">
+                  <span style="color:var(--primary); font-weight:600">${escapeHtml(t.author_username || "unknown")}</span>
+                  <span>•</span>
+                  <span>${t.posts_count} ${this.t("postsCount")}</span>
+                </div>
+              </div>
+              <div class="inline-actions" id="actions-${t.id}">
+              </div>
+            </div>
+          `;
+          
+          const actionsContainer = li.querySelector(`#actions-${t.id}`);
           const openBtn = document.createElement("button");
           openBtn.className = "ghost";
           openBtn.textContent = this.t("posts");
-          openBtn.addEventListener("click", () => this.openThread(t.id));
-          actions.appendChild(openBtn);
-        if (this.state.user && (this.state.user.role === "admin" || this.state.user.role === "moderator")) {
-          const lockBtn = document.createElement("button");
-          lockBtn.className = "ghost";
-          lockBtn.textContent = t.locked ? this.t("unlock") : this.t("lock");
-          lockBtn.addEventListener("click", () => {
-            api.post(`/api/threads/${t.id}/lock`, { locked: !t.locked }).then(()=>this.renderThreads(categoryId));
-          });
-          const pinBtn = document.createElement("button");
-          pinBtn.className = "ghost";
-          pinBtn.textContent = t.pinned ? this.t("unpin") : this.t("pin");
-          pinBtn.addEventListener("click", () => {
-            api.post(`/api/threads/${t.id}/pin`, { pinned: !t.pinned }).then(()=>this.renderThreads(categoryId));
-          });
-          actions.appendChild(lockBtn);
-          actions.appendChild(pinBtn);
-        }
+          openBtn.addEventListener("click", (e) => { e.stopPropagation(); this.openThread(t.id); });
+          actionsContainer.appendChild(openBtn);
+
           if (this.state.user && (this.state.user.role === "admin" || this.state.user.role === "moderator")) {
-            const editBtn = document.createElement("button");
-            editBtn.className = "ghost";
-            editBtn.textContent = this.t("edit");
-            editBtn.addEventListener("click", () => {
-              this.el.editThreadTitleInput.value = t.title;
-              this.el.editThreadDialog.showModal();
-              this.el.editThreadTagsInput.value = (t.tags || []).join(", ");
-              this.el.editThreadForm.onsubmit = (e) => {
-                e.preventDefault();
-                const tags = this.el.editThreadTagsInput.value.split(",").map(s => s.trim()).filter(Boolean);
-                api.post(`/api/threads/${t.id}/edit`, { title: this.el.editThreadTitleInput.value.trim(), tags })
-                  .then(() => { this.el.editThreadDialog.close(); this.renderThreads(categoryId); })
-                  .catch(err => alert(ui.t("apiError") + ": " + err.message));
-              };
-              this.el.editThreadCancel.onclick = () => this.el.editThreadDialog.close();
-            });
-            const delBtn = document.createElement("button");
-            delBtn.className = "ghost";
-            delBtn.textContent = this.t("delete");
-            delBtn.addEventListener("click", () => {
-              api.post(`/api/threads/${t.id}/delete`, {}).then(() => this.renderThreads(categoryId))
-                .catch(err => alert(ui.t("apiError") + ": " + err.message));
-            });
-            actions.appendChild(editBtn);
-            actions.appendChild(delBtn);
+            const lockBtn = document.createElement("button");
+            lockBtn.className = "ghost";
+            lockBtn.textContent = t.locked ? this.t("unlock") : this.t("lock");
+            lockBtn.onclick = (e) => { e.stopPropagation(); api.post(`/api/threads/${t.id}/lock`, { locked: !t.locked }).then(()=>this.renderThreads(categoryId)); };
+            
+            const pinBtn = document.createElement("button");
+            pinBtn.className = "ghost";
+            pinBtn.textContent = t.pinned ? this.t("unpin") : this.t("pin");
+            pinBtn.onclick = (e) => { e.stopPropagation(); api.post(`/api/threads/${t.id}/pin`, { pinned: !t.pinned }).then(()=>this.renderThreads(categoryId)); };
+            
+            actionsContainer.appendChild(lockBtn);
+            actionsContainer.appendChild(pinBtn);
           }
-          li.appendChild(left);
-          li.appendChild(actions);
+
+          li.onclick = () => this.openThread(t.id);
           ul.appendChild(li);
         });
       });
@@ -2068,95 +2047,85 @@ const ui = {
       }
       list.forEach(p => {
         const li = document.createElement("li");
-        const left = document.createElement("div");
+        li.style.display = "flex";
+        li.style.flexDirection = "column";
+        li.style.gap = "16px";
+        li.style.padding = "24px";
+        li.style.background = "var(--bg-alt)";
+        li.style.borderRadius = "var(--radius)";
+        li.style.border = "1px solid var(--border)";
+        li.style.marginBottom = "16px";
+
         const date = new Date(p.created_at).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
         const avatarSrc = this.avatarUrlOrFallback({ username: p.author_username, avatar_url: p.author_avatar });
         const role = p.author_role || "user";
         const roleClass = role === "admin" ? "avatar-admin" : (role === "moderator" ? "avatar-mod" : "");
         const roleBadge = role === "admin" ? `<span class="badge badge-error">ADMIN</span>` : (role === "moderator" ? `<span class="badge badge-warning">MOD</span>` : "");
         
-        left.innerHTML = `<div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                            <div style="position:relative;">
-                              <img src="${avatarSrc}" class="avatar ${roleClass}" style="width:48px; height:48px; border-radius:50%; object-fit:cover;">
-                              ${role === "admin" ? '<div class="avatar-badge-icon admin">A</div>' : (role === "moderator" ? '<div class="avatar-badge-icon mod">M</div>' : '')}
-                            </div>
-                            <div>
-                              <div class="item-title" style="display:flex; align-items:center; gap:8px;">
-                                ${escapeHtml(p.author_username || "unknown")}
-                                ${roleBadge}
-                              </div>
-                              <div class="item-sub">${date}</div>
-                            </div>
-                          </div>`;
-        const content = document.createElement("div");
-        content.innerHTML = renderMarkdownSafe(p.content);
-        const actions = document.createElement("div");
-        actions.className = "inline-actions";
+        li.innerHTML = `
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="position:relative; flex-shrink:0">
+              <img src="${avatarSrc}" style="width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--border)">
+              ${role === "admin" ? '<div class="avatar-badge-icon admin" style="position:absolute; bottom:-2px; right:-2px; background:var(--danger); color:white; width:18px; height:18px; border-radius:50%; font-size:10px; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg2)">A</div>' : (role === "moderator" ? '<div class="avatar-badge-icon mod" style="position:absolute; bottom:-2px; right:-2px; background:var(--success); color:white; width:18px; height:18px; border-radius:50%; font-size:10px; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg2)">M</div>' : '')}
+            </div>
+            <div style="flex:1">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px">
+                <span style="font-weight:700; font-size:16px">${escapeHtml(p.author_username || "unknown")}</span>
+                ${roleBadge}
+              </div>
+              <div style="color:var(--muted); font-size:12px">${date}</div>
+            </div>
+            <div class="inline-actions" id="actions-post-${p.id}"></div>
+          </div>
+          <div style="font-size:15px; line-height:1.6; color:var(--text); white-space:pre-wrap">${renderMarkdownSafe(p.content)}</div>
+          <div class="attachments" id="attachments-${p.id}"></div>
+        `;
+
+        const actionsContainer = li.querySelector(`#actions-post-${p.id}`);
+        
         const likeBtn = document.createElement("button");
-        likeBtn.className = "like-btn";
+        likeBtn.className = "ghost";
         const likeCount = (p.reactions || []).filter(r => r.type === "like").length;
-        likeBtn.textContent = `${this.t("likes")}: ${likeCount}`;
-        likeBtn.addEventListener("click", () => {
-          api.post(`/api/posts/${p.id}/react`, { type: "like" }).then(r => { likeBtn.textContent = `${this.t("likes")}: ${r.count}`; });
-        });
-        actions.appendChild(likeBtn);
+        likeBtn.innerHTML = `❤️ <span style="margin-left:4px">${likeCount}</span>`;
+        likeBtn.onclick = () => api.post(`/api/posts/${p.id}/react`, { type: "like" }).then(r => { likeBtn.querySelector("span").textContent = r.count; });
+        actionsContainer.appendChild(likeBtn);
+
         const quoteBtn = document.createElement("button");
         quoteBtn.className = "ghost";
         quoteBtn.textContent = this.t("quote");
-        quoteBtn.addEventListener("click", () => {
+        quoteBtn.onclick = () => {
           if (!this.state.user) { this.el.loginDialog.showModal(); return }
           this.el.postDialog.showModal();
-          const author = p.author_username || "unknown";
-          this.el.postContentInput.value = `> ${author}\n\n${p.content}\n\n`;
-        });
-        actions.appendChild(quoteBtn);
-        const reportBtn = document.createElement("button");
-        reportBtn.className = "ghost";
-        reportBtn.textContent = this.t("report");
-        reportBtn.addEventListener("click", () => {
-          if (!this.state.user) { this.el.loginDialog.showModal(); return }
-          const reason = prompt(this.t("report"));
-          if (reason === null) return;
-          api.post(`/api/posts/${p.id}/report`, { reason }).then(() => {}).catch(err => alert(ui.t("apiError") + ": " + err.message));
-        });
-        actions.appendChild(reportBtn);
+          this.el.postContentInput.value = `> ${p.author_username}\n\n${p.content}\n\n`;
+        };
+        actionsContainer.appendChild(quoteBtn);
+
         if (this.state.user && (this.state.user.role === "admin" || this.state.user.role === "moderator" || this.state.user.username === p.author_username)) {
           const editBtn = document.createElement("button");
           editBtn.className = "ghost";
           editBtn.textContent = this.t("edit");
-          editBtn.addEventListener("click", () => {
+          editBtn.onclick = () => {
             this.el.editPostContentInput.value = p.content;
             this.el.editPostDialog.showModal();
             this.el.editPostForm.onsubmit = (e) => {
               e.preventDefault();
               api.post(`/api/posts/${p.id}/edit`, { content: this.el.editPostContentInput.value })
-                .then(() => { this.el.editPostDialog.close(); this.renderPosts(threadId) })
-                .catch(err => alert(ui.t("apiError") + ": " + err.message));
+                .then(() => { this.el.editPostDialog.close(); this.renderPosts(threadId) });
             };
-            this.el.editPostCancel.onclick = () => this.el.editPostDialog.close();
-          });
-          const delBtn = document.createElement("button");
-          delBtn.className = "ghost";
-          delBtn.textContent = this.t("delete");
-          delBtn.addEventListener("click", () => {
-            api.post(`/api/posts/${p.id}/delete`, {}).then(() => this.renderPosts(threadId))
-              .catch(err => alert(ui.t("apiError") + ": " + err.message));
-          });
-          actions.appendChild(editBtn);
-          actions.appendChild(delBtn);
+          };
+          actionsContainer.appendChild(editBtn);
         }
-        const att = document.createElement("div");
-        att.className = "attachments";
+
+        const attContainer = li.querySelector(`#attachments-${p.id}`);
         (p.attachments || []).forEach(a => {
           const img = document.createElement("img");
           img.src = a.url;
-          img.alt = a.name || "image";
-          att.appendChild(img);
+          img.style.maxWidth = "100%";
+          img.style.borderRadius = "var(--radius)";
+          img.style.marginTop = "12px";
+          attContainer.appendChild(img);
         });
-        li.appendChild(left);
-        li.appendChild(content);
-        li.appendChild(att);
-        li.appendChild(actions);
+
         ul.appendChild(li);
       });
     });
@@ -2194,72 +2163,64 @@ const ui = {
       };
       addTreeOptions(tree);
 
-      const renderNode = (nodes, container) => {
+      const renderNode = (nodes, container, depth = 0) => {
         nodes.forEach(c => {
           const li = document.createElement("li");
-          const left = document.createElement("div");
-          left.innerHTML = `<div class="item-title">${escapeHtml(c.name)}${c.locked ? " • "+this.t("locked") : ""}</div>`;
-          const actions = document.createElement("div");
-          actions.className = "inline-actions";
+          li.style.marginLeft = `${depth * 20}px`;
+          li.style.padding = "12px 16px";
+          li.style.borderLeft = depth > 0 ? "2px solid var(--border)" : "none";
+          li.style.background = depth % 2 === 0 ? "rgba(124,58,237,0.02)" : "transparent";
+
+          li.innerHTML = `
+            <div style="display:flex; align-items:center; gap:12px; width:100%">
+              <div style="flex:1">
+                <div class="item-title" style="font-weight:600">${depth > 0 ? "↳ " : ""}${escapeHtml(c.name)}${c.locked ? " 🔒" : ""}</div>
+              </div>
+              <div class="inline-actions" id="admin-cat-actions-${c.id}">
+              </div>
+            </div>
+          `;
+          
+          const actions = li.querySelector(`#admin-cat-actions-${c.id}`);
+          
           const editBtn = document.createElement("button");
           editBtn.className = "ghost";
           editBtn.textContent = this.t("edit");
-          editBtn.addEventListener("click", () => {
+          editBtn.onclick = () => {
              this.el.editCategoryNameInput.value = c.name;
              this.el.editCategoryParentInput.value = c.parent_id || "";
-             Array.from(this.el.editCategoryParentInput.options).forEach(o => {
-               o.disabled = (o.value === c.id);
-             });
              this.el.editCategoryDialog.showModal();
              this.el.editCategoryForm.onsubmit = (e) => {
                e.preventDefault();
                const name = this.el.editCategoryNameInput.value.trim();
                const parent_id = this.el.editCategoryParentInput.value || null;
-               if (!name) return;
                api.post(`/api/categories/${c.id}/edit`, { name, parent_id }).then(() => {
                  this.el.editCategoryDialog.close();
                  this.renderAdmin();
                });
              };
-             this.el.editCategoryCancel.onclick = () => this.el.editCategoryDialog.close();
-          });
-          const delBtn = document.createElement("button");
-          delBtn.className = "ghost";
-          delBtn.textContent = this.t("delete");
-          delBtn.addEventListener("click", () => {
-            if (confirm(this.t("delete") + "?")) {
-              api.post(`/api/categories/${c.id}/delete`, {}).then(()=>this.renderAdmin());
-            }
-          });
+          };
+          
           const lockBtn = document.createElement("button");
           lockBtn.className = "ghost";
           lockBtn.textContent = c.locked ? this.t("unlock") : this.t("lock");
-          lockBtn.addEventListener("click", () => {
-            api.post(`/api/categories/${c.id}/lock`, { locked: !c.locked }).then(()=>this.renderAdmin());
-          });
-          actions.appendChild(editBtn);
-          actions.appendChild(delBtn);
-          actions.appendChild(lockBtn);
+          lockBtn.onclick = () => api.post(`/api/categories/${c.id}/lock`, { locked: !c.locked }).then(()=>this.renderAdmin());
           
-          const row = document.createElement("div");
-          row.style.display = "flex";
-          row.style.justifyContent = "space-between";
-          row.style.alignItems = "center";
-          row.appendChild(left);
-          row.appendChild(actions);
-          li.appendChild(row);
+          const delBtn = document.createElement("button");
+          delBtn.className = "ghost";
+          delBtn.textContent = this.t("delete");
+          delBtn.style.color = "var(--danger)";
+          delBtn.onclick = () => { if (confirm(this.t("delete") + "?")) api.post(`/api/categories/${c.id}/delete`, {}).then(()=>this.renderAdmin()); };
+
+          actions.appendChild(editBtn);
+          actions.appendChild(lockBtn);
+          actions.appendChild(delBtn);
+
+          container.appendChild(li);
 
           if (c.children && c.children.length > 0) {
-            const subUl = document.createElement("ul");
-            subUl.className = "list";
-            subUl.style.marginTop = "8px";
-            subUl.style.marginLeft = "20px";
-            subUl.style.borderLeft = "2px solid var(--border)";
-            subUl.style.paddingLeft = "12px";
-            renderNode(c.children, subUl);
-            li.appendChild(subUl);
+            renderNode(c.children, container, depth + 1);
           }
-          container.appendChild(li);
         });
       };
       renderNode(tree, this.el.adminCategoryList);
