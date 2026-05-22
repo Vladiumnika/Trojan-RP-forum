@@ -1,677 +1,683 @@
 const translations = {
   ru: {
     title: "Prestige RolePlay",
-    subtitle: "Форум",
-    language: "Язык",
-    themeToggle: "Тема",
+    subtitle: "Официальный форум проекта",
+    language: "Язык интерфейса",
+    themeToggle: "Сменить тему",
+    themeEditor: "Редактор темы",
     categories: "Категории",
-    addCategory: "Добавить категорию",
-    newCategory: "Новая категория",
+    addCategory: "Создать раздел",
+    newCategory: "Новый раздел",
     cancel: "Отмена",
     create: "Создать",
     threads: "Темы",
     back: "Назад",
     addThread: "Создать тему",
-    newThread: "Новая тема",
-    threadTitlePh: "Заголовок",
-    threadContentPh: "Содержание",
-    authorPh: "Автор",
+    newThread: "Оформление новой темы",
+    threadTitlePh: "Заголовок темы...",
+    threadContentPh: "Текст вашего сообщения...",
+    authorPh: "Ваш никнейм",
     publish: "Опубликовать",
     posts: "Публикации",
-    newPost: "Новая публикация",
-    reply: "Ответить",
-    captchaSolve: "Решите капчу",
+    newPost: "Ответить в тему",
+    reply: "Отправить ответ",
+    captchaSolve: "Введите код с картинки",
     captchaRefresh: "Обновить",
-    footer: "Prestige RolePlay • GTA RolePlay",
-    empty: "Нет записей",
+    footer: "Prestige RolePlay • Игровое сообщество GTA",
+    empty: "В этом разделе пока нет тем",
     threadsCount: "тем",
-    postsCount: "постов",
-    subforumsCount: "подфорума",
+    postsCount: "сообщений",
+    subforumsCount: "подразделов",
     login: "Вход",
     register: "Регистрация",
-    logout: "Выход",
-    admin: "Админ",
-    emailPh: "Email",
+    logout: "Выйти",
+    admin: "Админ-центр",
+    emailPh: "Электронная почта",
     usernamePh: "Имя пользователя",
     passwordPh: "Пароль",
-    loginTitle: "Вход",
-    registerTitle: "Регистрация",
+    loginTitle: "Авторизация",
+    registerTitle: "Регистрация аккаунта",
     registerNote: "Проверьте почту для подтверждения регистрации",
-    adminPanel: "Админ панель",
-    adminCategories: "Категории",
+    adminPanel: "Панель администратора",
+    adminCategories: "Управление категориями",
     add: "Добавить",
     close: "Закрыть",
-    categoryNamePh: "Название категории",
-    noParent: "Без родителя",
-    apiError: "Ошибка API",
-    adminOnly: "Только админ может добавлять категории"
-    ,
-    resetPassword: "Восстановление пароля",
+    categoryNamePh: "Название раздела",
+    noParent: "Основной раздел",
+    apiError: "Ошибка связи с сервером",
+    adminOnly: "Доступ только для администрации",
+    resetPassword: "Сброс пароля",
     send: "Отправить",
-    changePassword: "Смена пароля",
-    tokenPh: "Токен",
+    changePassword: "Сменить пароль",
+    tokenPh: "Токен восстановления",
     newPasswordPh: "Новый пароль",
-    searchPh: "Поиск",
-    search: "Поиск",
+    searchPh: "Поиск по форуму...",
+    search: "Найти",
     prev: "Назад",
     next: "Вперед",
-    edit: "Редактировать",
+    edit: "Изменить",
     delete: "Удалить",
     save: "Сохранить",
     editThread: "Редактирование темы",
-    editPost: "Редактирование публикации",
+    editPost: "Редактирование сообщения",
     users: "Пользователи",
-    ban: "Бан",
-    unban: "Снять бан",
-    setModerator: "Модератор",
-    setUser: "Пользователь",
-    setAdmin: "Назначить админа",
-    lock: "Заблокировать",
-    unlock: "Разблокировать",
+    ban: "Забанить",
+    unban: "Разбанить",
+    setModerator: "Сделать модератором",
+    setUser: "Снять полномочия",
+    setAdmin: "Сделать админом",
+    lock: "Закрыть тему",
+    unlock: "Открыть тему",
     pin: "Закрепить",
     unpin: "Открепить",
     pinned: "Закреплено",
-    locked: "Заблокировано",
-    likes: "Лайки",
-    bannedLabel: "Забанен",
+    locked: "Тема закрыта",
+    likes: "Понравилось",
+    bannedLabel: "ЗАБАНЕН",
     profile: "Профиль",
-    profileTitle: "Профиль",
-    notifications: "Уведомления по email",
+    profileTitle: "Личный кабинет",
+    notifications: "Уведомления на Email",
     tagsPh: "Теги (через запятую)",
-    tagsEditPh: "Теги (через запятую)",
+    tagsEditPh: "Редактировать теги",
     copyright: "© {year} {brand}. Все права защищены.",
-    adminDiagSMTP: "Диагностика SMTP",
-    adminDiagDB: "Диагностика БД",
-    exportDB: "Экспорт базы",
-    importDB: "Импорт базы",
-    chooseFile: "Избери файл",
-    dbLabel: "База данных",
+    adminDiagSMTP: "Тест SMTP",
+    adminDiagDB: "Статус БД",
+    exportDB: "Экспорт БД",
+    importDB: "Импорт БД",
+    chooseFile: "Выбрать файл",
+    dbLabel: "Хранилище",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
-    dbJSONFallback: "JSON (временный режим)"
-    ,
-    dbJSONWorkingNote: "Для ясности: база данных — JSON. Пишет, что отключена, но работает."
-    ,
-    resendConfirm: "Отправить повторно подтверждение",
-    resendConfirmSent: "Письмо с подтверждением отправлено, если аккаунт не подтвержден",
-    smtpDisabledNote: "SMTP не настроен: регистрация пройдет, но письмо не придет. После настройки используйте кнопку 'Отправить повторно подтверждение'."
-    ,
-    confirmEmail: "Подтвердить email",
-    emailUnconfirmed: "email не подтвержден",
-    twofa: "Двухфакторная защита",
-    enable2fa: "Включить 2FA (Google Authenticator)",
+    dbJSONFallback: "JSON (Fallback)",
+    dbJSONWorkingNote: "Система использует JSON хранилище.",
+    resendConfirm: "Повторить письмо активации",
+    resendConfirmSent: "Инструкции отправлены на почту",
+    smtpDisabledNote: "SMTP сервер не настроен.",
+    confirmEmail: "Активация почты",
+    emailUnconfirmed: "Почта не подтверждена",
+    twofa: "2FA Защита",
+    enable2fa: "Включить 2FA",
     disable2fa: "Выключить 2FA",
     twofaSetupTitle: "Настройка 2FA",
-    twofaScanNote: "Сканируйте QR в Google Authenticator или введите секрет вручную.",
-    twofaCodePh: "TOTP код",
-    twofaEnabledNote: "2FA включен",
-    twofaRequired: "Требуется 2FA код",
-    loginWarning: "Администрация никогда не пришлет ссылку на авторизацию и не запросит ваши данные для входа.",
-    newPostInThread: "Новый пост в теме: {title}",
-    latestPosts: "Последние публикации",
+    twofaScanNote: "Сканируйте QR в Google Authenticator",
+    twofaCodePh: "6-значный код",
+    twofaEnabledNote: "2FA активна",
+    twofaRequired: "Введите код 2FA",
+    loginWarning: "Внимание! Администрация никогда не просит пароль.",
+    newPostInThread: "Новый ответ в теме: {title}",
+    latestPosts: "Последняя активность",
     by: "от",
     in: "в",
-    quote: "Цитировать",
-    report: "Пожаловаться",
-    views: "Просмотры",
+    quote: "Цитата",
+    report: "Жалоба",
+    views: "Просмотров",
     support: "Поддержка",
-    group: "Группа",
-    logoutAll: "Выход со всех устройств",
-    discord: "Discord",
+    group: "Группа ВК",
+    logoutAll: "Выйти везде",
+    discord: "Discord сервер",
     themeSettings: "Настройки темы",
     themePrimary: "Основной цвет",
     themeAccent: "Акцент",
     themeBg: "Фон",
     themeText: "Текст",
-    themeBorder: "Рамка",
-    save: "Сохранить",
+    themeBorder: "Границы",
     themePresets: "Пресеты",
     presetDark: "Темная",
     presetLight: "Светлая",
     presetOcean: "Океан",
-    presetSolar: "Солнечная",
-    pinned: "Закреплено"
+    presetSolar: "Солнце",
+    subforums: "Подфорумы",
+    subforumsTitle: "Вложенные разделы",
+    adminCategoriesTitle: "Управление разделами",
+    adminUsersTitle: "Управление пользователями",
+    editCategory: "Редактировать раздел",
+    loginRequired: "Для этого действия необходим вход",
+    afterLoginRedirect: "вы будете перенаправлены",
+    important: "Важное"
   },
   kk: {
     title: "Prestige RolePlay",
-    subtitle: "Форум",
-    language: "Тіл",
-    themeToggle: "Тема",
+    subtitle: "Жобаның ресми форумы",
+    language: "Интерфейс тілі",
+    themeToggle: "Тақырыпты өзгерту",
+    themeEditor: "Тақырып редакторы",
     categories: "Санаттар",
-    addCategory: "Санат қосу",
-    newCategory: "Жаңа санат",
-    cancel: "Болдырмау",
+    addCategory: "Бөлім құру",
+    newCategory: "Жаңа бөлім",
+    cancel: "Бас тарту",
     create: "Құру",
     threads: "Тақырыптар",
     back: "Артқа",
-    addThread: "Тақырып құру",
-    newThread: "Жаңа тақырып",
-    threadTitlePh: "Тақырып",
-    threadContentPh: "Мазмұн",
-    authorPh: "Автор",
+    addThread: "Тақырып ашу",
+    newThread: "Жаңа тақырыпты рәсімдеу",
+    threadTitlePh: "Тақырып атауы...",
+    threadContentPh: "Хабарлама мәтіні...",
+    authorPh: "Сіздің никнейміңіз",
     publish: "Жариялау",
-    posts: "Посттар",
-    newPost: "Жаңа пост",
-    reply: "Жауап беру",
-    captchaSolve: "Капчаны шешіңіз",
+    posts: "Жарияланымдар",
+    newPost: "Жауап беру",
+    reply: "Жауапты жіберу",
+    captchaSolve: "Суреттегі кодты енгізіңіз",
     captchaRefresh: "Жаңарту",
-    footer: "Prestige RolePlay • GTA RolePlay",
-    empty: "Жазбалар жоқ",
+    footer: "Prestige RolePlay • GTA Ойын қауымдастығы",
+    empty: "Бұл бөлімде әлі тақырыптар жоқ",
     threadsCount: "тақырып",
-    postsCount: "пост",
-    subforumsCount: "ішкі санат",
+    postsCount: "хабарлама",
+    subforumsCount: "ішкі бөлім",
     login: "Кіру",
     register: "Тіркелу",
     logout: "Шығу",
-    admin: "Әкімші",
-    emailPh: "Email",
-    usernamePh: "Пайдаланушы",
+    admin: "Админ-орталық",
+    emailPh: "Электрондық пошта",
+    usernamePh: "Пайдаланушы есімі",
     passwordPh: "Құпиясөз",
-    loginTitle: "Кіру",
+    loginTitle: "Авторизация",
     registerTitle: "Тіркелу",
-    registerNote: "Растау үшін поштаны тексеріңіз",
+    registerNote: "Тіркеуді растау үшін поштаңызды тексеріңіз",
     adminPanel: "Әкімші панелі",
-    adminCategories: "Санаттар",
+    adminCategories: "Санаттарды басқару",
     add: "Қосу",
     close: "Жабу",
-    categoryNamePh: "Санат атауы",
-    noParent: "Бас санатсыз",
-    apiError: "API қателігі",
-    adminOnly: "Санатты тек әкімші қоса алады"
-    ,
-    resetPassword: "Құпиясөзді қалпына келтіру",
+    categoryNamePh: "Бөлім атауы",
+    noParent: "Негізгі бөлім",
+    apiError: "Сервермен байланыс қатесі",
+    adminOnly: "Тек әкімшілер үшін",
+    resetPassword: "Құпиясөзді қайтару",
     send: "Жіберу",
     changePassword: "Құпиясөзді өзгерту",
-    tokenPh: "Token",
+    tokenPh: "Қалпына келтіру токені",
     newPasswordPh: "Жаңа құпиясөз",
-    searchPh: "Іздеу",
-    search: "Іздеу",
+    searchPh: "Форум бойынша іздеу...",
+    search: "Табу",
     prev: "Артқа",
     next: "Алға",
-    edit: "Өңдеу",
+    edit: "Өзгерту",
     delete: "Жою",
     save: "Сақтау",
     editThread: "Тақырыпты өңдеу",
-    editPost: "Постты өңдеу",
+    editPost: "Хабарламаны өңдеу",
     users: "Пайдаланушылар",
-    ban: "Бан",
-    unban: "Баннан алу",
-    setModerator: "Модератор",
-    setUser: "Пайдаланушы",
-    setAdmin: "Админ ету",
-    lock: "Блоктау",
-    unlock: "Блоктан шығару",
+    ban: "Блоктау",
+    unban: "Блоктан шығару",
+    setModerator: "Модератор ету",
+    setUser: "Өкілеттікті алу",
+    setAdmin: "Әкімші ету",
+    lock: "Тақырыпты жабу",
+    unlock: "Тақырыпты ашу",
     pin: "Бекіту",
     unpin: "Бекітуді алу",
-    locked: "Блокталған",
-    likes: "Лайк",
-    bannedLabel: "Бан",
+    pinned: "Бекітілген",
+    locked: "Тақырып жабық",
+    likes: "Ұнады",
+    bannedLabel: "БЛОКТАЛҒАН",
     profile: "Профиль",
-    profileTitle: "Профиль",
+    profileTitle: "Жеке кабинет",
     notifications: "Email хабарламалар",
-    tagsPh: "Тегтер (үтірмен бөлінген)",
-    tagsEditPh: "Тегтер (үтірмен бөлінген)",
+    tagsPh: "Тегтер (үтір арқылы)",
+    tagsEditPh: "Тегтерді өңдеу",
     copyright: "© {year} {brand}. Барлық құқықтар қорғалған.",
-    adminDiagSMTP: "SMTP диагностикасы",
-    adminDiagDB: "DB диагностикасы",
-    exportDB: "Базаны экспорттау",
-    importDB: "Базаны импорттау",
-    chooseFile: "Файл таңдау",
-    dbLabel: "Дерекқор",
+    adminDiagSMTP: "SMTP тесті",
+    adminDiagDB: "Дерекқор күйі",
+    exportDB: "Дерекқор экспорты",
+    importDB: "Дерекқор импорты",
+    chooseFile: "Файлды таңдау",
+    dbLabel: "Қойма",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
-    dbJSONFallback: "JSON (уақытша режим)"
-    ,
-    dbJSONWorkingNote: "Түсінікті болу үшін: дерекқор JSON. Өшірілген деп жазылғанымен, жұмыс істейді."
-    ,
-    resendConfirm: "Қайта растауды жіберу",
-    resendConfirmSent: "Растау хаты жіберілді (егер аккаунт расталмаған болса)",
-    smtpDisabledNote: "SMTP бапталмаған: тіркелу орындалады, бірақ хат келмейді. Баптаудан кейін 'Қайта растауды жіберу' түймесін қолданыңыз."
-    ,
-    confirmEmail: "Email-ді растау",
-    emailUnconfirmed: "email расталмаған",
-    twofa: "Екі факторлы қорғау",
-    enable2fa: "2FA қосу (Google Authenticator)",
-    disable2fa: "2FA болдырмау",
+    dbJSONFallback: "JSON (Fallback)",
+    dbJSONWorkingNote: "Жүйе JSON қоймасын қолданады.",
+    resendConfirm: "Растау хатын қайта жіберу",
+    resendConfirmSent: "Нұсқаулықтар поштаға жіберілді",
+    smtpDisabledNote: "SMTP сервері бапталмаған.",
+    confirmEmail: "Поштаны белсендіру",
+    emailUnconfirmed: "Пошта расталмаған",
+    twofa: "2FA Қорғаныс",
+    enable2fa: "2FA қосу",
+    disable2fa: "2FA өшіру",
     twofaSetupTitle: "2FA баптау",
-    twofaScanNote: "Google Authenticator-де QR скандеңіз немесе құпияны қолмен енгізіңіз.",
-    twofaCodePh: "TOTP код",
-    twofaEnabledNote: "2FA қосылған",
-    twofaRequired: "2FA коды қажет",
-    loginWarning: "Әкімшілік ешқашан авторизация сілтемесін жібермейді және кіру деректеріңізді сұрамайды.",
-    newPostInThread: "Жаңа пост: {title}",
-    latestPosts: "Соңғы посттар",
-    by: "автор",
-    in: "тақырыпта",
+    twofaScanNote: "QR-кодты Google Authenticator арқылы сканерлеңіз",
+    twofaCodePh: "6 таңбалы код",
+    twofaEnabledNote: "2FA белсенді",
+    twofaRequired: "2FA кодын енгізіңіз",
+    loginWarning: "Назар аударыңыз! Әкімшілік ешқашан құпиясөзді сұрамайды.",
+    newPostInThread: "Тақырыптағы жаңа жауап: {title}",
+    latestPosts: "Соңғы белсенділік",
+    by: "кімнен",
+    in: "ішінде",
     quote: "Дәйексөз",
-    report: "Шағымдану",
-    views: "Қаралымдар",
+    report: "Шағым",
+    views: "Қаралым",
     support: "Қолдау",
-    group: "Топ",
-    logoutAll: "Барлық құрылғылардан шығу",
-    discord: "Discord",
-    themeSettings: "Тақырып баптауы",
+    group: "ВК тобы",
+    logoutAll: "Барлық жерден шығу",
+    discord: "Discord сервері",
+    themeSettings: "Тақырып баптаулары",
     themePrimary: "Негізгі түс",
     themeAccent: "Акцент",
     themeBg: "Фон",
     themeText: "Мәтін",
-    themeBorder: "Шекара",
-    save: "Сақтау",
-    themePresets: "Прессеттер",
+    themeBorder: "Шекаралар",
+    themePresets: "Пресеттер",
     presetDark: "Қараңғы",
     presetLight: "Жарық",
     presetOcean: "Мұхит",
     presetSolar: "Күн",
-    pinned: "Бекітілген"
+    subforums: "Ішкі форумдар",
+    subforumsTitle: "Ішкі бөлімдер",
+    adminCategoriesTitle: "Бөлімдерді басқару",
+    adminUsersTitle: "Пайдаланушыларды басқару",
+    editCategory: "Бөлімді өңдеу",
+    loginRequired: "Бұл әрекет үшін кіру қажет",
+    afterLoginRedirect: "сіз қайта бағытталасыз",
+    important: "Маңызды"
   },
   uk: {
     title: "Prestige RolePlay",
-    subtitle: "Форум",
-    language: "Мова",
-    themeToggle: "Тема",
+    subtitle: "Офіційний форум проекту",
+    language: "Мова інтерфейсу",
+    themeToggle: "Змінити тему",
+    themeEditor: "Редактор теми",
     categories: "Категорії",
-    addCategory: "Додати категорію",
-    newCategory: "Нова категорія",
+    addCategory: "Створити розділ",
+    newCategory: "Новий розділ",
     cancel: "Скасувати",
     create: "Створити",
     threads: "Теми",
     back: "Назад",
     addThread: "Створити тему",
-    newThread: "Нова тема",
-    threadTitlePh: "Назва",
-    threadContentPh: "Вміст",
-    authorPh: "Автор",
+    newThread: "Оформлення нової теми",
+    threadTitlePh: "Заголовок теми...",
+    threadContentPh: "Текст вашого повідомлення...",
+    authorPh: "Ваш нікнейм",
     publish: "Опублікувати",
     posts: "Публікації",
-    newPost: "Нова публікація",
-    reply: "Відповісти",
-    captchaSolve: "Розв'яжіть капчу",
+    newPost: "Відповісти в тему",
+    reply: "Надіслати відповідь",
+    captchaSolve: "Введіть код з картинки",
     captchaRefresh: "Оновити",
-    footer: "Prestige RolePlay • GTA RolePlay",
-    empty: "Немає записів",
+    footer: "Prestige RolePlay • Ігрова спільнота GTA",
+    empty: "У цьому розділі поки немає тем",
     threadsCount: "тем",
-    postsCount: "постів",
-    subforumsCount: "підфоруми",
+    postsCount: "повідомлень",
+    subforumsCount: "підрозділів",
     login: "Вхід",
     register: "Реєстрація",
-    logout: "Вихід",
-    admin: "Адмін",
-    emailPh: "Email",
-    usernamePh: "Користувач",
+    logout: "Вийти",
+    admin: "Адмін-центр",
+    emailPh: "Електронна пошта",
+    usernamePh: "Ім'я користувача",
     passwordPh: "Пароль",
-    loginTitle: "Вхід",
-    registerTitle: "Реєстрація",
-    registerNote: "Перевірте пошту для підтвердження",
-    adminPanel: "Адмін панель",
-    adminCategories: "Категорії",
+    loginTitle: "Авторизація",
+    registerTitle: "Реєстрація аккаунту",
+    registerNote: "Перевірте пошту для підтвердження реєстрації",
+    adminPanel: "Панель адміністратора",
+    adminCategories: "Управління категоріями",
     add: "Додати",
     close: "Закрити",
-    categoryNamePh: "Назва категорії",
-    noParent: "Без батьківської категорії",
-    apiError: "Помилка API",
-    adminOnly: "Лише адмін може додавати категорії"
-    ,
-    resetPassword: "Відновлення пароля",
-    send: "Надіслати",
-    changePassword: "Зміна пароля",
-    tokenPh: "Token",
+    categoryNamePh: "Назва розділу",
+    noParent: "Основний розділ",
+    apiError: "Помилка зв'язку з сервером",
+    adminOnly: "Доступ тільки для адміністрації",
+    resetPassword: "Скидання пароля",
+    send: "Відправити",
+    changePassword: "Змінити пароль",
+    tokenPh: "Токен відновлення",
     newPasswordPh: "Новий пароль",
-    searchPh: "Пошук",
-    search: "Пошук",
+    searchPh: "Пошук по форуму...",
+    search: "Знайти",
     prev: "Назад",
     next: "Вперед",
-    edit: "Редагувати",
+    edit: "Змінити",
     delete: "Видалити",
     save: "Зберегти",
     editThread: "Редагування теми",
-    editPost: "Редагування публікації",
+    editPost: "Редагування повідомлення",
     users: "Користувачі",
-    ban: "Бан",
-    unban: "Зняти бан",
-    setModerator: "Модератор",
-    setUser: "Користувач",
-    lock: "Заблокувати",
-    unlock: "Розблокувати",
+    ban: "Забанити",
+    unban: "Розбанити",
+    setModerator: "Зробити модератором",
+    setUser: "Зняти повноваження",
+    setAdmin: "Зробити адміном",
+    lock: "Закрити тему",
+    unlock: "Відкрити тему",
     pin: "Закріпити",
     unpin: "Відкріпити",
-    locked: "Заблоковано",
-    likes: "Лайки",
+    pinned: "Закріплено",
+    locked: "Тема закрита",
+    likes: "Сподобалося",
+    bannedLabel: "ЗАБАНЕНИЙ",
     profile: "Профіль",
-    profileTitle: "Профіль",
-    notifications: "Email сповіщення",
+    profileTitle: "Особистий кабінет",
+    notifications: "Сповіщення на Email",
     tagsPh: "Теги (через кому)",
-    tagsEditPh: "Теги (через кому)",
-    copyright: "© {year} {brand}. Усі права захищені.",
-    adminDiagSMTP: "Діагностика SMTP",
-    adminDiagDB: "Діагностика БД",
-    exportDB: "Експорт бази",
-    importDB: "Імпорт бази",
+    tagsEditPh: "Редагувати теги",
+    copyright: "© {year} {brand}. Всі права захищені.",
+    adminDiagSMTP: "Тест SMTP",
+    adminDiagDB: "Статус БД",
+    exportDB: "Експорт БД",
+    importDB: "Імпорт БД",
     chooseFile: "Вибрати файл",
-    dbLabel: "База даних",
+    dbLabel: "Сховище",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
-    dbJSONFallback: "JSON (тимчасовий режим)"
-    ,
-    dbJSONWorkingNote: "Для ясності: база даних — JSON. Пише, що вимкнена, але працює."
-    ,
-    resendConfirm: "Надіслати повторне підтвердження",
-    resendConfirmSent: "Лист підтвердження надіслано, якщо акаунт не підтверджений",
-    smtpDisabledNote: "SMTP не налаштовано: реєстрація пройде, але лист не прийде. Після налаштування використовуйте 'Надіслати повторне підтвердження'."
-    ,
-    confirmEmail: "Підтвердити email",
-    emailUnconfirmed: "email не підтверджено",
-    twofa: "Двофакторний захист",
-    enable2fa: "Увімкнути 2FA (Google Authenticator)",
+    dbJSONFallback: "JSON (Fallback)",
+    dbJSONWorkingNote: "Система використовує JSON сховище.",
+    resendConfirm: "Повторити лист активації",
+    resendConfirmSent: "Інструкції відправлені на пошту",
+    smtpDisabledNote: "SMTP сервер не налаштований.",
+    confirmEmail: "Активація пошти",
+    emailUnconfirmed: "Пошта не підтверджена",
+    twofa: "2FA Захист",
+    enable2fa: "Увімкнути 2FA",
     disable2fa: "Вимкнути 2FA",
     twofaSetupTitle: "Налаштування 2FA",
-    twofaScanNote: "Скануйте QR у Google Authenticator або введіть секрет вручну.",
-    twofaCodePh: "TOTP код",
-    twofaEnabledNote: "2FA увімкнено",
-    twofaRequired: "Потрібен 2FA код",
-    loginWarning: "Адміністрація ніколи не надішле вам посилання на авторизацію та не попросить ваші дані для входу.",
-    newPostInThread: "Новий пост у темі: {title}",
-    latestPosts: "Останні публікації",
+    twofaScanNote: "Скануйте QR у Google Authenticator",
+    twofaCodePh: "6-значний код",
+    twofaEnabledNote: "2FA активна",
+    twofaRequired: "Введіть код 2FA",
+    loginWarning: "Увага! Адміністрація ніколи не просить пароль.",
+    newPostInThread: "Нова відповідь у темі: {title}",
+    latestPosts: "Остання активність",
     by: "від",
     in: "в",
-    quote: "Цитувати",
-    report: "Поскаржитися",
-    views: "Перегляди",
+    quote: "Цитата",
+    report: "Скарга",
+    views: "Переглядів",
     support: "Підтримка",
-    group: "Група",
-    logoutAll: "Вийти з усіх пристроїв",
-    discord: "Discord",
+    group: "Група ВК",
+    logoutAll: "Вийти скрізь",
+    discord: "Discord сервер",
     themeSettings: "Налаштування теми",
     themePrimary: "Основний колір",
     themeAccent: "Акцент",
     themeBg: "Фон",
     themeText: "Текст",
-    themeBorder: "Рамка",
-    save: "Зберегти",
+    themeBorder: "Кордони",
     themePresets: "Пресети",
     presetDark: "Темна",
     presetLight: "Світла",
     presetOcean: "Океан",
-    presetSolar: "Сонячна",
-    pinned: "Закріплено"
+    presetSolar: "Сонце",
+    subforums: "Підфоруми",
+    subforumsTitle: "Вкладені розділи",
+    adminCategoriesTitle: "Управління розділами",
+    adminUsersTitle: "Управління користувачами",
+    editCategory: "Редагувати розділ",
+    loginRequired: "Для цієї дії необхідний вхід",
+    afterLoginRedirect: "вас буде перенаправлено",
+    important: "Важливе"
   },
   bg: {
     title: "Prestige RolePlay",
-    subtitle: "Форум",
-    language: "Език",
-    themeToggle: "Тема",
+    subtitle: "Официален форум на проекта",
+    language: "Език на интерфейса",
+    themeToggle: "Смени темата",
+    themeEditor: "Редактор на тема",
     categories: "Категории",
-    addCategory: "Добави категория",
-    newCategory: "Нова категория",
+    addCategory: "Създай раздел",
+    newCategory: "Нов раздел",
     cancel: "Отказ",
     create: "Създай",
     threads: "Теми",
     back: "Назад",
     addThread: "Създай тема",
-    newThread: "Нова тема",
-    threadTitlePh: "Заглавие",
-    threadContentPh: "Съдържание",
-    authorPh: "Автор",
+    newThread: "Оформяне на нова тема",
+    threadTitlePh: "Заглавие на темата...",
+    threadContentPh: "Текст на вашето съобщение...",
+    authorPh: "Вашият никнейм",
     publish: "Публикувай",
     posts: "Публикации",
-    newPost: "Нова публикация",
-    reply: "Отговори",
-    captchaSolve: "Решете CAPTCHA",
+    newPost: "Отговори в темата",
+    reply: "Изпрати отговор",
+    captchaSolve: "Въведете кода от картинката",
     captchaRefresh: "Обнови",
-    footer: "Prestige RolePlay • GTA RolePlay",
-    empty: "Няма записи",
+    footer: "Prestige RolePlay • Игрова общност GTA",
+    empty: "В този раздел все още няма теми",
     threadsCount: "теми",
-    postsCount: "постове",
-    subforumsCount: "подфорума",
+    postsCount: "съобщения",
+    subforumsCount: "подраздела",
     login: "Вход",
     register: "Регистрация",
     logout: "Изход",
-    admin: "Админ",
-    emailPh: "Email",
-    usernamePh: "Потребител",
+    admin: "Админ център",
+    emailPh: "Имейл адрес",
+    usernamePh: "Потребителско име",
     passwordPh: "Парола",
-    loginTitle: "Вход",
-    registerTitle: "Регистрация",
-    registerNote: "Провери имейла за потвърждение",
-    adminPanel: "Админ панел",
-    adminCategories: "Категории",
+    loginTitle: "Авторизация",
+    registerTitle: "Регистрация на акаунт",
+    registerNote: "Проверете имейла си за потвърждение на регистрацията",
+    adminPanel: "Административен панел",
+    adminCategories: "Управление на категории",
     add: "Добави",
     close: "Затвори",
-    categoryNamePh: "Име на категория",
-    noParent: "Без родител",
-    apiError: "API грешка",
-    adminOnly: "Само админ може да добавя категории"
-    ,
+    categoryNamePh: "Име на раздела",
+    noParent: "Основен раздел",
+    apiError: "Грешка при връзка със сървъра",
+    adminOnly: "Достъп само за администратори",
     resetPassword: "Възстановяване на парола",
     send: "Изпрати",
-    changePassword: "Смяна на парола",
-    tokenPh: "Token",
+    changePassword: "Смени парола",
+    tokenPh: "Токен за възстановяване",
     newPasswordPh: "Нова парола",
-    searchPh: "Търсене",
+    searchPh: "Търсене във форума...",
     search: "Търси",
     prev: "Назад",
     next: "Напред",
-    edit: "Редакция",
-    delete: "Изтриване",
+    edit: "Промени",
+    delete: "Изтрий",
     save: "Запази",
-    editThread: "Редакция на тема",
-    editPost: "Редакция на публикация",
+    editThread: "Редактиране на тема",
+    editPost: "Редактиране на съобщение",
     users: "Потребители",
-    ban: "Бан",
-    unban: "Премахни бан",
-    setModerator: "Назначи модератор",
-    setUser: "Назначи потребител",
-    setAdmin: "Назначи администратор",
-    lock: "Заключи",
-    unlock: "Отключи",
+    ban: "Блокирай",
+    unban: "Деблокирай",
+    setModerator: "Направи модератор",
+    setUser: "Премахни права",
+    setAdmin: "Направи администратор",
+    lock: "Заключи темата",
+    unlock: "Отключи темата",
     pin: "Закачи",
     unpin: "Откачи",
     pinned: "Закачено",
-    locked: "Заключено",
+    locked: "Темата е заключена",
     likes: "Харесвания",
-    bannedLabel: "Блокиран",
+    bannedLabel: "БЛОКИРАН",
     profile: "Профил",
-    profileTitle: "Профил",
-    notifications: "Уведомления по имейл",
-    tagsPh: "Тагове (разделени със запетая)",
-    tagsEditPh: "Тагове (разделени със запетая)",
+    profileTitle: "Личен кабинет",
+    notifications: "Имейл известия",
+    tagsPh: "Етикети (разделени със запетая)",
+    tagsEditPh: "Редактирай етикети",
     copyright: "© {year} {brand}. Всички права запазени.",
-    adminDiagSMTP: "Диагностика на SMTP",
-    adminDiagDB: "Диагностика на база данни",
-    exportDB: "Експорт база",
-    importDB: "Импорт база",
+    adminDiagSMTP: "Тест на SMTP",
+    adminDiagDB: "Статус на БД",
+    exportDB: "Експорт на БД",
+    importDB: "Импорт на БД",
     chooseFile: "Избери файл",
-    dbLabel: "База данни",
+    dbLabel: "Хранилище",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
-    dbJSONFallback: "JSON (временен режим)"
-    ,
-    dbJSONWorkingNote: "За яснота: Базата данни е JSON. Пише, че е изключена, но работи."
-    ,
-    resendConfirm: "Изпрати наново потвърждение",
-    resendConfirmSent: "Изпратихме потвърждение, ако акаунтът не е потвърден",
-    smtpDisabledNote: "SMTP не е конфигуриран: Регистрацията ще мине, но няма да получиш имейл. След конфигуриране използвай 'Изпрати наново потвърждение'."
-    ,
-    confirmEmail: "Потвърди имейл",
-    emailUnconfirmed: "имейл не е потвърден",
-    twofa: "Двуфакторна защита",
-    enable2fa: "Включи 2FA (Google Authenticator)",
+    dbJSONFallback: "JSON (Резервен)",
+    dbJSONWorkingNote: "Системата използва JSON хранилище.",
+    resendConfirm: "Повтори имейла за активация",
+    resendConfirmSent: "Инструкциите са изпратени на имейла",
+    smtpDisabledNote: "SMTP сървърът не е настроен.",
+    confirmEmail: "Активация на имейл",
+    emailUnconfirmed: "Имейлът не е потвърден",
+    twofa: "2FA Защита",
+    enable2fa: "Включи 2FA",
     disable2fa: "Изключи 2FA",
     twofaSetupTitle: "Настройка на 2FA",
-    twofaScanNote: "Сканирай QR в Google Authenticator или въведи секретния ключ ръчно.",
-    twofaCodePh: "TOTP код",
-    twofaEnabledNote: "2FA е включен",
-    twofaRequired: "Изисква се 2FA код"
-    ,
-    logoutAll: "Изход от всички устройства"
-    ,
-    newPostInThread: "Нов пост в тема: {title}"
-    ,
-    loginRequired: "Моля, влез, за да продължиш",
-    afterLoginRedirect: "След вход ще те пренасочим",
-    latestPosts: "Последни публикации",
+    twofaScanNote: "Сканирайте QR в Google Authenticator",
+    twofaCodePh: "6-цифрен код",
+    twofaEnabledNote: "2FA е активна",
+    twofaRequired: "Въведете код от 2FA",
+    loginWarning: "Внимание! Администрацията никога не иска вашата парола.",
+    newPostInThread: "Нов отговор в тема: {title}",
+    latestPosts: "Последна активност",
     by: "от",
     in: "в",
-    loginWarning: "Администрация никога няма да Ви изпрати линк за авторизация, нито да иска данните Ви.",
-    quote: "Цитирай",
+    quote: "Цитат",
     report: "Докладвай",
     views: "Преглеждания",
     support: "Поддръжка",
-    group: "Група",
-    discord: "Discord",
+    group: "ВК Група",
+    logoutAll: "Изход отвред",
+    discord: "Discord сървър",
     themeSettings: "Настройки на тема",
     themePrimary: "Основен цвят",
     themeAccent: "Акцент",
     themeBg: "Фон",
     themeText: "Текст",
-    themeBorder: "Рамка",
-    save: "Запази",
+    themeBorder: "Рамки",
     themePresets: "Пресети",
     presetDark: "Тъмна",
     presetLight: "Светла",
     presetOcean: "Океан",
-    presetSolar: "Слънчева"
+    presetSolar: "Слънце",
+    subforums: "Подфоруми",
+    subforumsTitle: "Вложени раздели",
+    adminCategoriesTitle: "Управление на раздели",
+    adminUsersTitle: "Управление на потребители",
+    editCategory: "Редактирай раздел",
+    loginRequired: "За това действие е нужен вход",
+    afterLoginRedirect: "ще бъдете пренасочени",
+    important: "Важно"
   },
   en: {
     title: "Prestige RolePlay",
-    subtitle: "Forum",
+    subtitle: "Official Project Forum",
     language: "Language",
-    themeToggle: "Theme",
+    themeToggle: "Toggle Theme",
+    themeEditor: "Theme Editor",
     categories: "Categories",
-    addCategory: "Add Category",
-    newCategory: "New Category",
+    addCategory: "Create Section",
+    newCategory: "New Section",
     cancel: "Cancel",
     create: "Create",
     threads: "Threads",
     back: "Back",
-    addThread: "Create Thread",
-    newThread: "New Thread",
-    threadTitlePh: "Title",
-    threadContentPh: "Content",
-    authorPh: "Author",
+    addThread: "New Thread",
+    newThread: "Create New Thread",
+    threadTitlePh: "Thread title...",
+    threadContentPh: "Your message content...",
+    authorPh: "Your nickname",
     publish: "Publish",
     posts: "Posts",
-    newPost: "New Post",
-    reply: "Reply",
-    captchaSolve: "Solve CAPTCHA",
+    newPost: "Reply to Thread",
+    reply: "Post Reply",
+    captchaSolve: "Enter captcha code",
     captchaRefresh: "Refresh",
-    footer: "Prestige RolePlay • GTA RolePlay",
-    empty: "No records",
+    footer: "Prestige RolePlay • GTA Gaming Community",
+    empty: "No threads in this section yet",
     threadsCount: "threads",
     postsCount: "posts",
     subforumsCount: "subforums",
     login: "Login",
     register: "Register",
     logout: "Logout",
-    admin: "Admin",
-    emailPh: "Email",
+    admin: "Admin CP",
+    emailPh: "Email address",
     usernamePh: "Username",
     passwordPh: "Password",
-    loginTitle: "Login",
-    registerTitle: "Register",
-    registerNote: "Check email to confirm registration",
+    loginTitle: "Authentication",
+    registerTitle: "Account Registration",
+    registerNote: "Check your email to confirm registration",
     adminPanel: "Admin Panel",
-    adminCategories: "Categories",
+    adminCategories: "Manage Categories",
     add: "Add",
     close: "Close",
-    categoryNamePh: "Category name",
-    noParent: "No parent",
-    apiError: "API error",
-    adminOnly: "Only admin can add categories"
-    ,
-    resetPassword: "Password reset",
+    categoryNamePh: "Section name",
+    noParent: "Main Section",
+    apiError: "Server connection error",
+    adminOnly: "Admin access only",
+    resetPassword: "Reset Password",
     send: "Send",
-    changePassword: "Change password",
-    tokenPh: "Token",
+    changePassword: "Change Password",
+    tokenPh: "Recovery token",
     newPasswordPh: "New password",
-    searchPh: "Search",
+    searchPh: "Search forum...",
     search: "Search",
     prev: "Prev",
     next: "Next",
     edit: "Edit",
     delete: "Delete",
     save: "Save",
-    editThread: "Edit thread",
-    editPost: "Edit post",
+    editThread: "Edit Thread",
+    editPost: "Edit Post",
     users: "Users",
     ban: "Ban",
     unban: "Unban",
-    setModerator: "Moderator",
-    setUser: "User",
+    setModerator: "Make Moderator",
+    setUser: "Demote",
     setAdmin: "Make Admin",
-    lock: "Lock",
-    unlock: "Unlock",
+    lock: "Lock Thread",
+    unlock: "Unlock Thread",
     pin: "Pin",
     unpin: "Unpin",
+    pinned: "Pinned",
     locked: "Locked",
     likes: "Likes",
     bannedLabel: "BANNED",
     profile: "Profile",
-    profileTitle: "Profile",
-    notifications: "Email notifications",
-    tagsPh: "Tags (comma-separated)",
-    tagsEditPh: "Tags (comma-separated)",
+    profileTitle: "User Control Panel",
+    notifications: "Email Notifications",
+    tagsPh: "Tags (comma separated)",
+    tagsEditPh: "Edit tags",
     copyright: "© {year} {brand}. All rights reserved.",
-    adminDiagSMTP: "SMTP Diagnostics",
-    adminDiagDB: "DB Diagnostics",
+    adminDiagSMTP: "SMTP Test",
+    adminDiagDB: "DB Status",
     exportDB: "Export DB",
     importDB: "Import DB",
     chooseFile: "Choose file",
-    dbLabel: "Database",
+    dbLabel: "Storage",
     dbMySQL: "MySQL",
     dbJSON: "JSON",
-    dbJSONFallback: "JSON (fallback)"
-    ,
-    dbJSONWorkingNote: "For clarity: the database is JSON. It says it's disabled, but it works."
-    ,
-    resendConfirm: "Resend confirmation",
-    resendConfirmSent: "Confirmation email sent if the account is unconfirmed",
-    smtpDisabledNote: "SMTP is not configured: registration works, but no email will arrive. After configuring, use 'Resend confirmation'."
-    ,
-    confirmEmail: "Confirm email",
-    emailUnconfirmed: "email unconfirmed",
-    twofa: "Two-factor auth",
-    enable2fa: "Enable 2FA (Google Authenticator)",
+    dbJSONFallback: "JSON (Fallback)",
+    dbJSONWorkingNote: "System is using JSON storage.",
+    resendConfirm: "Resend activation email",
+    resendConfirmSent: "Instructions sent to your email",
+    smtpDisabledNote: "SMTP server is not configured.",
+    confirmEmail: "Email Activation",
+    emailUnconfirmed: "Email not confirmed",
+    twofa: "2FA Protection",
+    enable2fa: "Enable 2FA",
     disable2fa: "Disable 2FA",
     twofaSetupTitle: "2FA Setup",
-    twofaScanNote: "Scan QR in Google Authenticator or enter the secret manually.",
-    twofaCodePh: "TOTP code",
-    twofaEnabledNote: "2FA is enabled",
-    twofaRequired: "2FA code required"
-    ,
-    logoutAll: "Logout all devices"
-    ,
-    newPostInThread: "New post in thread: {title}"
-    ,
-    loginRequired: "Please log in to continue"
-    ,
-    afterLoginRedirect: "You will be redirected after login"
-    ,
-    latestPosts: "Latest posts"
-    ,
-    by: "by"
-    ,
-    in: "in"
-    ,
-    loginWarning: "Administration will never send you an authorization link or ask for your login details.",
+    twofaScanNote: "Scan QR with Google Authenticator",
+    twofaCodePh: "6-digit code",
+    twofaEnabledNote: "2FA is active",
+    twofaRequired: "Enter 2FA code",
+    loginWarning: "Warning! Staff will never ask for your password.",
+    newPostInThread: "New reply in: {title}",
+    latestPosts: "Latest Activity",
+    by: "by",
+    in: "in",
     quote: "Quote",
     report: "Report",
     views: "Views",
     support: "Support",
-    group: "Group",
-    discord: "Discord",
+    group: "VK Group",
+    logoutAll: "Logout everywhere",
+    discord: "Discord Server",
     themeSettings: "Theme Settings",
-    themePrimary: "Primary",
+    themePrimary: "Primary Color",
     themeAccent: "Accent",
     themeBg: "Background",
     themeText: "Text",
-    themeBorder: "Border",
-    save: "Save",
+    themeBorder: "Borders",
     themePresets: "Presets",
     presetDark: "Dark",
     presetLight: "Light",
     presetOcean: "Ocean",
     presetSolar: "Solar",
-    pinned: "Pinned"
+    subforums: "Subforums",
+    subforumsTitle: "Nested Sections",
+    adminCategoriesTitle: "Manage Sections",
+    adminUsersTitle: "Manage Users",
+    editCategory: "Edit Section",
+    loginRequired: "Login required for this action",
+    afterLoginRedirect: "you will be redirected",
+    important: "Important"
   }
 };
 
@@ -732,36 +738,14 @@ const api = {
     return r.json();
   }
 };
-// Normalize base if a stale localhost leaked into client while page runs on non-localhost
-if (typeof window !== "undefined") {
-  try {
-    const host = window.location && window.location.hostname;
-    if (typeof api.base === "string" && api.base.includes("__RUNTIME_API_BASE__")) {
-      api.base = "";
-    }
-    if (/localhost|127\.0\.0\.1/.test(api.base) && host && !/localhost|127\.0\.0\.1/.test(host)) {
-      api.base = "";
-    }
-  } catch {}
-}
 
 const store = {
   pendingAttachments: [],
-  async categories() {
-    return api.get("/api/categories");
-  },
-  async addCategory(name, parent_id) {
-    return api.post("/api/categories", { name, parent_id });
-  },
-  async threadsByCategory(categoryId) {
-    return api.get(`/api/categories/${categoryId}/threads`);
-  },
-  async addThread(categoryId, title, content) {
-    return api.post("/api/threads", { categoryId, title, content });
-  },
-  async postsByThread(threadId) {
-    return api.get(`/api/threads/${threadId}/posts`);
-  },
+  async categories() { return api.get("/api/categories"); },
+  async addCategory(name, parent_id) { return api.post("/api/categories", { name, parent_id }); },
+  async threadsByCategory(categoryId) { return api.get(`/api/categories/${categoryId}/threads`); },
+  async addThread(categoryId, title, content) { return api.post("/api/threads", { categoryId, title, content }); },
+  async postsByThread(threadId) { return api.get(`/api/threads/${threadId}/posts`); },
   async addPost(threadId, content) {
     const res = await api.post("/api/posts", { threadId, content, attachments: this.pendingAttachments || [] });
     this.pendingAttachments = [];
@@ -772,1612 +756,315 @@ const store = {
 function buildCategoryTree(categories) {
   const map = {};
   const tree = [];
+  categories.forEach(c => { map[c.id] = { ...c, children: [] }; });
   categories.forEach(c => {
-    c.children = [];
-    map[c.id] = c;
-  });
-  categories.forEach(c => {
-    if (c.parent_id && map[c.parent_id]) {
-      map[c.parent_id].children.push(c);
-    } else {
-      tree.push(c);
-    }
+    if (c.parent_id && map[c.parent_id]) map[c.parent_id].children.push(map[c.id]);
+    else tree.push(map[c.id]);
   });
   return tree;
 }
 
 const ui = {
-  state: { lang: "ru", theme: "dark", current: { categoryId: null, threadId: null }, user: null, loginReferrer: null, loginReason: null },
+  state: { lang: localStorage.getItem("lang") || "ru", theme: "dark", current: { categoryId: null, threadId: null }, user: null, ws: null },
   t(k) {
     const cur = translations[this.state.lang] || translations.ru;
-    return (cur && cur[k] !== undefined) ? cur[k] : (translations.ru[k] !== undefined ? translations.ru[k] : k);
+    return cur[k] || translations.ru[k] || k;
   },
   el: {},
   init() {
     this.cache();
-    this.loadThemeFromStorage();
     this.bind();
     this.applyLang();
-    this.refreshMeta();
+    this.loadTheme();
     this.restoreAuth();
     this.connectWs();
     this.renderCategories();
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const reason = params.get("reason");
-      const refb64 = params.get("referrer");
-      let ref = null;
-      if (refb64) {
-        try { ref = atob(refb64); } catch {}
-      }
-      if (ref) {
-        try {
-          const u = new URL(ref, window.location.origin);
-          if (u.origin === window.location.origin) this.state.loginReferrer = u.href;
-        } catch {}
-      }
-      if (reason) {
-        this.state.loginReason = reason;
-        captcha.mount(this.el.loginCaptcha, () => {});
-        if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginRequired") + (this.state.loginReferrer ? ` • ${this.t("afterLoginRedirect")}` : "");
-        this.el.loginDialog.showModal();
-      }
-    } catch {}
   },
   cache() {
-    this.el.title = document.getElementById("title");
-    this.el.subtitle = document.getElementById("subtitle");
-    this.el.langLabel = document.getElementById("langLabel");
-    this.el.lang = document.getElementById("lang");
-    this.el.supportBtn = document.getElementById("supportBtn");
-    this.el.groupBtn = document.getElementById("groupBtn");
-    this.el.discordBtn = document.getElementById("discordBtn");
-    this.el.themeToggle = document.getElementById("themeToggle");
-    this.el.themeEditor = document.getElementById("themeEditor");
-    this.el.controls = document.getElementById("controls");
-    this.el.burgerBtn = document.getElementById("burgerBtn");
-    this.el.loginBtn = document.getElementById("loginBtn");
-    this.el.registerBtn = document.getElementById("registerBtn");
-    this.el.userBadge = document.getElementById("userBadge");
-    this.el.headerAvatar = document.getElementById("headerAvatar");
-    this.el.logoutBtn = document.getElementById("logoutBtn");
-    this.el.adminBtn = document.getElementById("adminBtn");
-    this.el.profileBtn = document.getElementById("profileBtn");
-    this.el.profileDialog = document.getElementById("profileDialog");
-    this.el.profileForm = document.getElementById("profileForm");
-    this.el.profileTitle = document.getElementById("profileTitle");
-    this.el.profileUsername = document.getElementById("profileUsername");
-    this.el.profileNotifications = document.getElementById("profileNotifications");
-    this.el.profileNotificationsLabel = document.getElementById("profileNotificationsLabel");
-    this.el.avatarUpload = document.getElementById("avatarUpload");
-    this.el.profileStatsThreads = document.getElementById("profileStatsThreads");
-    this.el.profileStatsPosts = document.getElementById("profileStatsPosts");
-    this.el.enable2faBtn = document.getElementById("enable2faBtn");
-    this.el.disable2faBtn = document.getElementById("disable2faBtn");
-    this.el.logoutAllBtn = document.getElementById("logoutAllBtn");
-    this.el.twofaDialog = document.getElementById("twofaDialog");
-    this.el.twofaForm = document.getElementById("twofaForm");
-    this.el.twofaTitle = document.getElementById("twofaTitle");
-    this.el.twofaNote = document.getElementById("twofaNote");
-    this.el.twofaSecret = document.getElementById("twofaSecret");
-    this.el.twofaUri = document.getElementById("twofaUri");
-    this.el.twofaCode = document.getElementById("twofaCode");
-    this.el.twofaCancel = document.getElementById("twofaCancel");
-    this.el.twofaActivate = document.getElementById("twofaActivate");
-    this.el.profileCancel = document.getElementById("profileCancel");
-    this.el.saveProfile = document.getElementById("saveProfile");
-    this.el.loginDialog = document.getElementById("loginDialog");
-    this.el.loginForm = document.getElementById("loginForm");
-    this.el.loginCaptcha = document.getElementById("loginCaptcha");
-    this.el.loginNote = document.getElementById("loginNote");
-    this.el.loginTitle = document.getElementById("loginTitle");
-    this.el.loginEmail = document.getElementById("loginEmail");
-    this.el.loginPassword = document.getElementById("loginPassword");
-    this.el.loginTotp = document.getElementById("loginTotp");
-    this.el.loginCancel = document.getElementById("loginCancel");
-    this.el.loginResendBtn = document.getElementById("loginResendBtn");
-    this.el.loginSubmit = document.getElementById("loginSubmit");
-    this.el.registerDialog = document.getElementById("registerDialog");
-    this.el.registerForm = document.getElementById("registerForm");
-    this.el.registerCaptcha = document.getElementById("registerCaptcha");
-    this.el.registerTitle = document.getElementById("registerTitle");
-    this.el.registerEmail = document.getElementById("registerEmail");
-    this.el.registerUsername = document.getElementById("registerUsername");
-    this.el.registerPassword = document.getElementById("registerPassword");
-    this.el.registerCancel = document.getElementById("registerCancel");
-    this.el.registerSubmit = document.getElementById("registerSubmit");
-    this.el.registerNote = document.getElementById("registerNote");
-    this.el.resetDialog = document.getElementById("resetDialog");
-    this.el.resetForm = document.getElementById("resetForm");
-    this.el.resetTitle = document.getElementById("resetTitle");
-    this.el.resetEmail = document.getElementById("resetEmail");
-    this.el.resetCancel = document.getElementById("resetCancel");
-    this.el.resetSubmit = document.getElementById("resetSubmit");
-    this.el.resetNote = document.getElementById("resetNote");
-    this.el.performResetDialog = document.getElementById("performResetDialog");
-    this.el.performResetForm = document.getElementById("performResetForm");
-    this.el.performResetTitle = document.getElementById("performResetTitle");
-    this.el.performResetToken = document.getElementById("performResetToken");
-    this.el.performResetPassword = document.getElementById("performResetPassword");
-    this.el.performResetCancel = document.getElementById("performResetCancel");
-    this.el.performResetSubmit = document.getElementById("performResetSubmit");
-    this.el.categoriesTitle = document.getElementById("categoriesTitle");
-    this.el.addCategoryBtn = document.getElementById("addCategoryBtn");
-    this.el.categoryList = document.getElementById("categoryList");
-    this.el.latestPostsSection = document.getElementById("latestPostsSection");
-    this.el.latestPostsTitle = document.getElementById("latestPostsTitle");
-    this.el.latestPostsList = document.getElementById("latestPostsList");
-    this.el.categoryDialog = document.getElementById("categoryDialog");
-    this.el.categoryForm = document.getElementById("categoryForm");
-    this.el.categoryNameInput = document.getElementById("categoryNameInput");
-    this.el.categoryDialogTitle = document.getElementById("categoryDialogTitle");
-    this.el.cancelLabel = document.getElementById("cancelLabel");
-    this.el.createLabel = document.getElementById("createLabel");
-    this.el.cancelLabel2 = document.getElementById("cancelLabel2");
-    this.el.publishLabel = document.getElementById("publishLabel");
-    this.el.viewCategories = document.getElementById("view-categories");
-    this.el.viewThreads = document.getElementById("view-threads");
-    this.el.viewPosts = document.getElementById("view-posts");
-    this.el.threadsTitle = document.getElementById("threadsTitle");
-    this.el.backToCategories = document.getElementById("backToCategories");
-    this.el.addThreadBtn = document.getElementById("addThreadBtn");
-    this.el.searchInput = document.getElementById("searchInput");
-    this.el.searchBtn = document.getElementById("searchBtn");
-    this.el.searchMeta = document.getElementById("searchMeta");
-    this.el.threadBreadcrumbs = document.getElementById("threadBreadcrumbs");
-    this.el.subCategoryList = document.getElementById("subCategoryList");
-    this.el.subCategorySidebar = document.getElementById("subCategorySidebar");
-    this.el.threadList = document.getElementById("threadList");
-    this.el.threadDialog = document.getElementById("threadDialog");
-    this.el.threadForm = document.getElementById("threadForm");
-    this.el.threadDialogTitle = document.getElementById("threadDialogTitle");
-    this.el.threadTitleInput = document.getElementById("threadTitleInput");
-    this.el.threadContentInput = document.getElementById("threadContentInput");
-    this.el.threadTagsInput = document.getElementById("threadTagsInput");
-    this.el.threadAuthorInput = document.getElementById("threadAuthorInput");
-    this.el.threadCaptcha = null;
-    this.el.editThreadDialog = document.getElementById("editThreadDialog");
-    this.el.editThreadForm = document.getElementById("editThreadForm");
-    this.el.editThreadTitle = document.getElementById("editThreadTitle");
-    this.el.editThreadTitleInput = document.getElementById("editThreadTitleInput");
-    this.el.editThreadTagsInput = document.getElementById("editThreadTagsInput");
-    this.el.editThreadCancel = document.getElementById("editThreadCancel");
-    this.el.editThreadSubmit = document.getElementById("editThreadSubmit");
-    this.el.threadsPrev = document.getElementById("threadsPrev");
-    this.el.threadsNext = document.getElementById("threadsNext");
-    this.el.postsTitle = document.getElementById("postsTitle");
-    this.el.backToThreads = document.getElementById("backToThreads");
-    this.el.addPostBtn = document.getElementById("addPostBtn");
-    this.el.postList = document.getElementById("postList");
-    this.el.postDialog = document.getElementById("postDialog");
-    this.el.postForm = document.getElementById("postForm");
-    this.el.postDialogTitle = document.getElementById("postDialogTitle");
-    this.el.postContentInput = document.getElementById("postContentInput");
-    this.el.postCaptcha = null;
-    this.el.cancelLabel3 = document.getElementById("cancelLabel3");
-    this.el.replyLabel = document.getElementById("replyLabel");
-    this.el.postsPrev = document.getElementById("postsPrev");
-    this.el.postsNext = document.getElementById("postsNext");
-    this.el.editPostDialog = document.getElementById("editPostDialog");
-    this.el.editPostForm = document.getElementById("editPostForm");
-    this.el.editPostTitle = document.getElementById("editPostTitle");
-    this.el.editPostContentInput = document.getElementById("editPostContentInput");
-    this.el.editPostCancel = document.getElementById("editPostCancel");
-    this.el.editPostSubmit = document.getElementById("editPostSubmit");
-    this.el.threadMeta = document.getElementById("threadMeta");
-    this.el.footerText = document.getElementById("footerText");
-    this.el.copyrightText = document.getElementById("copyrightText");
-    this.el.viewAdmin = document.getElementById("view-admin");
-    this.el.adminTitle = document.getElementById("adminTitle");
-    this.el.backAdminClose = document.getElementById("backAdminClose");
-    this.el.adminMeta = document.getElementById("adminMeta");
-    this.el.adminCategoriesTitle = document.getElementById("adminCategoriesTitle");
-    this.el.adminCategoryName = document.getElementById("adminCategoryName");
-    this.el.adminCategoryParent = document.getElementById("adminCategoryParent");
-    this.el.adminAddCategory = document.getElementById("adminAddCategory");
-    this.el.adminCategoryList = document.getElementById("adminCategoryList");
-    this.el.adminUsersTitle = document.getElementById("adminUsersTitle");
-    this.el.adminUserList = document.getElementById("adminUserList");
-    this.el.editCategoryDialog = document.getElementById("editCategoryDialog");
-    this.el.editCategoryForm = document.getElementById("editCategoryForm");
-    this.el.editCategoryNameInput = document.getElementById("editCategoryNameInput");
-    this.el.editCategoryParentInput = document.getElementById("editCategoryParentInput");
-    this.el.editCategoryCancel = document.getElementById("editCategoryCancel");
-    this.el.editCategorySubmit = document.getElementById("editCategorySubmit");
-    this.el.adminModalDialog = document.getElementById("admin-modal-dialog");
-    this.el.dbBadge = document.getElementById("dbBadge");
-    this.el.adminDiagSMTPBtn = document.getElementById("adminDiagSMTPBtn");
-    this.el.adminDiagDBBtn = document.getElementById("adminDiagDBBtn");
-    this.el.adminExportDBBtn = document.getElementById("adminExportDBBtn");
-    this.el.adminImportDBBtn = document.getElementById("adminImportDBBtn");
-    this.el.adminImportFile = document.getElementById("adminImportFile");
-    this.el.adminDialog = document.getElementById("adminDialog");
-    this.el.themeDialog = document.getElementById("themeDialog");
-    this.el.themeForm = document.getElementById("themeForm");
-    this.el.themeDialogTitle = document.getElementById("themeDialogTitle");
-    this.el.themePrimaryLabel = document.getElementById("themePrimaryLabel");
-    this.el.themeAccentLabel = document.getElementById("themeAccentLabel");
-    this.el.themeBgLabel = document.getElementById("themeBgLabel");
-    this.el.themeTextLabel = document.getElementById("themeTextLabel");
-    this.el.themeBorderLabel = document.getElementById("themeBorderLabel");
-    this.el.themePrimary = document.getElementById("themePrimary");
-    this.el.themeAccent = document.getElementById("themeAccent");
-    this.el.themeBg = document.getElementById("themeBg");
-    this.el.themeText = document.getElementById("themeText");
-    this.el.themeBorder = document.getElementById("themeBorder");
-    this.el.themeCancel = document.getElementById("themeCancel");
-    this.el.themeSave = document.getElementById("themeSave");
-    this.el.themePresetsLabel = document.getElementById("themePresetsLabel");
-    this.el.presetDark = document.getElementById("presetDark");
-    this.el.presetLight = document.getElementById("presetLight");
-    this.el.presetOcean = document.getElementById("presetOcean");
-    this.el.presetSolar = document.getElementById("presetSolar");
-    this.el.cropDialog = document.getElementById("cropDialog");
-    this.el.cropImage = document.getElementById("cropImage");
-    this.el.cropSave = document.getElementById("cropSave");
-    this.el.cropCancel = document.getElementById("cropCancel");
+    const ids = [
+      "title", "subtitle", "langLabel", "lang", "supportBtn", "groupBtn", "discordBtn", "themeToggle", "themeEditor",
+      "loginBtn", "registerBtn", "userBadge", "headerAvatar", "logoutBtn", "profileBtn", "adminBtn",
+      "loginDialog", "loginForm", "registerDialog", "registerForm", "profileDialog", "profileForm",
+      "view-categories", "view-threads", "view-posts", "categoryList", "threadList", "postList",
+      "categoriesTitle", "threadsTitle", "postsTitle", "backToCategories", "backToThreads",
+      "addCategoryBtn", "addThreadBtn", "addPostBtn", "searchInput", "searchBtn", "threadBreadcrumbs",
+      "subCategoryList", "subCategorySidebar", "latestPostsList", "footerText", "copyrightText",
+      "themeDialog", "themeForm", "themePrimary", "themeAccent", "themeBg", "themeText", "themeBorder",
+      "presetDark", "presetLight", "presetOcean", "presetSolar", "admin-modal-dialog"
+    ];
+    ids.forEach(id => { this.el[id] = document.getElementById(id); });
   },
   bind() {
-    this.el.lang.addEventListener("change", () => {
-      this.state.lang = this.el.lang.value;
-      document.documentElement.lang = this.state.lang;
+    this.el.lang.value = this.state.lang;
+    this.el.lang.onchange = (e) => {
+      this.state.lang = e.target.value;
+      localStorage.setItem("lang", this.state.lang);
       this.applyLang();
-      this.render();
-    });
-    this.el.themeToggle.addEventListener("click", () => {
-      this.state.theme = this.state.theme === "dark" ? "light" : "dark";
-      document.body.dataset.theme = this.state.theme;
-      this.el.themeToggle.textContent = this.state.theme === "dark" ? "☾" : "☼";
-    });
-    if (this.el.burgerBtn) {
-      this.el.burgerBtn.addEventListener("click", () => {
-        this.el.controls.classList.toggle("open");
-      });
-    }
-    if (this.el.supportBtn) {
-      this.el.supportBtn.addEventListener("click", () => {
-        window.open("https://t.me/Tex_Prestige_RP_bot", "_blank");
-      });
-    }
-    if (this.el.groupBtn) {
-      this.el.groupBtn.addEventListener("click", () => {
-        window.open("https://t.me/Prestige_RP", "_blank");
-      });
-    }
-    if (this.el.discordBtn) {
-      this.el.discordBtn.addEventListener("click", () => {
-        window.open("https://discord.gg/evYda7aU8S", "_blank");
-      });
-    }
-    if (this.el.headerAvatar) {
-      this.el.headerAvatar.addEventListener("click", () => {
-        if (!this.state.user) { this.el.loginDialog.showModal(); return }
-        this.el.profileDialog.showModal();
-      });
-    }
-    if (this.el.themeEditor && this.el.themeDialog) {
-      this.el.themeEditor.addEventListener("click", () => {
-        this.loadThemeFromStorage();
-        this.el.themeDialog.showModal();
-      });
-    }
-    if (this.el.themePrimary) {
-      this.el.themePrimary.addEventListener("input", () => {
-        this.applyThemeVars({ primary: this.el.themePrimary.value });
-      });
-    }
-    if (this.el.themeAccent) {
-      this.el.themeAccent.addEventListener("input", () => {
-        this.applyThemeVars({ accent: this.el.themeAccent.value });
-      });
-    }
-    if (this.el.themeBg) {
-      this.el.themeBg.addEventListener("input", () => {
-        this.applyThemeVars({ bg: this.el.themeBg.value });
-      });
-    }
-    if (this.el.themeText) {
-      this.el.themeText.addEventListener("input", () => {
-        this.applyThemeVars({ text: this.el.themeText.value });
-      });
-    }
-    if (this.el.themeBorder) {
-      this.el.themeBorder.addEventListener("input", () => {
-        this.applyThemeVars({ border: this.el.themeBorder.value });
-      });
-    }
-    if (this.el.themeCancel && this.el.themeDialog) {
-      this.el.themeCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.themeDialog.close(); });
-    }
-    if (this.el.themeForm && this.el.themeDialog) {
-      this.el.themeForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        this.saveThemeToStorage();
-        this.el.themeDialog.close();
-      });
-    }
-    const applyPreset = (vars) => {
-      this.applyThemeVars(vars);
-      if (this.el.themePrimary) this.el.themePrimary.value = vars.primary;
-      if (this.el.themeAccent) this.el.themeAccent.value = vars.accent;
-      if (this.el.themeBg) this.el.themeBg.value = vars.bg;
-      if (this.el.themeText) this.el.themeText.value = vars.text;
-      if (this.el.themeBorder) this.el.themeBorder.value = vars.border;
+      this.refreshCurrentView();
     };
-    if (this.el.presetDark) {
-      this.el.presetDark.addEventListener("click", () => {
-        applyPreset({ primary: "#7c3aed", accent: "#a855f7", bg: "#0b0b10", text: "#f2f2f7", border: "#26263a" });
-      });
-    }
-    if (this.el.presetLight) {
-      this.el.presetLight.addEventListener("click", () => {
-        applyPreset({ primary: "#2563eb", accent: "#38bdf8", bg: "#f5f5f5", text: "#111827", border: "#d1d5db" });
-      });
-    }
-    if (this.el.presetOcean) {
-      this.el.presetOcean.addEventListener("click", () => {
-        applyPreset({ primary: "#0ea5e9", accent: "#22d3ee", bg: "#0b1220", text: "#e5f6ff", border: "#17324d" });
-      });
-    }
-    if (this.el.presetSolar) {
-      this.el.presetSolar.addEventListener("click", () => {
-        applyPreset({ primary: "#f59e0b", accent: "#fde047", bg: "#0f0e0c", text: "#fff7ed", border: "#3b2f1a" });
-      });
-    }
-    this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
-    this.el.registerBtn.addEventListener("click", () => { this.el.registerDialog.showModal(); captcha.mount(this.el.registerCaptcha, () => {}); });
-    this.el.profileBtn.addEventListener("click", () => {
-      if (!this.state.user) return;
-      this.el.profileUsername.value = this.state.user.username || "";
-      this.el.profileNotifications.checked = !!this.state.user.notifications;
-      // Ensure stats elements exist even if HTML is older
-      if (!this.el.profileStatsThreads || !this.el.profileStatsPosts) {
-        const meta = document.createElement("div");
-        meta.className = "meta";
-        this.el.profileStatsThreads = document.createElement("span");
-        this.el.profileStatsThreads.id = "profileStatsThreads";
-        this.el.profileStatsPosts = document.createElement("span");
-        this.el.profileStatsPosts.id = "profileStatsPosts";
-        this.el.profileStatsPosts.style.marginLeft = "12px";
-        meta.appendChild(this.el.profileStatsThreads);
-        meta.appendChild(this.el.profileStatsPosts);
-        const form = this.el.profileForm || document.getElementById("profileForm");
-        if (form) form.insertBefore(meta, form.querySelector(".actions"));
-      }
-      this.el.profileDialog.showModal();
-      const id = this.state.user?.id;
-      if (id) {
-        api.get(`/api/users/${id}/stats`).then(s => {
-          if (this.el.profileStatsThreads) this.el.profileStatsThreads.textContent = `${this.t("threadsCount")}: ${s.threads}`;
-          if (this.el.profileStatsPosts) this.el.profileStatsPosts.textContent = `${this.t("postsCount")}: ${s.posts}`;
-        }).catch(()=>{});
-      }
-    });
-    this.el.loginCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.loginDialog.close(); });
-    this.el.registerCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.registerDialog.close(); });
-    this.el.profileCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.profileDialog.close(); });
-    this.el.profileForm.addEventListener("submit", async (e) => {
+    this.el.themeToggle.onclick = () => this.toggleTheme();
+    this.el.themeEditor.onclick = () => this.el.themeDialog.showModal();
+    this.el.discordBtn.onclick = () => window.open("https://discord.gg/evYda7aU8S", "_blank");
+    this.el.loginBtn.onclick = () => this.el.loginDialog.showModal();
+    this.el.registerBtn.onclick = () => this.el.registerDialog.showModal();
+    this.el.logoutBtn.onclick = () => this.logout();
+    this.el.backToCategories.onclick = () => this.renderCategories();
+    this.el.backToThreads.onclick = () => this.renderThreads(this.state.current.categoryId);
+    this.el.adminBtn.onclick = () => this.renderAdmin();
+    
+    // Forms
+    this.el.loginForm.onsubmit = async (e) => {
       e.preventDefault();
       try {
-        const id = this.state.user?.id;
-        if (!id) return;
-        const file = this.el.avatarUpload.files?.[0];
-        if (file) {
-          const fd = new FormData();
-          fd.append("avatar", file);
-          const r = await fetch(`${api.base}/api/users/${id}/avatar`, { method: "POST", headers: { Authorization: `Bearer ${api.token}` }, body: fd });
-          if (!r.ok) throw new Error(await r.text());
-          const j = await r.json();
-          if (j.avatar_url) this.state.user.avatar_url = j.avatar_url;
-        }
-        await api.post(`/api/users/${id}/profile`, { username: this.el.profileUsername.value.trim(), notifications: !!this.el.profileNotifications.checked });
-        this.el.profileDialog.close();
-        this.updateHeaderAuth();
-      } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-    });
-    if (this.el.enable2faBtn) {
-      this.el.enable2faBtn.addEventListener("click", async () => {
-        try {
-          if (!this.state.user) return;
-          const r = await api.post("/api/auth/2fa/setup", {});
-          this.el.twofaTitle.textContent = this.t("twofaSetupTitle");
-          this.el.twofaNote.textContent = this.t("twofaScanNote");
-          this.el.twofaSecret.textContent = `Secret: ${r.secret}`;
-          this.el.twofaUri.textContent = `URI: ${r.uri}`;
-          this.el.twofaCode.value = "";
-          this.el.twofaDialog.showModal();
-          this.el.twofaForm.onsubmit = async (e2) => {
-            e2.preventDefault();
-            try {
-              await api.post("/api/auth/2fa/activate", { code: this.el.twofaCode.value.trim() });
-              this.el.twofaDialog.close();
-              alert(this.t("twofaEnabledNote"));
-            } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-          };
-          this.el.twofaCancel.onclick = () => this.el.twofaDialog.close();
-        } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-      });
-    }
-    if (this.el.disable2faBtn) {
-      this.el.disable2faBtn.addEventListener("click", async () => {
-        try {
-          this.el.twofaTitle.textContent = this.t("disable2fa");
-          this.el.twofaNote.textContent = this.t("twofaRequired");
-          this.el.twofaSecret.textContent = "";
-          this.el.twofaUri.textContent = "";
-          this.el.twofaCode.value = "";
-          this.el.twofaDialog.showModal();
-          this.el.twofaForm.onsubmit = async (e2) => {
-            e2.preventDefault();
-            try {
-              await api.post("/api/auth/2fa/disable", { code: this.el.twofaCode.value.trim() });
-              this.el.twofaDialog.close();
-              alert("OK");
-            } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-          };
-          this.el.twofaCancel.onclick = () => this.el.twofaDialog.close();
-        } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-      });
-    }
-    if (this.el.logoutAllBtn) {
-      this.el.logoutAllBtn.addEventListener("click", async () => {
-        try {
-          await api.post("/api/auth/logout_all", {});
-        } catch {}
-        api.setToken("");
-        api.setRefreshToken("");
-        this.state.user = null;
-        this.updateHeaderAuth();
-        this.render();
-        this.el.profileDialog.close();
-      });
-    }
-    this.el.cancelLabel.addEventListener("click", (e) => { e.preventDefault(); this.el.categoryDialog.close(); });
-    this.el.cancelLabel2.addEventListener("click", (e) => { e.preventDefault(); this.el.threadDialog.close(); });
-    this.el.cancelLabel3.addEventListener("click", (e) => { e.preventDefault(); this.el.postDialog.close(); });
-    const forgotLink = document.createElement("button");
-    forgotLink.className = "ghost";
-    forgotLink.textContent = this.t("resetPassword");
-    forgotLink.addEventListener("click", () => this.el.resetDialog.showModal());
-    this.el.loginForm.appendChild(forgotLink);
-    this.el.resetCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.resetDialog.close(); });
-    this.el.performResetCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.performResetDialog.close(); });
-    this.el.logoutBtn.addEventListener("click", () => {
-      api.setToken("");
-      api.setRefreshToken("");
-      this.state.user = null;
-      this.updateHeaderAuth();
-      this.render();
-    });
-    this.el.loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      try {
-        if (!captcha.verify(this.el.loginCaptcha)) return;
-        const r = await api.post("/api/auth/login", { email: this.el.loginEmail.value.trim(), password: this.el.loginPassword.value, totp: (this.el.loginTotp?.value || "").trim() || undefined });
-        api.setToken(r.token);
-        if (r.refresh_token) api.setRefreshToken(r.refresh_token);
-        this.state.user = r.user;
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+        const totp = document.getElementById("loginTotp").value;
+        const res = await api.post("/api/auth/login", { email, password, totp });
+        api.setToken(res.token);
+        api.setRefreshToken(res.refresh_token);
         this.el.loginDialog.close();
-        this.updateHeaderAuth();
-        this.render();
-        if (this.state.loginReferrer) {
-          const u = this.state.loginReferrer;
-          this.state.loginReferrer = null;
-          window.location.href = u;
-          return;
-        }
-        if (r.require_twofa_prompt) {
-          try {
-            const setup = await api.post("/api/auth/2fa/setup", {});
-            this.el.twofaTitle.textContent = this.t("twofaSetupTitle");
-            this.el.twofaNote.textContent = this.t("twofaScanNote");
-            this.el.twofaSecret.textContent = `Secret: ${setup.secret}`;
-            this.el.twofaUri.textContent = `URI: ${setup.uri}`;
-            this.el.twofaCode.value = "";
-            this.el.twofaDialog.showModal();
-            const onCancel = async () => {
-              try { await api.post("/api/auth/2fa/skip", {}); } catch {}
-              this.el.twofaDialog.close();
-            };
-            this.el.twofaCancel.onclick = onCancel;
-            this.el.twofaForm.onsubmit = async (e2) => {
-              e2.preventDefault();
-              try {
-                await api.post("/api/auth/2fa/activate", { code: this.el.twofaCode.value.trim() });
-                this.el.twofaDialog.close();
-                alert(this.t("twofaEnabledNote"));
-              } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-            };
-          } catch {}
-        }
-      } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-    });
-    this.el.registerForm.addEventListener("submit", async (e) => {
+        this.restoreAuth();
+      } catch (err) { alert(err.message); }
+    };
+
+    this.el.registerForm.onsubmit = async (e) => {
       e.preventDefault();
       try {
-        if (!captcha.verify(this.el.registerCaptcha)) return;
-        const r = await api.post("/api/auth/register", {
-          email: this.el.registerEmail.value.trim(),
-          username: this.el.registerUsername.value.trim(),
-          password: this.el.registerPassword.value,
-          locale: this.state.lang
-        });
-        this.el.registerNote.textContent = (r && r.smtp_ready) ? this.t("registerNote") : this.t("smtpDisabledNote");
-      } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-    });
-    this.el.resetForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      try {
-        await api.post("/api/auth/reset/request", { email: this.el.resetEmail.value.trim() });
-        this.el.resetNote.textContent = this.t("registerNote");
-      } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-    });
-    this.el.performResetForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      try {
-        await api.post("/api/auth/reset/perform", { token: this.el.performResetToken.value.trim(), password: this.el.performResetPassword.value });
-        this.el.performResetDialog.close();
-        alert("OK");
-      } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
-    });
-    this.el.addCategoryBtn.addEventListener("click", () => this.el.categoryDialog.showModal());
-    this.el.categoryForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = this.el.categoryNameInput.value.trim();
+        const email = document.getElementById("registerEmail").value;
+        const username = document.getElementById("registerUsername").value;
+        const password = document.getElementById("registerPassword").value;
+        await api.post("/api/auth/register", { email, username, password });
+        alert(this.t("registerNote"));
+        this.el.registerDialog.close();
+      } catch (err) { alert(err.message); }
+    };
+
+    document.getElementById("backAdminClose").onclick = () => this.el["admin-modal-dialog"].close();
+    
+    document.getElementById("adminAddCategory").onclick = async () => {
+      const name = document.getElementById("adminCategoryName").value;
+      const parent_id = document.getElementById("adminCategoryParent").value || null;
       if (!name) return;
-      if (!this.state.user || this.state.user.role !== "admin") { alert(ui.t("adminOnly")); return }
-      store.addCategory(name).then(() => {
-        this.el.categoryNameInput.value = "";
-        this.el.categoryDialog.close();
-        this.renderCategories();
-      }).catch(err => alert(ui.t("apiError") + ": " + err.message));
-    });
-    this.el.backToCategories.addEventListener("click", () => {
-      this.state.current.categoryId = null;
-      this.show("categories");
-      this.renderCategories();
-    });
-    this.el.addThreadBtn.addEventListener("click", () => {
-      if (!this.state.user) { this.el.loginDialog.showModal(); return }
-      this.el.threadDialog.showModal();
-    });
-    this.el.threadForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const title = this.el.threadTitleInput.value.trim();
-      const content = this.el.threadContentInput.value.trim();
-      if (!title || !content) return;
-      store.addThread(this.state.current.categoryId, title, content)
-        .then(t => {
-          const tagsRaw = (this.el.threadTagsInput?.value || "").trim();
-          if (tagsRaw) {
-            const tags = tagsRaw.split(",").map(s => s.trim()).filter(Boolean);
-            api.post(`/api/threads/${t.id}/edit`, { tags }).catch(()=>{});
-          }
-          this.el.threadTitleInput.value = "";
-          this.el.threadContentInput.value = "";
-          if (this.el.threadTagsInput) this.el.threadTagsInput.value = "";
-          this.el.threadDialog.close();
-          this.renderThreads(this.state.current.categoryId);
-          this.openThread(t.id);
-        })
-        .catch(err => alert(ui.t("apiError") + ": " + err.message));
-    });
-    this.el.searchBtn.addEventListener("click", () => {
-      this.state.searchPage = 1;
-      this.renderThreads(this.state.current.categoryId);
-    });
-    this.el.threadsPrev.addEventListener("click", () => {
-      this.state.searchPage = Math.max(1, (this.state.searchPage || 1) - 1);
-      this.renderThreads(this.state.current.categoryId);
-    });
-    this.el.threadsNext.addEventListener("click", () => {
-      this.state.searchPage = (this.state.searchPage || 1) + 1;
-      this.renderThreads(this.state.current.categoryId);
-    });
-    this.el.backToThreads.addEventListener("click", () => {
-      this.state.current.threadId = null;
-      this.show("threads");
-      this.renderThreads(this.state.current.categoryId);
-    });
-    this.el.addPostBtn.addEventListener("click", () => {
-      if (!this.state.user) { this.el.loginDialog.showModal(); return }
-      this.el.postDialog.showModal();
-    });
-    const filesInput = document.getElementById("postFiles");
-    if (filesInput) {
-      filesInput.addEventListener("change", async () => {
-        const f = filesInput.files;
-        if (!f || !f.length) { store.pendingAttachments = []; return }
-        const fd = new FormData();
-        for (let i = 0; i < Math.min(4, f.length); i++) fd.append("files", f[i]);
-        const r = await fetch(`${api.base}/api/upload`, { method: "POST", headers: { Authorization: `Bearer ${api.token}` }, body: fd });
-        if (!r.ok) { alert(ui.t("apiError")); return }
-        const j = await r.json();
-        store.pendingAttachments = j.files;
-      });
-    }
-    this.el.postForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const content = this.el.postContentInput.value.trim();
-      if (!content) return;
-      store.addPost(this.state.current.threadId, content)
-        .then(() => {
-          this.el.postContentInput.value = "";
-          this.el.postDialog.close();
-          this.renderPosts(this.state.current.threadId);
-        })
-        .catch(err => alert(ui.t("apiError") + ": " + err.message));
-    });
-    this.el.postsPrev.addEventListener("click", () => {
-      this.state.postsPage = Math.max(1, (this.state.postsPage || 1) - 1);
-      this.renderPosts(this.state.current.threadId);
-    });
-    this.el.postsNext.addEventListener("click", () => {
-      this.state.postsPage = (this.state.postsPage || 1) + 1;
-      this.renderPosts(this.state.current.threadId);
-    });
-    this.el.adminBtn.addEventListener("click", () => {
-      if (this.state.user?.role !== "admin") return;
-      if (this.el.adminModalDialog) {
-        this.el.adminModalDialog.showModal();
-      } else {
-        this.show("admin");
-      }
-      this.refreshMeta();
+      try {
+        await store.addCategory(name, parent_id);
+        document.getElementById("adminCategoryName").value = "";
+        this.renderAdmin();
+      } catch (err) { alert(err.message); }
+    };
+  },
+  async renderAdmin() {
+    this.el["admin-modal-dialog"].showModal();
+    try {
+      const cats = await store.categories();
+      const users = await api.get("/api/admin/users");
+      
+      // Categories select
+      const sel = document.getElementById("adminCategoryParent");
+      sel.innerHTML = `<option value="">-- ${this.t("noParent")} --</option>` + 
+        cats.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+        
+      // Categories list
+      document.getElementById("adminCategoryList").innerHTML = cats.map(c => `
+        <li class="item">
+          <span>${c.name} ${c.parent_id ? `(-> ${cats.find(x => x.id === c.parent_id)?.name || "?"})` : ""}</span>
+          <button class="ghost" onclick="ui.deleteCategory('${c.id}')">${this.t("delete")}</button>
+        </li>
+      `).join("");
+
+      // Users list
+      document.getElementById("adminUserList").innerHTML = users.map(u => `
+        <li class="item">
+          <span>${u.username} (${u.role})</span>
+          <div>
+            ${u.banned ? `<button class="ghost" onclick="ui.unbanUser('${u.id}')">${this.t("unban")}</button>` : `<button class="ghost" onclick="ui.banUser('${u.id}')">${this.t("ban")}</button>`}
+          </div>
+        </li>
+      `).join("");
+    } catch (err) { console.error(err); }
+  },
+  async deleteCategory(id) {
+    if (!confirm(this.t("delete") + "?")) return;
+    try {
+      await api.post(`/api/categories/${id}/delete`, {});
       this.renderAdmin();
-    });
-    this.el.backAdminClose.addEventListener("click", () => {
-      if (this.el.adminModalDialog) {
-        this.el.adminModalDialog.close();
-      } else {
-        this.show("categories");
-      }
-    });
-    if (this.el.adminDiagSMTPBtn) {
-      this.el.adminDiagSMTPBtn.addEventListener("click", async () => {
-        try {
-          const r = await api.post("/api/diag/smtp", {});
-          this.el.adminMeta.textContent = `SMTP: OK • изпратено до ${r.sent_to}`;
-        } catch (err) {
-          this.el.adminMeta.textContent = `SMTP грешка: ${err.message}`;
-        }
-      });
-    }
-    if (this.el.loginResendBtn) {
-      this.el.loginResendBtn.addEventListener("click", async () => {
-        const email = this.el.loginEmail.value.trim();
-        if (!email) { alert(this.t("emailPh")); return }
-        this.el.loginResendBtn.disabled = true;
-        try {
-          await api.post("/api/auth/resend-confirm", { email });
-          if (this.el.loginNote) this.el.loginNote.textContent = this.t("resendConfirmSent");
-        } catch (err) {
-          if (this.el.loginNote) this.el.loginNote.textContent = `${this.t("apiError")}: ${err.message}`;
-        } finally {
-          this.el.loginResendBtn.disabled = false;
-        }
-      });
-    }
-    if (this.el.adminDiagDBBtn) {
-      this.el.adminDiagDBBtn.addEventListener("click", async () => {
-        try {
-          const r = await api.post("/api/diag/mysql", {});
-          if (r.ok && r.ready) {
-            this.el.adminMeta.textContent = `DB: OK • MySQL ${r.host}:${r.port}/${r.db}`;
-          } else if (r.error === "MySQL not ready") {
-             // If MySQL is not ready, we are likely running on JSON
-            this.el.adminMeta.textContent = `DB: JSON (Active) • MySQL Inactive`;
-          } else {
-            this.el.adminMeta.textContent = `DB: неактивна • ${r.error || "unknown"}`;
-          }
-        } catch (err) {
-          this.el.adminMeta.textContent = `DB грешка: ${err.message}`;
-        }
-      });
-    }
-    if (this.el.adminExportDBBtn) {
-      this.el.adminExportDBBtn.addEventListener("click", async () => {
-        try {
-          const url = api.base ? `${api.base}/api/db/export` : "/api/db/export";
-          const r = await fetch(url, { headers: api.token ? { Authorization: `Bearer ${api.token}` } : {} });
-          if (!r.ok) throw new Error(await r.text());
-          const db = await r.json();
-          const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = `prestige_forum_${new Date().toISOString().slice(0,19).replace(/[:T]/g,"-")}.json`;
-          a.click();
-          setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
-          this.el.adminMeta.textContent = "Export OK";
-        } catch (err) {
-          this.el.adminMeta.textContent = `${this.t("apiError")}: ${err.message || err}`;
-        }
-      });
-    }
-    if (this.el.adminImportDBBtn && this.el.adminImportFile) {
-      this.el.adminImportDBBtn.addEventListener("click", () => {
-        this.el.adminImportFile.value = "";
-        this.el.adminImportFile.click();
-      });
-      this.el.adminImportFile.addEventListener("change", async () => {
-        const f = this.el.adminImportFile.files?.[0];
-        if (!f) return;
-        try {
-          const txt = await f.text();
-          const db = JSON.parse(txt);
-          await api.post("/api/db/import", { db });
-          this.el.adminMeta.textContent = "Import OK";
-          this.renderAdmin();
-        } catch (err) {
-          this.el.adminMeta.textContent = `${this.t("apiError")}: ${err.message || err}`;
-        }
-      });
-    }
+    } catch (err) { alert(err.message); }
   },
-  applyThemeVars(vars) {
-    const root = document.documentElement;
-    if (vars.primary) root.style.setProperty("--primary", vars.primary);
-    if (vars.accent) root.style.setProperty("--accent", vars.accent);
-    if (vars.bg) root.style.setProperty("--bg", vars.bg);
-    if (vars.text) root.style.setProperty("--text", vars.text);
-    if (vars.border) root.style.setProperty("--border", vars.border);
+  async banUser(id) {
+    try {
+      await api.post(`/api/admin/users/${id}/ban`, { banned: true });
+      this.renderAdmin();
+    } catch (err) { alert(err.message); }
   },
-  saveThemeToStorage() {
-    const vars = {
-      primary: this.el.themePrimary ? this.el.themePrimary.value : "",
-      accent: this.el.themeAccent ? this.el.themeAccent.value : "",
-      bg: this.el.themeBg ? this.el.themeBg.value : "",
-      text: this.el.themeText ? this.el.themeText.value : "",
-      border: this.el.themeBorder ? this.el.themeBorder.value : ""
-    };
-    try { localStorage.setItem("theme_vars", JSON.stringify(vars)); } catch {}
-  },
-  loadThemeFromStorage() {
-    let vars = {};
-    try { vars = JSON.parse(localStorage.getItem("theme_vars") || "{}") || {}; } catch {}
-    const cs = getComputedStyle(document.documentElement);
-    const defaults = {
-      primary: cs.getPropertyValue("--primary").trim(),
-      accent: cs.getPropertyValue("--accent").trim(),
-      bg: cs.getPropertyValue("--bg").trim(),
-      text: cs.getPropertyValue("--text").trim(),
-      border: cs.getPropertyValue("--border").trim()
-    };
-    const merged = { ...defaults, ...vars };
-    this.applyThemeVars(merged);
-    if (this.el.themePrimary) this.el.themePrimary.value = merged.primary;
-    if (this.el.themeAccent) this.el.themeAccent.value = merged.accent;
-    if (this.el.themeBg) this.el.themeBg.value = merged.bg;
-    if (this.el.themeText) this.el.themeText.value = merged.text;
-    if (this.el.themeBorder) this.el.themeBorder.value = merged.border;
+  async unbanUser(id) {
+    try {
+      await api.post(`/api/admin/users/${id}/ban`, { banned: false });
+      this.renderAdmin();
+    } catch (err) { alert(err.message); }
   },
   applyLang() {
-    this.el.title.textContent = this.t("title");
-    this.el.subtitle.textContent = this.t("subtitle");
-    this.el.langLabel.textContent = this.t("language");
-    this.el.themeToggle.textContent = this.state.theme === "dark" ? "☾" : "☼";
-    if (this.el.burgerBtn) this.el.burgerBtn.textContent = "☰";
-    this.el.loginBtn.textContent = this.t("login");
-    this.el.registerBtn.textContent = this.t("register");
-    this.el.logoutBtn.textContent = this.t("logout");
-    this.el.adminBtn.textContent = this.t("admin");
-    this.el.profileBtn.textContent = this.t("profile");
-    this.el.categoriesTitle.textContent = this.t("categories");
-    this.el.addCategoryBtn.textContent = this.t("addCategory");
-    this.el.categoryDialogTitle.textContent = this.t("newCategory");
-    this.el.cancelLabel.textContent = this.t("cancel");
-    this.el.createLabel.textContent = this.t("create");
-    this.el.threadsTitle.textContent = this.t("threads");
-    this.el.backToCategories.textContent = this.t("back");
-    this.el.addThreadBtn.textContent = this.t("addThread");
-    this.el.threadDialogTitle.textContent = this.t("newThread");
-    this.el.threadTitleInput.placeholder = this.t("threadTitlePh");
-    this.el.threadContentInput.placeholder = this.t("threadContentPh");
-    if (this.el.threadTagsInput) this.el.threadTagsInput.placeholder = this.t("tagsPh");
-    this.el.threadAuthorInput.placeholder = this.t("authorPh");
-    this.el.cancelLabel2.textContent = this.t("cancel");
-    this.el.publishLabel.textContent = this.t("publish");
-    this.el.postsTitle.textContent = this.t("posts");
-    this.el.backToThreads.textContent = this.t("back");
-    this.el.addPostBtn.textContent = this.t("newPost");
-    this.el.postDialogTitle.textContent = this.t("newPost");
-    this.el.postContentInput.placeholder = this.t("threadContentPh");
-    this.el.cancelLabel3.textContent = this.t("cancel");
-    this.el.replyLabel.textContent = this.t("reply");
-    this.el.footerText.textContent = this.t("footer");
-    const year = new Date().getFullYear();
-    const brand = this.t("title");
-    this.el.copyrightText.textContent = this.t("copyright").replace("{year}", year).replace("{brand}", brand);
-    this.el.loginTitle.textContent = this.t("loginTitle");
-    this.el.loginEmail.placeholder = this.t("emailPh");
-    this.el.loginPassword.placeholder = this.t("passwordPh");
-    if (this.el.loginTotp) this.el.loginTotp.placeholder = this.t("twofaCodePh");
-    this.el.loginCancel.textContent = this.t("cancel");
-    this.el.loginSubmit.textContent = this.t("login");
-    this.el.loginTitle.textContent = this.t("loginTitle");
-    if (this.el.loginResendBtn) this.el.loginResendBtn.textContent = this.t("resendConfirm");
-    this.el.registerTitle.textContent = this.t("registerTitle");
-    this.el.registerEmail.placeholder = this.t("emailPh");
-    this.el.registerUsername.placeholder = this.t("usernamePh");
-    this.el.registerPassword.placeholder = this.t("passwordPh");
-    this.el.registerCancel.textContent = this.t("cancel");
-    this.el.registerSubmit.textContent = this.t("register");
-    this.el.adminTitle.textContent = this.t("adminPanel");
-    this.el.adminCategoriesTitle.textContent = this.t("adminCategories");
-    this.el.adminAddCategory.textContent = this.t("add");
-    this.el.backAdminClose.textContent = this.t("close");
-    this.el.adminCategoryName.placeholder = this.t("categoryNamePh");
-    if (this.el.adminDiagSMTPBtn) this.el.adminDiagSMTPBtn.textContent = this.t("adminDiagSMTP");
-    if (this.el.adminDiagDBBtn) this.el.adminDiagDBBtn.textContent = this.t("adminDiagDB");
-    if (this.el.adminExportDBBtn) this.el.adminExportDBBtn.textContent = this.t("exportDB");
-    if (this.el.adminImportDBBtn) this.el.adminImportDBBtn.textContent = this.t("importDB");
-    this.el.resetTitle.textContent = this.t("resetPassword");
-    this.el.resetEmail.placeholder = this.t("emailPh");
-    this.el.resetCancel.textContent = this.t("cancel");
-    this.el.resetSubmit.textContent = this.t("send");
-    this.el.performResetTitle.textContent = this.t("changePassword");
-    this.el.performResetToken.placeholder = this.t("tokenPh");
-    this.el.performResetPassword.placeholder = this.t("newPasswordPh");
-    this.el.performResetCancel.textContent = this.t("cancel");
-    this.el.performResetSubmit.textContent = this.t("save");
-    this.el.searchInput.placeholder = this.t("searchPh");
-    this.el.searchBtn.textContent = this.t("search");
-    this.el.threadsPrev.textContent = this.t("prev");
-    this.el.threadsNext.textContent = this.t("next");
-    this.el.postsPrev.textContent = this.t("prev");
-    this.el.postsNext.textContent = this.t("next");
-    this.el.editThreadTitle.textContent = this.t("editThread");
-    if (this.el.editThreadTagsInput) this.el.editThreadTagsInput.placeholder = this.t("tagsEditPh");
-    this.el.editThreadCancel.textContent = this.t("cancel");
-    this.el.editThreadSubmit.textContent = this.t("save");
-    this.el.editPostTitle.textContent = this.t("editPost");
-    this.el.editPostCancel.textContent = this.t("cancel");
-    this.el.editPostSubmit.textContent = this.t("save");
-    this.el.adminUsersTitle.textContent = this.t("users");
-    this.el.profileTitle.textContent = this.t("profileTitle");
-    this.el.profileUsername.placeholder = this.t("usernamePh");
-    this.el.profileNotificationsLabel.textContent = this.t("notifications");
-    if (this.el.enable2faBtn) this.el.enable2faBtn.textContent = this.t("enable2fa");
-    if (this.el.disable2faBtn) this.el.disable2faBtn.textContent = this.t("disable2fa");
-    if (this.el.twofaTitle) this.el.twofaTitle.textContent = this.t("twofaSetupTitle");
-    if (this.el.twofaNote) this.el.twofaNote.textContent = this.t("twofaScanNote");
-    if (this.el.twofaCode) this.el.twofaCode.placeholder = this.t("twofaCodePh");
-    this.el.profileCancel.textContent = this.t("cancel");
-    this.el.saveProfile.textContent = this.t("save");
-    if (this.el.logoutAllBtn) this.el.logoutAllBtn.textContent = this.t("logoutAll");
-    if (this.el.latestPostsTitle) this.el.latestPostsTitle.textContent = this.t("latestPosts");
-    if (this.el.groupBtn) this.el.groupBtn.textContent = this.t("group");
-    if (this.el.supportBtn) this.el.supportBtn.textContent = this.t("support");
+    document.title = this.t("title");
+    if (this.el.title) this.el.title.textContent = this.t("title");
+    if (this.el.subtitle) this.el.subtitle.textContent = this.t("subtitle");
+    if (this.el.langLabel) this.el.langLabel.textContent = this.t("language");
     if (this.el.discordBtn) this.el.discordBtn.textContent = this.t("discord");
-    if (this.el.themeEditor) this.el.themeEditor.textContent = this.t("themeSettings");
-    if (this.el.themeDialogTitle) this.el.themeDialogTitle.textContent = this.t("themeSettings");
-    if (this.el.themePrimaryLabel) this.el.themePrimaryLabel.textContent = this.t("themePrimary");
-    if (this.el.themeAccentLabel) this.el.themeAccentLabel.textContent = this.t("themeAccent");
-    if (this.el.themeBgLabel) this.el.themeBgLabel.textContent = this.t("themeBg");
-    if (this.el.themeTextLabel) this.el.themeTextLabel.textContent = this.t("themeText");
-    if (this.el.themeBorderLabel) this.el.themeBorderLabel.textContent = this.t("themeBorder");
-    if (this.el.themeCancel) this.el.themeCancel.textContent = this.t("cancel");
-    if (this.el.themeSave) this.el.themeSave.textContent = this.t("save");
-    if (this.el.themePresetsLabel) this.el.themePresetsLabel.textContent = this.t("themePresets");
-    if (this.el.presetDark) this.el.presetDark.textContent = this.t("presetDark");
-    if (this.el.presetLight) this.el.presetLight.textContent = this.t("presetLight");
-    if (this.el.presetOcean) this.el.presetOcean.textContent = this.t("presetOcean");
-    if (this.el.presetSolar) this.el.presetSolar.textContent = this.t("presetSolar");
-    const opts = this.el.lang.querySelectorAll("option");
-    opts.forEach(o => {
-      if (o.value === "ru") o.textContent = "Русский";
-      if (o.value === "kk") o.textContent = "Қазақша";
-      if (o.value === "uk") o.textContent = "Українська";
-      if (o.value === "bg") o.textContent = "Български";
-      if (o.value === "en") o.textContent = "English";
+    if (this.el.loginBtn) this.el.loginBtn.textContent = this.t("login");
+    if (this.el.registerBtn) this.el.registerBtn.textContent = this.t("register");
+    if (this.el.logoutBtn) this.el.logoutBtn.textContent = this.t("logout");
+    if (this.el.profileBtn) this.el.profileBtn.textContent = this.t("profile");
+    if (this.el.adminBtn) this.el.adminBtn.textContent = this.t("admin");
+    if (this.el.categoriesTitle) this.el.categoriesTitle.textContent = this.t("categories");
+    if (this.el.threadsTitle) this.el.threadsTitle.textContent = this.t("threads");
+    if (this.el.postsTitle) this.el.postsTitle.textContent = this.t("posts");
+    if (this.el.footerText) this.el.footerText.textContent = this.t("footer");
+    if (this.el.copyrightText) this.el.copyrightText.textContent = this.t("copyright").replace("{year}", new Date().getFullYear()).replace("{brand}", "Prestige RP");
+    
+    // Inputs placeholders
+    const placeholders = {
+      "searchInput": "searchPh",
+      "loginEmail": "emailPh",
+      "loginPassword": "passwordPh",
+      "registerEmail": "emailPh",
+      "registerUsername": "usernamePh",
+      "registerPassword": "passwordPh"
+    };
+    for (const [id, key] of Object.entries(placeholders)) {
+      const el = document.getElementById(id);
+      if (el) el.placeholder = this.t(key);
+    }
+  },
+  async renderCategories() {
+    this.showView("view-categories");
+    this.state.current.categoryId = null;
+    try {
+      const cats = await store.categories();
+      const tree = buildCategoryTree(cats);
+      this.el.categoryList.innerHTML = tree.map(c => this.tmplCategory(c)).join("");
+    } catch (err) { console.error(err); }
+  },
+  tmplCategory(c) {
+    return `
+      <li class="item" onclick="ui.renderThreads('${c.id}')">
+        <div class="item-main">
+          <div class="item-title">${c.name}</div>
+          <div class="item-sub">${c.threads_count || 0} ${this.t("threadsCount")}</div>
+        </div>
+        ${c.children && c.children.length ? `<div class="badge">${c.children.length} ${this.t("subforumsCount")}</div>` : ""}
+      </li>
+    `;
+  },
+  async renderThreads(categoryId) {
+    this.showView("view-threads");
+    this.state.current.categoryId = categoryId;
+    this.el.threadList.innerHTML = `<div class="loader"></div>`;
+    try {
+      const threads = await store.threadsByCategory(categoryId);
+      const cats = await store.categories();
+      const currentCat = cats.find(c => c.id === categoryId);
+      const subcats = cats.filter(c => c.parent_id === categoryId);
+      
+      // Breadcrumbs
+      this.el.threadBreadcrumbs.textContent = currentCat ? currentCat.name : "";
+      
+      // Subforums vertical list
+      if (subcats.length) {
+        this.el.subCategorySidebar.classList.remove("hidden");
+        this.el.subCategoryList.innerHTML = subcats.map(s => `
+          <li class="item" onclick="ui.renderThreads('${s.id}')">
+            <div class="item-title">${s.name}</div>
+          </li>
+        `).join("");
+      } else {
+        this.el.subCategorySidebar.classList.add("hidden");
+      }
+      
+      this.el.threadList.innerHTML = threads.length ? threads.map(t => this.tmplThread(t)).join("") : `<div class="empty">${this.t("empty")}</div>`;
+    } catch (err) { this.el.threadList.innerHTML = `<div class="error">${err.message}</div>`; }
+  },
+  tmplThread(t) {
+    return `
+      <li class="item" onclick="ui.renderPosts('${t.id}')">
+        <div class="item-main">
+          <div class="item-title">${t.pinned ? `<span class="badge primary">${this.t("important")}</span> ` : ""}${t.title}</div>
+          <div class="item-sub">${this.t("by")} ${t.author_username || "User"} • ${new Date(t.created_at).toLocaleDateString()}</div>
+        </div>
+        <div class="meta">${t.posts_count} ${this.t("postsCount")}</div>
+      </li>
+    `;
+  },
+  async renderPosts(threadId) {
+    this.showView("view-posts");
+    this.state.current.threadId = threadId;
+    try {
+      const posts = await store.postsByThread(threadId);
+      this.el.postList.innerHTML = posts.map(p => this.tmplPost(p)).join("");
+    } catch (err) { console.error(err); }
+  },
+  tmplPost(p) {
+    return `
+      <li class="post">
+        <div class="post-header">
+          <img src="${p.author_avatar || "/default-avatar.png"}" class="avatar">
+          <div class="post-info">
+            <div class="post-author">${p.author_username}</div>
+            <div class="post-date">${new Date(p.created_at).toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="post-content">${p.content}</div>
+      </li>
+    `;
+  },
+  showView(id) {
+    ["view-categories", "view-threads", "view-posts"].forEach(v => {
+      this.el[v].classList.add("hidden");
     });
-    this.updateDbBadge();
+    this.el[id].classList.remove("hidden");
+    window.scrollTo(0, 0);
+  },
+  refreshCurrentView() {
+    if (this.state.current.threadId) this.renderPosts(this.state.current.threadId);
+    else if (this.state.current.categoryId) this.renderThreads(this.state.current.categoryId);
+    else this.renderCategories();
   },
   async restoreAuth() {
-    if (!api.token) { this.updateHeaderAuth(); return }
+    if (!api.token) return;
     try {
-      const me = await api.get("/api/me");
-      this.state.user = me;
-    } catch {
-      api.setToken("");
-      api.setRefreshToken("");
-      this.state.user = null;
-    }
-    this.updateHeaderAuth();
+      const user = await api.get("/api/auth/me");
+      this.state.user = user;
+      this.el.loginBtn.classList.add("hidden");
+      this.el.registerBtn.classList.add("hidden");
+      this.el.logoutBtn.classList.remove("hidden");
+      this.el.profileBtn.classList.remove("hidden");
+      this.el.userBadge.textContent = user.username;
+      this.el.userBadge.style.display = "inline-block";
+      if (user.role === "admin") this.el.adminBtn.classList.remove("hidden");
+    } catch { this.logout(); }
   },
-  updateHeaderAuth() {
-    const logged = !!this.state.user;
-    this.el.loginBtn.style.display = logged ? "none" : "";
-    this.el.registerBtn.style.display = logged ? "none" : "";
-    this.el.logoutBtn.style.display = logged ? "" : "none";
-    this.el.userBadge.style.display = logged ? "" : "none";
-    if (this.el.headerAvatar) {
-      this.el.headerAvatar.style.display = logged ? "" : "none";
-      if (logged) {
-        const src = this.avatarUrlOrFallback(this.state.user);
-        if (src) this.el.headerAvatar.src = src;
-        this.el.headerAvatar.alt = this.state.user.username || "profile";
-        this.el.headerAvatar.title = this.state.user.username || "";
-        this.el.headerAvatar.style.width = "40px";
-        this.el.headerAvatar.style.height = "40px";
-        this.el.headerAvatar.style.borderRadius = "50%";
-        this.el.headerAvatar.style.objectFit = "cover";
-        this.el.headerAvatar.style.display = "";
-      }
-    }
-    this.el.adminBtn.style.display = logged && this.state.user.role === "admin" ? "" : "none";
-    this.el.profileBtn.style.display = logged ? "" : "none";
-    this.el.userBadge.textContent = logged ? `${this.state.user.username} • ${this.state.user.role}` : "";
+  logout() {
+    api.setToken("");
+    api.setRefreshToken("");
+    location.reload();
   },
-  avatarUrlOrFallback(user) {
-    if (user && user.avatar_url) return user.avatar_url;
-    const name = (user && user.username) ? String(user.username).trim() : "";
-    const ch = (name && name[0]) ? name[0].toUpperCase() : "?";
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${getComputedStyle(document.documentElement).getPropertyValue("--primary").trim() || "#7c3aed"}'/><stop offset='1' stop-color='${getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#a855f7"}'/></linearGradient></defs><rect width='100%' height='100%' rx='32' fill='url(#g)'/><text x='50%' y='55%' text-anchor='middle' font-size='32' font-family='Inter, system-ui, sans-serif' fill='white'>${ch}</text></svg>`;
-    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  toggleTheme() {
+    this.state.theme = this.state.theme === "dark" ? "light" : "dark";
+    document.body.className = this.state.theme;
+    localStorage.setItem("theme", this.state.theme);
   },
-  async refreshMeta() {
-    try {
-      const m = await api.get("/api/meta");
-      this.state.meta = m;
-      this.updateDbBadge();
-      if (this.el.registerNote) {
-        this.el.registerNote.textContent = m.smtp_ready ? this.t("registerNote") : this.t("smtpDisabledNote");
-      }
-      if (this.el.viewAdmin && !this.el.viewAdmin.classList.contains("hidden")) {
-        const label = this.t("dbLabel");
-        const mysql = this.t("dbMySQL");
-        const json = this.t("dbJSON");
-        const jsonFb = this.t("dbJSONFallback");
-        const txt = m.mysql_ready ? `${label}: ${mysql} • ${m.mysql.host}:${m.mysql.port}/${m.mysql.db}` : (m.mode === "json_fallback" ? `${label}: ${jsonFb}` : `${label}: ${json}`);
-        this.el.adminMeta.textContent = txt;
-      }
-    } catch {}
-  },
-  updateDbBadge() {
-    const m = this.state.meta;
-    if (!this.el.dbBadge) return;
-    if (m && m.mysql_ready && m.mode === "mysql") {
-      this.el.dbBadge.textContent = `${this.t("dbLabel")}: ${this.t("dbMySQL")}`;
-      this.el.dbBadge.className = "badge badge-success";
-      this.el.dbBadge.style.display = "";
-      this.el.dbBadge.title = m.version || "";
-    } else if (m) {
-      this.el.dbBadge.textContent = `${this.t("dbLabel")}: ${this.t("dbJSON")}`;
-      this.el.dbBadge.className = "badge badge-warning";
-      this.el.dbBadge.style.display = "";
-      this.el.dbBadge.title = m.version || "";
-    } else {
-      this.el.dbBadge.textContent = "";
-      this.el.dbBadge.style.display = "none";
-    }
+  loadTheme() {
+    const saved = localStorage.getItem("theme") || "dark";
+    this.state.theme = saved;
+    document.body.className = saved;
   },
   connectWs() {
-    try {
-      const base = api.base || `${window.location.protocol}//${window.location.host}`;
-      const wsUrl = base.replace(/^http:/, "ws:").replace(/^https:/, "wss:");
-      const url = `${wsUrl.replace(/\/$/, "")}`;
-      this.ws?.close?.();
-      this.ws = new WebSocket(url);
-      this.ws.onmessage = (ev) => {
-        try {
-          const msg = JSON.parse(ev.data);
-          if (msg && msg.type === "new_post" && msg.thread) {
-            const title = msg.thread.title || "";
-            const txt = (this.t("newPostInThread") || "New post").replace("{title}", title);
-            if (this.el.searchMeta) {
-              this.el.searchMeta.textContent = txt;
-              setTimeout(() => { if (this.el.searchMeta.textContent === txt) this.el.searchMeta.textContent = ""; }, 5000);
-            }
-            if (this.state.current?.threadId && msg.thread.id === this.state.current.threadId) {
-              // Refresh posts if currently viewing the thread
-              this.renderPosts(this.state.current.threadId);
-            }
-          }
-        } catch {}
-      };
-      this.ws.onclose = () => {
-        setTimeout(() => this.connectWs(), 3000);
-      };
-    } catch {}
-  },
-  show(view) {
-    this.el.viewCategories.classList.toggle("hidden", view !== "categories");
-    this.el.viewThreads.classList.toggle("hidden", view !== "threads");
-    this.el.viewPosts.classList.toggle("hidden", view !== "posts");
-    this.el.viewAdmin.classList.toggle("hidden", view !== "admin");
-  },
-  render() {
-    if (!this.el.viewCategories.classList.contains("hidden")) this.renderCategories();
-    else if (!this.el.viewThreads.classList.contains("hidden")) this.renderThreads(this.state.current.categoryId);
-    else if (!this.el.viewPosts.classList.contains("hidden")) this.renderPosts(this.state.current.threadId);
-    else if (!this.el.viewAdmin.classList.contains("hidden")) this.renderAdmin();
-  },
-  renderCategories() {
-    const ul = this.el.categoryList;
-    ul.innerHTML = "";
-    store.categories().then(categories => {
-      if (!categories.length) {
-        const li = document.createElement("li");
-        li.textContent = this.t("empty");
-        ul.appendChild(li);
-        return;
-      }
-      const tree = buildCategoryTree(categories);
-      const renderNode = (nodes, container) => {
-        nodes.forEach(c => {
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <div style="display:flex; align-items:center; gap:16px; width:100%">
-              <div style="background:rgba(124, 58, 237, 0.1); padding:10px; border-radius:10px; color:var(--primary); font-size:20px">📁</div>
-              <div style="flex:1">
-                <div class="item-title" style="font-size:16px; margin-bottom:2px">${escapeHtml(c.name)}</div>
-                <div class="item-sub">${c.children?.length || 0} ${this.t("subforumsCount")}</div>
-              </div>
-              <div class="inline-actions">
-                <button class="ghost">${this.t("threads")}</button>
-              </div>
-            </div>
-          `;
-          
-          li.onclick = () => {
-            this.state.current.categoryId = c.id;
-            this.show("threads");
-            this.renderThreads(c.id);
-          };
-
-          container.appendChild(li);
-        });
-      };
-      renderNode(tree, ul);
-      this.renderLatestPosts();
-    }).catch(err => {
-      const li = document.createElement("li");
-      li.textContent = this.t("apiError");
-      ul.appendChild(li);
-    });
-  },
-  renderLatestPosts() {
-    const ul = this.el.latestPostsList;
-    if (!ul) return;
-    ul.innerHTML = "";
-    api.get("/api/latest_posts?size=10").then(items => {
-      if (!items.length) {
-        const li = document.createElement("li");
-        li.textContent = this.t("empty");
-        ul.appendChild(li);
-        return;
-      }
-      items.forEach(p => {
-        const li = document.createElement("li");
-        const author = escapeHtml(p.author_username || "unknown");
-        const title = escapeHtml(p.thread_title || "");
-        li.innerHTML = `<div class="item-title">${title}</div><div class="item-sub">${this.t("by")} ${author}</div>`;
-        li.onclick = () => {
-          if (p.thread_id) {
-            this.state.current.categoryId = p.category_id || null;
-            this.show("posts");
-            this.openThread?.(p.thread_id);
-          }
-        };
-        ul.appendChild(li);
-      });
-    }).catch(()=>{});
-  },
-  async renderBreadcrumbs(categoryId) {
-    if (!this.el.threadBreadcrumbs) return;
-    this.el.threadBreadcrumbs.innerHTML = "";
-    if (!categoryId) return;
-
-    try {
-      const categories = await store.categories();
-      const trail = [];
-      let current = categories.find(c => c.id === categoryId);
-      while (current) {
-        trail.unshift(current);
-        if (!current.parent_id) break;
-        current = categories.find(c => c.id === current.parent_id);
-      }
-
-      const home = document.createElement("span");
-      home.className = "breadcrumb-item";
-      home.textContent = this.t("categories");
-      home.style.cursor = "pointer";
-      home.style.textDecoration = "underline";
-      home.onclick = () => {
-        this.show("categories");
-        this.renderCategories();
-      };
-      this.el.threadBreadcrumbs.appendChild(home);
-
-      const sep = document.createElement("span");
-      sep.textContent = " / ";
-      sep.style.margin = "0 8px";
-      this.el.threadBreadcrumbs.appendChild(sep);
-
-      trail.forEach((c, index) => {
-        const span = document.createElement("span");
-        span.className = "breadcrumb-item";
-        span.textContent = c.name;
-        if (index < trail.length - 1) {
-          span.style.cursor = "pointer";
-          span.style.textDecoration = "underline";
-          span.onclick = () => {
-            this.renderThreads(c.id);
-          };
-        } else {
-          span.style.fontWeight = "bold";
-        }
-        this.el.threadBreadcrumbs.appendChild(span);
-
-        if (index < trail.length - 1) {
-          const s = document.createElement("span");
-          s.textContent = " / ";
-          s.style.margin = "0 8px";
-          this.el.threadBreadcrumbs.appendChild(s);
-        }
-      });
-    } catch (e) { console.error(e); }
-  },
-  async renderSubcategories(categoryId) {
-    if (!this.el.subCategoryList) return;
-    this.el.subCategoryList.innerHTML = "";
-    if (this.el.subCategorySidebar) this.el.subCategorySidebar.style.display = "none";
-    if (!categoryId) return;
-
-    try {
-      const container = this.el.subCategorySidebar ? this.el.subCategorySidebar.parentElement : null;
-      const forumMain = container ? container.querySelector(".forum-main") : null;
-      const categories = await store.categories();
-      const children = categories.filter(c => c.parent_id === categoryId);
-      const inlineUlId = "inlineSubCategoryList";
-      const existingInline = forumMain ? forumMain.querySelector(`#${inlineUlId}`) : null;
-      if (children.length === 0) {
-        if (existingInline) existingInline.remove();
-        return;
-      }
-
-      // Ensure inline subcategory list above threads, hide sidebar
-      if (forumMain) {
-        const inline = existingInline || document.createElement("ul");
-        inline.id = inlineUlId;
-        inline.className = "list";
-        if (!existingInline) {
-          forumMain.insertBefore(inline, this.el.threadList);
-        }
-        inline.innerHTML = "";
-        children.forEach(c => {
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <div style="display:flex; align-items:center; gap:12px; width:100%">
-              <div style="color:var(--primary); font-size:16px">↳</div>
-              <div class="item-title" style="font-weight:600; flex:1">${escapeHtml(c.name)}</div>
-              <div class="item-sub">${this.t("threads")}</div>
-            </div>
-          `;
-          li.style.cursor = "pointer";
-          li.onclick = () => {
-            this.renderThreads(c.id);
-          };
-          inline.appendChild(li);
-        });
-      }
-      if (this.el.subCategorySidebar) this.el.subCategorySidebar.style.display = "none";
-    } catch (e) { console.error(e); }
-  },
-  renderThreads(categoryId) {
-    this.renderBreadcrumbs(categoryId);
-    this.renderSubcategories(categoryId);
-    const ul = this.el.threadList;
-    ul.innerHTML = "";
-    const q = this.el.searchInput.value.trim();
-    const page = this.state.searchPage || 1;
-    const catParam = categoryId ? encodeURIComponent(categoryId) : "";
-    api.get(`/api/search/threads?q=${encodeURIComponent(q)}&categoryId=${catParam}&page=${page}&size=10`)
-      .then(res => {
-        const list = res.items;
-        this.el.searchMeta.textContent = `${res.page}/${res.pages} • ${res.total}`;
-        if (!list.length) {
-          const li = document.createElement("li");
-          li.textContent = this.t("empty");
-          ul.appendChild(li);
-          return;
-        }
-        list.forEach(t => {
-          const li = document.createElement("li");
-          const tags = (t.tags || []).map(x => `<span class="tag-chip" style="font-size:10px; background:rgba(124,58,237,0.1); color:var(--primary); padding:2px 6px; border-radius:4px; margin-left:4px">#${escapeHtml(x)}</span>`).join("");
-          const avatarSrc = this.avatarUrlOrFallback({ username: t.author_username, avatar_url: t.author_avatar });
-          const role = t.author_role || "user";
-          const roleClass = role === "admin" ? "avatar-admin" : (role === "moderator" ? "avatar-mod" : "");
-          const pinnedIcon = t.pinned ? `<span style="margin-right:6px" title="${this.t("pinned") || "Pinned"}">📌</span>` : "";
-          const lockedIcon = t.locked ? `<span style="margin-right:6px" title="${this.t("locked") || "Locked"}">🔒</span>` : "";
-
-          li.innerHTML = `
-            <div style="display:flex; align-items:center; gap:16px; width:100%">
-              <div style="position:relative; flex-shrink:0">
-                <img src="${avatarSrc}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--border)">
-                ${role === "admin" ? '<div class="avatar-badge-icon admin" style="position:absolute; bottom:-2px; right:-2px; background:var(--danger); color:white; width:16px; height:16px; border-radius:50%; font-size:9px; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg2)">A</div>' : (role === "moderator" ? '<div class="avatar-badge-icon mod" style="position:absolute; bottom:-2px; right:-2px; background:var(--success); color:white; width:16px; height:16px; border-radius:50%; font-size:9px; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg2)">M</div>' : '')}
-              </div>
-              <div style="flex:1; min-width:0">
-                <div class="item-title" style="font-size:15px; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap">
-                  ${pinnedIcon}${lockedIcon}${escapeHtml(t.title)}${tags}
-                </div>
-                <div class="item-sub" style="display:flex; align-items:center; gap:8px">
-                  <span style="color:var(--primary); font-weight:600">${escapeHtml(t.author_username || "unknown")}</span>
-                  <span>•</span>
-                  <span>${t.posts_count} ${this.t("postsCount")}</span>
-                </div>
-              </div>
-              <div class="inline-actions" id="actions-${t.id}">
-              </div>
-            </div>
-          `;
-          
-          const actionsContainer = li.querySelector(`#actions-${t.id}`);
-          const openBtn = document.createElement("button");
-          openBtn.className = "ghost";
-          openBtn.textContent = this.t("posts");
-          openBtn.addEventListener("click", (e) => { e.stopPropagation(); this.openThread(t.id); });
-          actionsContainer.appendChild(openBtn);
-
-          if (this.state.user && (this.state.user.role === "admin" || this.state.user.role === "moderator")) {
-            const lockBtn = document.createElement("button");
-            lockBtn.className = "ghost";
-            lockBtn.textContent = t.locked ? this.t("unlock") : this.t("lock");
-            lockBtn.onclick = (e) => { e.stopPropagation(); api.post(`/api/threads/${t.id}/lock`, { locked: !t.locked }).then(()=>this.renderThreads(categoryId)); };
-            
-            const pinBtn = document.createElement("button");
-            pinBtn.className = "ghost";
-            pinBtn.textContent = t.pinned ? this.t("unpin") : this.t("pin");
-            pinBtn.onclick = (e) => { e.stopPropagation(); api.post(`/api/threads/${t.id}/pin`, { pinned: !t.pinned }).then(()=>this.renderThreads(categoryId)); };
-            
-            actionsContainer.appendChild(lockBtn);
-            actionsContainer.appendChild(pinBtn);
-          }
-
-          li.onclick = () => this.openThread(t.id);
-          ul.appendChild(li);
-        });
-      });
-  },
-  openThread(threadId) {
-    this.state.current.threadId = threadId;
-    this.show("posts");
-    this.renderPosts(threadId);
-  },
-  renderPosts(threadId) {
-    const ul = this.el.postList;
-    ul.innerHTML = "";
-    api.get(`/api/threads/${threadId}/meta`).then(meta => {
-      if (this.el.threadMeta) this.el.threadMeta.textContent = `${escapeHtml(meta.category_name || "")} > ${escapeHtml(meta.title || "")} • ${this.t("views")}: ${meta.views || 0}`;
-    }).catch(()=>{});
-    const page = this.state.postsPage || 1;
-    api.get(`/api/threads/${threadId}/posts_paginated?page=${page}&size=10`).then(res => {
-      const list = res.items;
-      if (!list.length) {
-        const li = document.createElement("li");
-        li.textContent = this.t("empty");
-        ul.appendChild(li);
-        return;
-      }
-      list.forEach(p => {
-        const li = document.createElement("li");
-        li.style.display = "flex";
-        li.style.flexDirection = "column";
-        li.style.gap = "16px";
-        li.style.padding = "24px";
-        li.style.background = "var(--bg-alt)";
-        li.style.borderRadius = "var(--radius)";
-        li.style.border = "1px solid var(--border)";
-        li.style.marginBottom = "16px";
-
-        const date = new Date(p.created_at).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
-        const avatarSrc = this.avatarUrlOrFallback({ username: p.author_username, avatar_url: p.author_avatar });
-        const role = p.author_role || "user";
-        const roleClass = role === "admin" ? "avatar-admin" : (role === "moderator" ? "avatar-mod" : "");
-        const roleBadge = role === "admin" ? `<span class="badge badge-error">ADMIN</span>` : (role === "moderator" ? `<span class="badge badge-warning">MOD</span>` : "");
-        
-        li.innerHTML = `
-          <div style="display:flex; align-items:center; gap:16px;">
-            <div style="position:relative; flex-shrink:0">
-              <img src="${avatarSrc}" style="width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--border)">
-              ${role === "admin" ? '<div class="avatar-badge-icon admin" style="position:absolute; bottom:-2px; right:-2px; background:var(--danger); color:white; width:18px; height:18px; border-radius:50%; font-size:10px; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg2)">A</div>' : (role === "moderator" ? '<div class="avatar-badge-icon mod" style="position:absolute; bottom:-2px; right:-2px; background:var(--success); color:white; width:18px; height:18px; border-radius:50%; font-size:10px; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg2)">M</div>' : '')}
-            </div>
-            <div style="flex:1">
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px">
-                <span style="font-weight:700; font-size:16px">${escapeHtml(p.author_username || "unknown")}</span>
-                ${roleBadge}
-              </div>
-              <div style="color:var(--muted); font-size:12px">${date}</div>
-            </div>
-            <div class="inline-actions" id="actions-post-${p.id}"></div>
-          </div>
-          <div style="font-size:15px; line-height:1.6; color:var(--text); white-space:pre-wrap">${renderMarkdownSafe(p.content)}</div>
-          <div class="attachments" id="attachments-${p.id}"></div>
-        `;
-
-        const actionsContainer = li.querySelector(`#actions-post-${p.id}`);
-        
-        const likeBtn = document.createElement("button");
-        likeBtn.className = "ghost";
-        const likeCount = (p.reactions || []).filter(r => r.type === "like").length;
-        likeBtn.innerHTML = `❤️ <span style="margin-left:4px">${likeCount}</span>`;
-        likeBtn.onclick = () => api.post(`/api/posts/${p.id}/react`, { type: "like" }).then(r => { likeBtn.querySelector("span").textContent = r.count; });
-        actionsContainer.appendChild(likeBtn);
-
-        const quoteBtn = document.createElement("button");
-        quoteBtn.className = "ghost";
-        quoteBtn.textContent = this.t("quote");
-        quoteBtn.onclick = () => {
-          if (!this.state.user) { this.el.loginDialog.showModal(); return }
-          this.el.postDialog.showModal();
-          this.el.postContentInput.value = `> ${p.author_username}\n\n${p.content}\n\n`;
-        };
-        actionsContainer.appendChild(quoteBtn);
-
-        if (this.state.user && (this.state.user.role === "admin" || this.state.user.role === "moderator" || this.state.user.username === p.author_username)) {
-          const editBtn = document.createElement("button");
-          editBtn.className = "ghost";
-          editBtn.textContent = this.t("edit");
-          editBtn.onclick = () => {
-            this.el.editPostContentInput.value = p.content;
-            this.el.editPostDialog.showModal();
-            this.el.editPostForm.onsubmit = (e) => {
-              e.preventDefault();
-              api.post(`/api/posts/${p.id}/edit`, { content: this.el.editPostContentInput.value })
-                .then(() => { this.el.editPostDialog.close(); this.renderPosts(threadId) });
-            };
-          };
-          actionsContainer.appendChild(editBtn);
-        }
-
-        const attContainer = li.querySelector(`#attachments-${p.id}`);
-        (p.attachments || []).forEach(a => {
-          const img = document.createElement("img");
-          img.src = a.url;
-          img.style.maxWidth = "100%";
-          img.style.borderRadius = "var(--radius)";
-          img.style.marginTop = "12px";
-          attContainer.appendChild(img);
-        });
-
-        ul.appendChild(li);
-      });
-    });
-  },
-  renderAdmin() {
-    this.el.adminCategoryList.innerHTML = "";
-    this.refreshMeta();
-    store.categories().then(categories => {
-      const tree = buildCategoryTree(categories);
-      
-      // Populate parent selects
-      const noParentText = "-- " + (this.t("noParent") || "Без родител") + " --";
-      this.el.adminCategoryParent.innerHTML = "";
-      this.el.editCategoryParentInput.innerHTML = "";
-      
-      const defaultOpt1 = document.createElement("option");
-      defaultOpt1.value = "";
-      defaultOpt1.textContent = noParentText;
-      this.el.adminCategoryParent.appendChild(defaultOpt1);
-      
-      const defaultOpt2 = document.createElement("option");
-      defaultOpt2.value = "";
-      defaultOpt2.textContent = noParentText;
-      this.el.editCategoryParentInput.appendChild(defaultOpt2);
-
-      const addTreeOptions = (nodes, prefix = "") => {
-        nodes.forEach(c => {
-          const opt = document.createElement("option");
-          opt.value = c.id;
-          opt.textContent = prefix + c.name;
-          this.el.adminCategoryParent.appendChild(opt.cloneNode(true));
-          this.el.editCategoryParentInput.appendChild(opt);
-          if (c.children && c.children.length > 0) addTreeOptions(c.children, prefix + "-- ");
-        });
-      };
-      addTreeOptions(tree);
-
-      const renderNode = (nodes, container, depth = 0) => {
-        nodes.forEach(c => {
-          const li = document.createElement("li");
-          li.style.marginLeft = `${depth * 20}px`;
-          li.style.padding = "12px 16px";
-          li.style.borderLeft = depth > 0 ? "2px solid var(--border)" : "none";
-          li.style.background = depth % 2 === 0 ? "rgba(124,58,237,0.02)" : "transparent";
-
-          li.innerHTML = `
-            <div style="display:flex; align-items:center; gap:12px; width:100%">
-              <div style="flex:1">
-                <div class="item-title" style="font-weight:600">${depth > 0 ? "↳ " : ""}${escapeHtml(c.name)}${c.locked ? " 🔒" : ""}</div>
-              </div>
-              <div class="inline-actions" id="admin-cat-actions-${c.id}">
-              </div>
-            </div>
-          `;
-          
-          const actions = li.querySelector(`#admin-cat-actions-${c.id}`);
-          
-          const editBtn = document.createElement("button");
-          editBtn.className = "ghost";
-          editBtn.textContent = this.t("edit");
-          editBtn.onclick = () => {
-             this.el.editCategoryNameInput.value = c.name;
-             this.el.editCategoryParentInput.value = c.parent_id || "";
-             this.el.editCategoryDialog.showModal();
-             this.el.editCategoryForm.onsubmit = (e) => {
-               e.preventDefault();
-               const name = this.el.editCategoryNameInput.value.trim();
-               const parent_id = this.el.editCategoryParentInput.value || null;
-               api.post(`/api/categories/${c.id}/edit`, { name, parent_id }).then(() => {
-                 this.el.editCategoryDialog.close();
-                 this.renderAdmin();
-               });
-             };
-          };
-          
-          const lockBtn = document.createElement("button");
-          lockBtn.className = "ghost";
-          lockBtn.textContent = c.locked ? this.t("unlock") : this.t("lock");
-          lockBtn.onclick = () => api.post(`/api/categories/${c.id}/lock`, { locked: !c.locked }).then(()=>this.renderAdmin());
-          
-          const delBtn = document.createElement("button");
-          delBtn.className = "ghost";
-          delBtn.textContent = this.t("delete");
-          delBtn.style.color = "var(--danger)";
-          delBtn.onclick = () => { if (confirm(this.t("delete") + "?")) api.post(`/api/categories/${c.id}/delete`, {}).then(()=>this.renderAdmin()); };
-
-          actions.appendChild(editBtn);
-          actions.appendChild(lockBtn);
-          actions.appendChild(delBtn);
-
-          container.appendChild(li);
-
-          if (c.children && c.children.length > 0) {
-            renderNode(c.children, container, depth + 1);
-          }
-        });
-      };
-      renderNode(tree, this.el.adminCategoryList);
-    });
-    this.el.adminAddCategory.onclick = () => {
-      const name = this.el.adminCategoryName.value.trim();
-      const parent_id = this.el.adminCategoryParent.value || null;
-      if (!name) return;
-      store.addCategory(name, parent_id)
-        .then(() => { 
-          this.el.adminCategoryName.value = ""; 
-          this.el.adminCategoryParent.value = "";
-          this.renderAdmin(); 
-        })
-        .catch(err => alert(this.t("apiError") + ": " + err.message));
-    };
-    api.get("/api/users").then(users => {
-      this.el.adminUserList.innerHTML = "";
-      users.forEach(u => {
-        const li = document.createElement("li");
-        const left = document.createElement("div");
-        left.innerHTML = `<div class="item-title">${escapeHtml(u.username)} • ${u.role}</div>
-                          <div class="item-sub">${escapeHtml(u.email)}${u.banned ? " • "+this.t("bannedLabel") : ""}${u.is_confirmed ? "" : " • " + this.t("emailUnconfirmed")}</div>`;
-        const actions = document.createElement("div");
-        actions.className = "inline-actions";
-        const modBtn = document.createElement("button");
-        modBtn.className = "ghost";
-        modBtn.textContent = this.t("setModerator");
-        modBtn.addEventListener("click", () => api.post(`/api/users/${u.id}/role`, { role: "moderator" }).then(()=>this.renderAdmin()));
-        const userBtn = document.createElement("button");
-        userBtn.className = "ghost";
-        userBtn.textContent = this.t("setUser");
-        userBtn.addEventListener("click", () => api.post(`/api/users/${u.id}/role`, { role: "user" }).then(()=>this.renderAdmin()));
-        const adminBtn = document.createElement("button");
-        adminBtn.className = "ghost";
-        adminBtn.textContent = this.t("setAdmin");
-        adminBtn.addEventListener("click", () => api.post(`/api/users/${u.id}/role`, { role: "admin" }).then(()=>this.renderAdmin()));
-        const banBtn = document.createElement("button");
-        banBtn.className = "ghost";
-        banBtn.textContent = u.banned ? this.t("unban") : this.t("ban");
-        banBtn.addEventListener("click", () => api.post(`/api/users/${u.id}/ban`, { banned: !u.banned }).then(()=>this.renderAdmin()));
-        if (!u.is_confirmed) {
-          const confirmBtn = document.createElement("button");
-          confirmBtn.className = "ghost";
-          confirmBtn.textContent = this.t("confirmEmail");
-          confirmBtn.addEventListener("click", () => api.post(`/api/users/${u.id}/confirm`, {}).then(()=>this.renderAdmin()));
-          actions.appendChild(confirmBtn);
-        }
-        actions.appendChild(modBtn);
-        actions.appendChild(userBtn);
-        actions.appendChild(adminBtn);
-        actions.appendChild(banBtn);
-        li.appendChild(left);
-        li.appendChild(actions);
-        this.el.adminUserList.appendChild(li);
-      });
-    }).catch(err => {
-      this.el.adminMeta.textContent = `${this.t("apiError")}: ${err.message || err}`;
-    });
-  }
-};
-const captcha = {
-  widgets: new Map(),
-  mount(container, onSolved) {
-    container.innerHTML = "";
-    const canvas = document.createElement("canvas");
-    const input = document.createElement("input");
-    const actions = document.createElement("div");
-    const refresh = document.createElement("button");
-    const label = document.createElement("div");
-    canvas.width = 240; canvas.height = 80;
-    input.type = "text";
-    actions.className = "inline-actions";
-    refresh.className = "ghost";
-    label.className = "item-sub";
-    label.textContent = ui.t("captchaSolve");
-    refresh.textContent = ui.t("captchaRefresh");
-    actions.appendChild(refresh);
-    container.appendChild(label);
-    container.appendChild(canvas);
-    container.appendChild(input);
-    container.appendChild(actions);
-    const draw = () => {
-      const code = this.generate();
-      this.widgets.set(container, { code, input });
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = "#0e0e17";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      for (let i=0;i<10;i++) {
-        ctx.strokeStyle = `rgba(124,58,237,${Math.random()*0.7+0.1})`;
-        ctx.beginPath();
-        ctx.moveTo(Math.random()*240, Math.random()*80);
-        ctx.bezierCurveTo(Math.random()*240, Math.random()*80, Math.random()*240, Math.random()*80, Math.random()*240, Math.random()*80);
-        ctx.stroke();
-      }
-      ctx.font = "bold 36px Inter, Arial";
-      for (let i=0;i<code.length;i++) {
-        const ch = code[i];
-        const x = 20 + i*40 + Math.random()*6;
-        const y = 50 + Math.random()*10;
-        const angle = (Math.random()*0.5 - 0.25);
-        ctx.save();
-        ctx.translate(x,y);
-        ctx.rotate(angle);
-        ctx.fillStyle = ["#a855f7","#7c3aed","#6d28d9","#f2f2f7"][i%4];
-        ctx.fillText(ch, 0, 0);
-        ctx.restore();
-      }
-      for (let i=0;i<60;i++) {
-        ctx.fillStyle = `rgba(168,85,247,${Math.random()*0.8})`;
-        ctx.fillRect(Math.random()*240, Math.random()*80, 2, 2);
+    const proto = location.protocol === "https:" ? "wss:" : "ws:";
+    const host = location.host;
+    this.state.ws = new WebSocket(`${proto}//${host}/ws`);
+    this.state.ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === "new_post" && data.threadId === this.state.current.threadId) {
+        this.renderPosts(this.state.current.threadId);
       }
     };
-    refresh.addEventListener("click", draw);
-    draw();
-  },
-  generate() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let s = "";
-    for (let i=0;i<5;i++) s += chars[Math.floor(Math.random()*chars.length)];
-    return s;
-  },
-  verify(container) {
-    const w = this.widgets.get(container);
-    if (!w) return false;
-    const ok = w.input.value.trim().toUpperCase() === w.code;
-    return ok;
   }
 };
 
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;" }[c]));
-}
-
-function renderMarkdownSafe(md) {
-  let s = escapeHtml(md);
-  s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-  s = s.replace(/\*(.+?)\*/g, "<em>$1</em>");
-  s = s.replace(/`(.+?)`/g, "<code>$1</code>");
-  s = s.replace(/(?:\r?\n){2,}/g, "<br/><br/>");
-  s = s.replace(/\r?\n/g, "<br/>");
-  return s;
-}
-window.addEventListener("DOMContentLoaded", () => ui.init());
+window.onload = () => ui.init();
