@@ -26,6 +26,7 @@ const translations = {
     empty: "Нет записей",
     threadsCount: "тем",
     postsCount: "постов",
+    subforumsCount: "подфорума",
     login: "Вход",
     register: "Регистрация",
     logout: "Выход",
@@ -41,6 +42,7 @@ const translations = {
     add: "Добавить",
     close: "Закрыть",
     categoryNamePh: "Название категории",
+    noParent: "Без родителя",
     apiError: "Ошибка API",
     adminOnly: "Только админ может добавлять категории"
     ,
@@ -157,6 +159,7 @@ const translations = {
     empty: "Жазбалар жоқ",
     threadsCount: "тақырып",
     postsCount: "пост",
+    subforumsCount: "ішкі санат",
     login: "Кіру",
     register: "Тіркелу",
     logout: "Шығу",
@@ -172,6 +175,7 @@ const translations = {
     add: "Қосу",
     close: "Жабу",
     categoryNamePh: "Санат атауы",
+    noParent: "Бас санатсыз",
     apiError: "API қателігі",
     adminOnly: "Санатты тек әкімші қоса алады"
     ,
@@ -252,7 +256,13 @@ const translations = {
     themeBg: "Фон",
     themeText: "Мәтін",
     themeBorder: "Шекара",
-    save: "Сақтау"
+    save: "Сақтау",
+    themePresets: "Прессеттер",
+    presetDark: "Қараңғы",
+    presetLight: "Жарық",
+    presetOcean: "Мұхит",
+    presetSolar: "Күн",
+    pinned: "Бекітілген"
   },
   uk: {
     title: "Prestige RolePlay",
@@ -281,6 +291,7 @@ const translations = {
     empty: "Немає записів",
     threadsCount: "тем",
     postsCount: "постів",
+    subforumsCount: "підфоруми",
     login: "Вхід",
     register: "Реєстрація",
     logout: "Вихід",
@@ -296,6 +307,7 @@ const translations = {
     add: "Додати",
     close: "Закрити",
     categoryNamePh: "Назва категорії",
+    noParent: "Без батьківської категорії",
     apiError: "Помилка API",
     adminOnly: "Лише адмін може додавати категорії"
     ,
@@ -409,6 +421,7 @@ const translations = {
     empty: "Няма записи",
     threadsCount: "теми",
     postsCount: "постове",
+    subforumsCount: "подфорума",
     login: "Вход",
     register: "Регистрация",
     logout: "Изход",
@@ -424,6 +437,7 @@ const translations = {
     add: "Добави",
     close: "Затвори",
     categoryNamePh: "Име на категория",
+    noParent: "Без родител",
     apiError: "API грешка",
     adminOnly: "Само админ може да добавя категории"
     ,
@@ -505,7 +519,6 @@ const translations = {
     group: "Група",
     discord: "Discord",
     themeSettings: "Настройки на тема",
-    themeSettings: "Настройки на тема",
     themePrimary: "Основен цвят",
     themeAccent: "Акцент",
     themeBg: "Фон",
@@ -545,6 +558,7 @@ const translations = {
     empty: "No records",
     threadsCount: "threads",
     postsCount: "posts",
+    subforumsCount: "subforums",
     login: "Login",
     register: "Register",
     logout: "Logout",
@@ -560,6 +574,7 @@ const translations = {
     add: "Add",
     close: "Close",
     categoryNamePh: "Category name",
+    noParent: "No parent",
     apiError: "API error",
     adminOnly: "Only admin can add categories"
     ,
@@ -1797,7 +1812,7 @@ const ui = {
               <div style="background:rgba(124, 58, 237, 0.1); padding:10px; border-radius:10px; color:var(--primary); font-size:20px">📁</div>
               <div style="flex:1">
                 <div class="item-title" style="font-size:16px; margin-bottom:2px">${escapeHtml(c.name)}</div>
-                <div class="item-sub">${c.children?.length || 0} подфорума</div>
+                <div class="item-sub">${c.children?.length || 0} ${this.t("subforumsCount")}</div>
               </div>
               <div class="inline-actions">
                 <button class="ghost">${this.t("threads")}</button>
