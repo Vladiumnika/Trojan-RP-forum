@@ -102,11 +102,24 @@ button {
 button.primary {
   background: var(--primary);
   color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3);
 }
 
 button.primary:hover {
   background: var(--primary-hover);
   transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(124, 58, 237, 0.4);
+}
+
+button.primary:active {
+  background: #5b21b6;
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 4px -1px rgba(124, 58, 237, 0.2);
+}
+
+button.primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.4);
 }
 
 button.ghost {
@@ -118,6 +131,19 @@ button.ghost {
 button.ghost:hover {
   background: var(--border);
   border-color: var(--muted);
+  transform: translateY(-1px);
+}
+
+button.ghost:active {
+  background: var(--bg-alt);
+  border-color: var(--primary);
+  transform: translateY(1px) scale(0.98);
+}
+
+button.ghost:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
 }
 
 /* Layout */
@@ -179,6 +205,11 @@ button.ghost:hover {
   border-color: var(--primary);
   transform: translateX(4px);
   background: rgba(124, 58, 237, 0.05);
+}
+
+.list li:active {
+  background: rgba(124, 58, 237, 0.15);
+  transform: translateX(2px) scale(0.995);
 }
 
 /* Badges */
