@@ -900,7 +900,7 @@ const ui = {
     this.el["admin-modal-dialog"].showModal();
     try {
       const cats = await store.categories();
-      const users = await api.get("/api/admin/users");
+      const users = await api.get("/api/users");
       
       // Categories select
       const sel = document.getElementById("adminCategoryParent");
@@ -910,21 +910,39 @@ const ui = {
       // Categories list
       document.getElementById("adminCategoryList").innerHTML = cats.map(c => `
         <li class="item">
-          <span>${c.name} ${c.parent_id ? `(-> ${cats.find(x => x.id === c.parent_id)?.name || "?"})` : ""}</span>
-          <button class="ghost" onclick="ui.deleteCategory('${c.id}')">${this.t("delete")}</button>
+          <div class="category-icon">📁</div>
+          <div class="category-content">
+            <div class="category-title">${c.name}</div>
+            <div class="category-desc">${c.parent_id ? `Подкатегория на: ${cats.find(x => x.id === c.parent_id)?.name || "Няма"}` : "Главна категория"}</div>
+          </div>
+          <div class="category-stats">
+            <button class="ghost" onclick="ui.deleteCategory('${c.id}')">${this.t("delete")}</button>
+          </div>
         </li>
       `).join("");
 
-      // Users list
+      // Users list with avatars
       document.getElementById("adminUserList").innerHTML = users.map(u => `
         <li class="item">
-          <span>${u.username} (${u.role})</span>
+          <img src="${u.avatar_url || "/default-avatar.png"}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--primary)">
+          <div class="category-content">
+            <div class="category-title">${u.username} ${u.banned ? `<span class="badge badge-error">${this.t("bannedLabel")}</span>` : ''}</div>
+            <div class="category-desc">${u.email} • ${u.role} • ${u.is_confirmed ? 'Потвърден' : 'Непотвърден'}</div>
+          </div>
           <div>
             ${u.banned ? `<button class="ghost" onclick="ui.unbanUser('${u.id}')">${this.t("unban")}</button>` : `<button class="ghost" onclick="ui.banUser('${u.id}')">${this.t("ban")}</button>`}
+            <button class="ghost" onclick="ui.setUserRole('${u.id}', 'moderator')">${this.t("setModerator")}</button>
+            <button class="ghost" onclick="ui.setUserRole('${u.id}', 'admin')">${this.t("setAdmin")}</button>
           </div>
         </li>
       `).join("");
     } catch (err) { console.error(err); }
+  },
+  async setUserRole(userId, role) {
+    try {
+      await api.post(`/api/users/${userId}/role`, { role });
+      this.renderAdmin();
+    } catch (err) { alert(err.message); }
   },
   async deleteCategory(id) {
     if (!confirm(this.t("delete") + "?")) return;

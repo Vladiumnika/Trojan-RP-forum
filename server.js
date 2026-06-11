@@ -770,8 +770,27 @@ app.post("/api/diag/smtp", authMiddleware, requireAdmin, async (req, res) => {
 app.get("/api/db/export", authMiddleware, requireAdmin, async (req, res) => {
   try {
     const db = await readDB();
+    // Add avatar data as base64 to export
+    const dbWithAvatars = {
+      ...db,
+      _uploads: {}
+    };
+    // Process all avatars
+    for (const user of dbWithAvatars.users) {
+      if (user.avatar_url && user.avatar_url.startsWith("/uploads/")) {
+        const filename = path.basename(user.avatar_url);
+        const avatarPath = path.join(UPLOAD_DIR, filename);
+        try {
+          const avatarData = await fs.readFile(avatarPath);
+          const mimeType = `image/${path.extname(filename).slice(1)}`;
+          dbWithAvatars._uploads[filename] = `data:${mimeType};base64,${avatarData.toString("base64")}`;
+        } catch (e) {
+          console.warn(`[Export] Could not read avatar ${filename}:`, e.message);
+        }
+      }
+    }
     res.set("Content-Type", "application/json");
-    res.json(db);
+    res.json(dbWithAvatars);
   } catch (e) {
     res.status(500).json({ error: e?.message || "Export failed" });
   }
@@ -789,6 +808,25 @@ app.post("/api/db/import", authMiddleware, requireAdmin, async (req, res) => {
     post_reports: Array.isArray(db.post_reports) ? db.post_reports : []
   };
   try {
+    // Ensure uploads directory exists
+    try {
+      await fs.access(UPLOAD_DIR);
+    } catch {
+      await fs.mkdir(UPLOAD_DIR, { recursive: true });
+    }
+    // Restore avatars from base64
+    if (db._uploads && typeof db._uploads === "object") {
+      for (const [filename, dataUrl] of Object.entries(db._uploads)) {
+        try {
+          const base64Data = dataUrl.split(",")[1];
+          const fileBuffer = Buffer.from(base64Data, "base64");
+          await fs.writeFile(path.join(UPLOAD_DIR, filename), fileBuffer);
+          console.log(`[Import] Restored avatar: ${filename}`);
+        } catch (e) {
+          console.warn(`[Import] Could not restore avatar ${filename}:`, e.message);
+        }
+      }
+    }
     await writeDB(norm);
     return res.json({ ok: true });
   } catch (e) {
