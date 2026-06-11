@@ -1064,11 +1064,19 @@ const ui = {
   tmplCategory(c) {
     return `
       <li class="item" onclick="ui.renderThreads('${c.id}')">
-        <div class="item-main">
-          <div class="item-title">${c.name}</div>
-          <div class="item-sub">${c.threads_count || 0} ${this.t("threadsCount")}</div>
+        <div class="category-icon">💬</div>
+        <div class="category-content">
+          <h3 class="category-title">${c.name}</h3>
+          <p class="category-desc">Общи дискусии за ${c.name}</p>
+          <div class="category-meta">
+            <span class="category-meta-item">👥 ${c.children?.length || 0} подфорума</span>
+            <span class="category-meta-item">📝 ${c.threads_count || 0} теми</span>
+          </div>
         </div>
-        ${c.children && c.children.length ? `<div class="badge">${c.children.length} ${this.t("subforumsCount")}</div>` : ""}
+        <div class="category-stats">
+          <span class="category-stat-number">${c.posts_count || 0}</span>
+          <span class="category-stat-label">публикации</span>
+        </div>
       </li>
     `;
   },
@@ -1083,14 +1091,22 @@ const ui = {
       const subcats = cats.filter(c => c.parent_id === categoryId);
       
       // Breadcrumbs
-      this.el.threadBreadcrumbs.textContent = currentCat ? currentCat.name : "";
+      this.el.threadBreadcrumbs.innerHTML = `
+        <span class="breadcrumb-item" onclick="ui.renderCategories()">${this.t("categories")}</span>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-item">${currentCat ? currentCat.name : categoryId}</span>
+      `;
       
       // Subforums vertical list
       if (subcats.length) {
         this.el.subCategorySidebar.classList.remove("hidden");
         this.el.subCategoryList.innerHTML = subcats.map(s => `
           <li class="item" onclick="ui.renderThreads('${s.id}')">
-            <div class="item-title">${s.name}</div>
+            <div class="category-icon">📂</div>
+            <div class="category-content">
+              <h4 class="category-title">${s.name}</h4>
+              <p class="category-desc">${s.threads_count || 0} теми</p>
+            </div>
           </li>
         `).join("");
       } else {
@@ -1103,11 +1119,28 @@ const ui = {
   tmplThread(t) {
     return `
       <li class="item" onclick="ui.renderPosts('${t.id}')">
-        <div class="item-main">
-          <div class="item-title">${t.pinned ? `<span class="badge primary">${this.t("important")}</span> ` : ""}${t.title}</div>
-          <div class="item-sub">${this.t("by")} ${t.author_username || "User"} • ${new Date(t.created_at).toLocaleDateString()}</div>
+        <div class="thread-icon ${t.pinned ? 'pinned' : ''}">${t.pinned ? '📌' : '💭'}</div>
+        <div class="category-content">
+          <h4 class="thread-title">${t.pinned ? `<span class="badge badge-primary">${this.t("important")}</span> ` : ''}${t.title}</h4>
+          <div class="thread-meta">
+            <span>от ${t.author_username || "User"}</span>
+            <span class="thread-meta-separator"></span>
+            <span>${new Date(t.created_at).toLocaleDateString()}</span>
+            <span class="thread-meta-separator"></span>
+            <span>👁 ${t.views_count || 0}</span>
+            <span class="thread-meta-separator"></span>
+            <span>👍 ${t.likes_count || 0}</span>
+          </div>
+          ${t.tags && t.tags.length ? `
+            <div class="thread-tags">
+              ${t.tags.map(tag => `<span class="thread-tag">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
         </div>
-        <div class="meta">${t.posts_count} ${this.t("postsCount")}</div>
+        <div class="category-stats">
+          <span class="category-stat-number">${t.posts_count || 0}</span>
+          <span class="category-stat-label">отговора</span>
+        </div>
       </li>
     `;
   },
@@ -1122,14 +1155,23 @@ const ui = {
   tmplPost(p) {
     return `
       <li class="post">
-        <div class="post-header">
-          <img src="${p.author_avatar || "/default-avatar.png"}" class="avatar">
-          <div class="post-info">
-            <div class="post-author">${p.author_username}</div>
-            <div class="post-date">${new Date(p.created_at).toLocaleString()}</div>
+        <div class="post-sidebar">
+          <img src="${p.author_avatar || "/default-avatar.png"}" class="post-avatar" alt="avatar">
+          <div>
+            <div class="post-username">${p.author_username}</div>
+            <div class="post-role">${p.author_role || "User"}</div>
           </div>
         </div>
-        <div class="post-content">${p.content}</div>
+        <div class="post-content-area">
+          <div class="post-header">
+            <div class="post-time">${new Date(p.created_at).toLocaleString()}</div>
+            <div class="post-actions">
+              <button class="ghost" onclick="alert('Цитирай')">Цитирай</button>
+              <button class="ghost" onclick="alert('Отговори')">Отговори</button>
+            </div>
+          </div>
+          <div class="post-body">${p.content}</div>
+        </div>
       </li>
     `;
   },
