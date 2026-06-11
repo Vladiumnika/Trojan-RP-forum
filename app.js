@@ -851,6 +851,50 @@ const ui = {
         this.renderAdmin();
       } catch (err) { alert(err.message); }
     };
+
+    // Theme presets
+    this.el.presetDark.onclick = () => {
+      this.applyThemePreset({ primary: "#7c3aed", accent: "#a855f7", bg: "#0b0b10", text: "#f2f2f7", border: "#26263a" });
+    };
+    this.el.presetLight.onclick = () => {
+      this.applyThemePreset({ primary: "#7c3aed", accent: "#a855f7", bg: "#ffffff", text: "#0f0f1a", border: "#e5e5e5" });
+    };
+    this.el.presetOcean.onclick = () => {
+      this.applyThemePreset({ primary: "#0ea5e9", accent: "#38bdf8", bg: "#0c1929", text: "#e0f2fe", border: "#1e3a5f" });
+    };
+    this.el.presetSolar.onclick = () => {
+      this.applyThemePreset({ primary: "#f97316", accent: "#fb923c", bg: "#1c1917", text: "#fef3c7", border: "#44403c" });
+    };
+
+    // Theme save
+    document.getElementById("themeSave").onclick = () => {
+      this.applyThemePreset({
+        primary: document.getElementById("themePrimary").value,
+        accent: document.getElementById("themeAccent").value,
+        bg: document.getElementById("themeBg").value,
+        text: document.getElementById("themeText").value,
+        border: document.getElementById("themeBorder").value
+      });
+    };
+    document.getElementById("themeCancel").onclick = () => this.el.themeDialog.close();
+  },
+  applyThemePreset(preset) {
+    const root = document.documentElement.style;
+    root.setProperty("--primary", preset.primary);
+    root.setProperty("--accent", preset.accent);
+    root.setProperty("--bg", preset.bg);
+    root.setProperty("--text", preset.text);
+    root.setProperty("--border", preset.border);
+    root.setProperty("--bg2", this.adjustBrightness(preset.bg, 8));
+    root.setProperty("--bg-alt", this.adjustBrightness(preset.bg, 16));
+    localStorage.setItem("customTheme", JSON.stringify(preset));
+  },
+  adjustBrightness(hex, amount) {
+    const num = parseInt(hex.replace("#", ""), 16);
+    const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+    const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+    const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
   },
   async renderAdmin() {
     this.el["admin-modal-dialog"].showModal();
@@ -918,18 +962,94 @@ const ui = {
     if (this.el.footerText) this.el.footerText.textContent = this.t("footer");
     if (this.el.copyrightText) this.el.copyrightText.textContent = this.t("copyright").replace("{year}", new Date().getFullYear()).replace("{brand}", "Prestige RP");
     
+    // Theme dialog labels
+    const themeLabels = {
+      themeDialogTitle: "themeSettings",
+      themePrimaryLabel: "themePrimary",
+      themeAccentLabel: "themeAccent",
+      themeBgLabel: "themeBg",
+      themeTextLabel: "themeText",
+      themeBorderLabel: "themeBorder",
+      themePresetsLabel: "themePresets",
+      presetDark: "presetDark",
+      presetLight: "presetLight",
+      presetOcean: "presetOcean",
+      presetSolar: "presetSolar",
+      themeCancel: "cancel",
+      themeSave: "save",
+      loginTitle: "loginTitle",
+      registerTitle: "registerTitle",
+      loginCancel: "cancel",
+      registerCancel: "cancel",
+      backToCategories: "back",
+      backToThreads: "back",
+      latestPostsTitle: "latestPosts",
+      adminCategoriesTitle: "adminCategories",
+      adminUsersTitle: "adminUsers",
+      editCategoryTitle: "editCategory",
+      editThreadTitle: "editThread",
+      editPostTitle: "editPost",
+      editCategoryCancel: "cancel",
+      editCategorySave: "save",
+      editThreadCancel: "cancel",
+      editThreadSubmit: "save",
+      editPostCancel: "cancel",
+      editPostSubmit: "save",
+      threadDialogTitle: "newThread",
+      postDialogTitle: "newPost",
+      cancelLabel: "cancel",
+      cancelLabel2: "cancel",
+      cancelLabel3: "cancel",
+      createLabel: "create",
+      publishLabel: "publish",
+      replyLabel: "reply",
+      addCategory: "addCategory",
+      addThread: "addThread",
+      addPost: "addPost",
+      search: "search",
+      add: "add",
+      close: "close",
+      backAdminClose: "close"
+    };
+    for (const [id, key] of Object.entries(themeLabels)) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = this.t(key);
+    }
+    
     // Inputs placeholders
     const placeholders = {
       "searchInput": "searchPh",
       "loginEmail": "emailPh",
       "loginPassword": "passwordPh",
+      "loginTotp": "twofaCodePh",
       "registerEmail": "emailPh",
       "registerUsername": "usernamePh",
-      "registerPassword": "passwordPh"
+      "registerPassword": "passwordPh",
+      "threadTitleInput": "threadTitlePh",
+      "threadContentInput": "threadContentPh",
+      "threadAuthorInput": "authorPh",
+      "threadTagsInput": "tagsPh",
+      "postContentInput": "threadContentPh",
+      "editThreadTitleInput": "threadTitlePh",
+      "editThreadTagsInput": "tagsEditPh",
+      "editPostContentInput": "threadContentPh",
+      "editCategoryNameInput": "categoryNamePh",
+      "adminCategoryName": "categoryNamePh"
     };
     for (const [id, key] of Object.entries(placeholders)) {
       const el = document.getElementById(id);
       if (el) el.placeholder = this.t(key);
+    }
+  },
+  loadTheme() {
+    const saved = localStorage.getItem("theme") || "dark";
+    this.state.theme = saved;
+    document.body.className = saved;
+    const custom = localStorage.getItem("customTheme");
+    if (custom) {
+      try {
+        this.applyThemePreset(JSON.parse(custom));
+      } catch {}
     }
   },
   async renderCategories() {
