@@ -1,5 +1,5 @@
 /* ========================================
-   PRESTIGE ROLEPLAY - PROFESSIONAL FORUM THEME
+   PRESTIGE ROLEPLAY - PREMIUM FORUM THEME
    ======================================== */
 
 :root {
@@ -12,9 +12,9 @@
   --warning: #f59e0b;
 
   --bg: #0a0a0f;
-  --bg2: #12121a;
-  --bg-alt: #161624;
-  --bg-elevated: #1a1a2a;
+  --bg-2: #12121a;
+  --bg-3: #161624;
+  --bg-card: linear-gradient(180deg, #1a1a2a 0%, #161624 100%);
 
   --text: #f8f8ff;
   --text-muted: #a1a1b5;
@@ -24,10 +24,9 @@
   --border-soft: #2a2a40;
   --border-strong: #323248;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-  --shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.45);
-  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.25);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.5);
 
   --radius-sm: 6px;
   --radius: 10px;
@@ -45,8 +44,7 @@
   padding: 0;
 }
 
-html,
-body {
+html, body {
   height: 100%;
   scroll-behavior: smooth;
 }
@@ -54,10 +52,10 @@ body {
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(800px 400px at 15% 0%, rgba(124, 58, 237, 0.18), transparent 60%),
-    radial-gradient(800px 400px at 85% 100%, rgba(168, 85, 247, 0.12), transparent 60%),
-    linear-gradient(135deg, var(--bg) 0%, #0d0d14 100%);
+  background: 
+    radial-gradient(900px 500px at 15% -10%, rgba(124, 58, 237, 0.2), transparent 60%),
+    radial-gradient(800px 400px at 85% 110%, rgba(168, 85, 247, 0.15), transparent 60%),
+    var(--bg);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -71,58 +69,62 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 28px;
+  padding: 14px 32px;
   border-bottom: 1px solid var(--border);
-  background: rgba(18, 18, 26, 0.92);
-  backdrop-filter: blur(16px);
+  background: rgba(18, 18, 26, 0.95);
+  backdrop-filter: blur(20px);
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   object-fit: cover;
   border: 2px solid var(--primary);
   box-shadow: var(--shadow);
-  transition: transform var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .logo:hover {
   transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.35);
 }
 
 .titles h1 {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
 }
 
 .titles p {
   color: var(--text-muted);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 #burgerBtn {
   display: none;
-  padding: 8px 14px;
-  font-size: 18px;
+  padding: 10px 14px;
+  font-size: 20px;
 }
 
 /* Buttons */
@@ -150,12 +152,12 @@ button.primary {
 
 button.primary:hover {
   background: linear-gradient(135deg, var(--primary-hover), #9333ea);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
 
 button.primary:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.97);
 }
 
 button.ghost {
@@ -166,15 +168,15 @@ button.ghost {
 }
 
 button.ghost:hover {
-  background: var(--bg-alt);
+  background: var(--bg-3);
   border-color: var(--primary);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 button.ghost:active {
   background: var(--primary-soft);
   border-color: var(--primary);
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.97);
 }
 
 .btn-danger {
@@ -194,13 +196,11 @@ button.ghost:active {
 }
 
 /* Inputs & Selects */
-select,
-input,
-textarea {
+select, input, textarea {
   font-family: inherit;
   font-size: 14px;
   color: var(--text);
-  background: var(--bg2);
+  background: var(--bg-2);
   border: 1.5px solid var(--border-soft);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
@@ -209,9 +209,7 @@ textarea {
   min-width: 140px;
 }
 
-select:focus,
-input:focus,
-textarea:focus {
+select:focus, input:focus, textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-soft);
 }
@@ -221,22 +219,23 @@ textarea {
   min-height: 100px;
 }
 
-/* Container & Panels */
+/* Container */
 .container {
   max-width: 1200px;
   width: 100%;
-  margin: 32px auto;
-  padding: 0 28px;
+  margin: 36px auto;
+  padding: 0 32px;
   flex: 1;
 }
 
+/* Panel */
 .panel {
-  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-alt) 100%);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: 28px;
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lg);
 }
 
 .panel-header {
@@ -244,16 +243,15 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--border-soft);
 }
 
-.panel-header h2,
-.panel-header h3 {
+.panel-header h2, .panel-header h3 {
   font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
 }
 
 .panel-actions {
@@ -262,22 +260,22 @@ textarea {
   flex-wrap: wrap;
 }
 
-/* Lists */
+/* List */
 .list {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .list li {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  padding: 22px;
-  background: var(--bg2);
+  gap: 18px;
+  padding: 24px;
+  background: var(--bg-2);
   border: 1.5px solid var(--border-soft);
   border-radius: var(--radius-lg);
   transition: all var(--transition-fast);
@@ -286,7 +284,7 @@ textarea {
 
 .list li:hover {
   border-color: var(--primary);
-  background: linear-gradient(90deg, var(--primary-soft) 0%, var(--bg-alt) 100%);
+  background: linear-gradient(90deg, var(--primary-soft) 0%, var(--bg-3) 100%);
   transform: translateX(4px);
   box-shadow: var(--shadow-sm);
 }
@@ -296,16 +294,16 @@ textarea {
   transform: translateX(2px) scale(0.995);
 }
 
-/* Category Card */
+/* Category Icon */
 .category-icon {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius);
   background: linear-gradient(135deg, var(--primary), var(--accent));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 24px;
   flex-shrink: 0;
   box-shadow: var(--shadow-sm);
 }
@@ -338,30 +336,30 @@ textarea {
 }
 
 .category-stat-number {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
   color: var(--primary);
   line-height: 1;
 }
 
 .category-stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-soft);
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.7px;
 }
 
-/* Thread Card */
+/* Thread */
 .thread-icon {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius);
-  background: var(--bg-alt);
+  background: var(--bg-3);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 22px;
   flex-shrink: 0;
   border: 2px solid var(--border-soft);
 }
@@ -412,18 +410,18 @@ textarea {
   letter-spacing: 0.5px;
 }
 
-/* Posts */
+/* Post */
 .post {
-  background: var(--bg2);
+  background: var(--bg-2);
   border: 1.5px solid var(--border-soft);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 28px;
   display: flex;
-  gap: 22px;
+  gap: 24px;
 }
 
 .post-sidebar {
-  width: 90px;
+  width: 100px;
   flex-shrink: 0;
   text-align: center;
 }
@@ -473,7 +471,7 @@ textarea {
 
 .post-body {
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.75;
   color: var(--text);
 }
 
@@ -495,13 +493,13 @@ textarea {
 .like-btn:hover {
   border-color: var(--primary);
   background: rgba(124, 58, 237, 0.2);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 /* Forum Layout */
 .forum-split-view {
   display: flex;
-  gap: 24px;
+  gap: 28px;
 }
 
 .subforum-sidebar {
@@ -551,44 +549,44 @@ textarea {
   border-color: var(--primary);
 }
 
-/* Breadcrumbs & Meta */
+/* Meta */
 .meta {
   color: var(--text-muted);
-  margin: 8px 0 18px;
+  margin: 8px 0 20px;
 }
 
-/* Dialogs */
+/* Dialog */
 dialog {
   border: none;
   border-radius: var(--radius-xl);
-  background: var(--bg-elevated);
+  background: var(--bg-card);
   color: var(--text);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
   padding: 0;
   width: min(92vw, 640px);
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(14px);
 }
 
 .form {
-  padding: 28px;
+  padding: 32px;
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .form h3 {
   font-size: 20px;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -608,14 +606,14 @@ dialog::backdrop {
 .footer {
   border-top: 1px solid var(--border);
   margin-top: auto;
-  padding: 24px 28px;
+  padding: 28px 32px;
   color: var(--text-muted);
-  background: linear-gradient(180deg, transparent 0%, var(--bg-alt) 100%);
+  background: linear-gradient(180deg, transparent 0%, var(--bg-3) 100%);
   text-align: center;
   font-size: 13px;
 }
 
-/* Utility Classes */
+/* Utility */
 .hidden {
   display: none !important;
 }
@@ -649,7 +647,7 @@ dialog::backdrop {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .attachments img {
@@ -713,8 +711,8 @@ dialog::backdrop {
 
 @media (max-width: 768px) {
   .header {
-    padding: 12px 16px;
-    gap: 10px;
+    padding: 14px 16px;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
@@ -729,7 +727,7 @@ dialog::backdrop {
   .controls {
     width: 100%;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
   }
 
   .controls:not(.open) {
@@ -745,7 +743,7 @@ dialog::backdrop {
   }
 
   .container {
-    margin: 20px auto;
+    margin: 24px auto;
     padding: 0 16px;
   }
 
@@ -759,7 +757,7 @@ dialog::backdrop {
 
   .list li {
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
 
   .category-stats {
@@ -770,6 +768,7 @@ dialog::backdrop {
 
   .post {
     flex-direction: column;
+    padding: 20px;
   }
 
   .post-sidebar {
@@ -785,11 +784,20 @@ dialog::backdrop {
     height: 52px;
     margin-bottom: 0;
   }
+
+  .form {
+    padding: 20px;
+  }
 }
 
 @media (max-width: 480px) {
   .logo {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .titles h1 {
+    font-size: 17px;
   }
 }
