@@ -5,6 +5,8 @@ const translations = {
     language: "Язык",
     themeToggle: "Тема",
     categories: "Категории",
+    subforums: "Подфорумы",
+    subforumsCount: "подфорумов",
     addCategory: "Добавить категорию",
     newCategory: "Новая категория",
     cancel: "Отмена",
@@ -136,6 +138,8 @@ const translations = {
     language: "Тіл",
     themeToggle: "Тема",
     categories: "Санаттар",
+    subforums: "Ішкі санаттар",
+    subforumsCount: "ішкі санат",
     addCategory: "Санат қосу",
     newCategory: "Жаңа санат",
     cancel: "Болдырмау",
@@ -260,6 +264,8 @@ const translations = {
     language: "Мова",
     themeToggle: "Тема",
     categories: "Категорії",
+    subforums: "Підфоруми",
+    subforumsCount: "підфорумів",
     addCategory: "Додати категорію",
     newCategory: "Нова категорія",
     cancel: "Скасувати",
@@ -388,6 +394,8 @@ const translations = {
     language: "Език",
     themeToggle: "Тема",
     categories: "Категории",
+    subforums: "Подфоруми",
+    subforumsCount: "подфорума",
     addCategory: "Добави категория",
     newCategory: "Нова категория",
     cancel: "Отказ",
@@ -524,6 +532,8 @@ const translations = {
     language: "Language",
     themeToggle: "Theme",
     categories: "Categories",
+    subforums: "Subforums",
+    subforumsCount: "subforums",
     addCategory: "Add Category",
     newCategory: "New Category",
     cancel: "Cancel",
@@ -1910,19 +1920,37 @@ const ui = {
     if (!categoryId) return;
 
     try {
-      const container = this.el.subCategorySidebar ? this.el.subCategorySidebar.parentElement : null;
-      const forumMain = container ? container.querySelector(".forum-main") : null;
+      const forumMain = this.el.threadList.parentElement;
       const categories = await store.categories();
       const children = categories.filter(c => c.parent_id === categoryId);
       const inlineUlId = "inlineSubCategoryList";
       const existingInline = forumMain ? forumMain.querySelector(`#${inlineUlId}`) : null;
+      
+      // Add header for subcategories if present
+      let sectionHeader = forumMain.querySelector("#subcategoriesHeader");
+      
       if (children.length === 0) {
         if (existingInline) existingInline.remove();
+        if (sectionHeader) sectionHeader.remove();
         return;
       }
 
-      // Ensure inline subcategory list above threads, hide sidebar
+      // Ensure inline subcategory list above threads
       if (forumMain) {
+        // Add subcategories header
+        if (!sectionHeader) {
+          sectionHeader = document.createElement("div");
+          sectionHeader.id = "subcategoriesHeader";
+          sectionHeader.className = "panel-header";
+          sectionHeader.style.paddingBottom = "10px";
+          sectionHeader.style.marginBottom = "10px";
+          sectionHeader.style.borderBottom = "1px solid var(--border-soft)";
+          const h3 = document.createElement("h3");
+          h3.textContent = this.t("subforums");
+          sectionHeader.appendChild(h3);
+          forumMain.insertBefore(sectionHeader, this.el.threadList);
+        }
+        
         const inline = existingInline || document.createElement("ul");
         inline.id = inlineUlId;
         inline.className = "list";
@@ -1936,14 +1964,17 @@ const ui = {
             <div class="category-icon">📂</div>
             <div class="category-content">
               <div class="category-title">${escapeHtml(c.name)}</div>
-              <div class="category-desc">${c.threads_count || 0} ${this.t("threadsCount") || "тем"}</div>
+              <div class="category-desc">${c.children?.length || 0} ${this.t("subforumsCount") || "подфорума"} • ${c.threads_count || 0} ${this.t("threadsCount") || "тем"}</div>
+            </div>
+            <div class="category-stats">
+              <span class="category-stat-number">${c.posts_count || 0}</span>
+              <span class="category-stat-label">${this.t("postsCount") || "постов"}</span>
             </div>
           `;
           li.addEventListener("click", () => this.renderThreads(c.id));
           inline.appendChild(li);
         });
       }
-      if (this.el.subCategorySidebar) this.el.subCategorySidebar.style.display = "none";
     } catch (e) { console.error(e); }
   },
   renderThreads(categoryId) {
