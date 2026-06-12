@@ -1129,6 +1129,9 @@ const ui = {
         applyPreset({ primary: "#f59e0b", accent: "#fde047", bg: "#0f0e0c", text: "#fff7ed", border: "#3b2f1a" });
       });
     }
+    this.el.burgerBtn.addEventListener("click", () => {
+      this.el.controls.classList.toggle("open");
+    });
     this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
     this.el.registerBtn.addEventListener("click", () => { this.el.registerDialog.showModal(); captcha.mount(this.el.registerCaptcha, () => {}); });
     this.el.profileBtn.addEventListener("click", () => {
