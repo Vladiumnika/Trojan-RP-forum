@@ -1026,13 +1026,98 @@ app.get("/api/me", authMiddleware, async (req, res) => {
   return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, twofa_enabled: !!u.twofa_enabled, avatar_url: u.avatar_url || null });
 });
 
+// Helper function to get all child category ids recursively
+function getAllChildCategoryIds(categories, parentId) {
+  const children = categories.filter(c => c.parent_id === parentId);
+  let ids = children.map(c => c.id);
+  children.forEach(c => {
+    ids = ids.concat(getAllChildCategoryIds(categories, c.id));
+  });
+  return ids;
+}
+
 app.get("/api/categories", async (req, res) => {
   if (MYSQL_READY) {
-    const [rows] = await pool.query("SELECT * FROM categories ORDER BY name");
-    return res.json(rows);
+    // For MySQL, let's get categories with threads_count and posts_count including subcategories
+    const [categories] = await pool.query("SELECT * FROM categories ORDER BY name");
+    const [threads] = await pool.query("SELECT id, category_id FROM threads");
+    const [posts] = await pool.query("SELECT id, thread_id FROM posts");
+    
+    // Build category tree
+    const catMap = {};
+    categories.forEach(c => { catMap[c.id] = { ...c, children: [] }; });
+    categories.forEach(c => {
+      if (c.parent_id && catMap[c.parent_id]) {
+        catMap[c.parent_id].children.push(catMap[c.id]);
+      }
+    });
+
+    // Helper to calculate counts recursively
+    const calculateCounts = (cat) => {
+      let threadCount = threads.filter(t => t.category_id === cat.id).length;
+      let postCount = 0;
+      threads.filter(t => t.category_id === cat.id).forEach(t => {
+        postCount += posts.filter(p => p.thread_id === t.id).length;
+      });
+      cat.children.forEach(child => {
+        const childCounts = calculateCounts(child);
+        threadCount += childCounts.threads_count;
+        postCount += childCounts.posts_count;
+      });
+      return { ...cat, threads_count: threadCount, posts_count: postCount };
+    };
+
+    // Process all categories
+    const processedCategories = categories.map(c => {
+      // Find the processed tree node
+      const findNode = (nodes, id) => {
+        for (const node of nodes) {
+          if (node.id === id) return node;
+          const found = findNode(node.children, id);
+          if (found) return found;
+        }
+        return null;
+      };
+      // First build the full tree
+      const rootNodes = categories.filter(c => !c.parent_id).map(c => catMap[c.id]);
+      let processedNode = findNode(rootNodes, c.id);
+      if (!processedNode) {
+        // If not found in root, calculate just for this node
+        let threadCount = threads.filter(t => t.category_id === c.id).length;
+        let postCount = 0;
+        threads.filter(t => t.category_id === c.id).forEach(t => {
+          postCount += posts.filter(p => p.thread_id === t.id).length;
+        });
+        processedNode = { ...c, threads_count: threadCount, posts_count: postCount };
+      } else {
+        processedNode = calculateCounts(processedNode);
+      }
+      return { ...c, threads_count: processedNode.threads_count, posts_count: processedNode.posts_count };
+    });
+
+    return res.json(processedCategories);
   }
   const db = await readDB();
-  return res.json(db.categories);
+  
+  // For JSON mode, calculate threads_count and posts_count including subcategories
+  const processedCategories = db.categories.map(cat => {
+    // Get all child category ids recursively
+    const childIds = getAllChildCategoryIds(db.categories, cat.id);
+    const allCategoryIds = [cat.id, ...childIds];
+    
+    // Count threads in all these categories
+    const threadsCount = db.threads.filter(t => allCategoryIds.includes(t.category_id)).length;
+    
+    // Count posts in all those threads
+    let postsCount = 0;
+    db.threads.filter(t => allCategoryIds.includes(t.category_id)).forEach(t => {
+      postsCount += db.posts.filter(p => p.thread_id === t.id).length;
+    });
+    
+    return { ...cat, threads_count: threadsCount, posts_count: postsCount };
+  });
+  
+  return res.json(processedCategories);
 });
 app.get("/api/stats", async (req, res) => {
   if (MYSQL_READY) {
@@ -1144,18 +1229,30 @@ app.post("/api/categories/:id/lock", authMiddleware, requireAdmin, async (req, r
   return res.json({ ok: true, locked: c.locked });
 });
 app.get("/api/categories/:id/threads", async (req, res) => {
+  const categoryId = req.params.id;
+  let categoryIdsToInclude = [];
+  
   if (MYSQL_READY) {
+    const [allCats] = await pool.query("SELECT id, parent_id FROM categories");
+    categoryIdsToInclude = [categoryId, ...getAllChildCategoryIds(allCats, categoryId)];
+    
+    const placeholders = categoryIdsToInclude.map((_, i) => `:cid${i}`).join(",");
+    const params = {};
+    categoryIdsToInclude.forEach((cid, i) => params[`cid${i}`] = cid);
+    
     const [rows] = await pool.query(`
       SELECT t.id, t.category_id, t.title, t.author_id, t.locked, t.pinned, t.created_at,
              (SELECT COUNT(*) FROM posts p WHERE p.thread_id=t.id) AS posts_count
       FROM threads t
-      WHERE t.category_id=:cid
+      WHERE t.category_id IN (${placeholders})
       ORDER BY t.pinned DESC, t.created_at DESC
-    `, { cid: req.params.id });
+    `, params);
     return res.json(rows);
   }
+  
   const db = await readDB();
-  const list = db.threads.filter(t => t.category_id === req.params.id);
+  categoryIdsToInclude = [categoryId, ...getAllChildCategoryIds(db.categories, categoryId)];
+  const list = db.threads.filter(t => categoryIdsToInclude.includes(t.category_id));
   const withCounts = list.map(t => ({ ...t, posts_count: db.posts.filter(p => p.thread_id === t.id).length }));
   return res.json(withCounts);
 });
@@ -1581,10 +1678,29 @@ app.get("/api/search/threads", async (req, res) => {
   const tag = (req.query.tag || "").toString().toLowerCase();
   const page = parseInt(req.query.page || "1", 10);
   const size = Math.min(parseInt(req.query.size || "10", 10), 50);
+  
+  // Get all category IDs to include (current category + all subcategories)
+  let categoryIdsToInclude = [];
+  if (categoryId) {
+    if (MYSQL_READY) {
+      // MySQL: Recursively get all subcategory IDs
+      const [allCats] = await pool.query("SELECT id, parent_id FROM categories");
+      categoryIdsToInclude = [categoryId, ...getAllChildCategoryIds(allCats, categoryId)];
+    } else {
+      // JSON: Use our helper function
+      const db = await readDB();
+      categoryIdsToInclude = [categoryId, ...getAllChildCategoryIds(db.categories, categoryId)];
+    }
+  }
+
   if (MYSQL_READY) {
     const where = [];
     const params = {};
-    if (categoryId) { where.push("t.category_id=:categoryId"); params.categoryId = categoryId; }
+    if (categoryId && categoryIdsToInclude.length > 0) { 
+      const placeholders = categoryIdsToInclude.map((_, i) => `:cid${i}`).join(",");
+      where.push(`t.category_id IN (${placeholders})`);
+      categoryIdsToInclude.forEach((cid, i) => params[`cid${i}`] = cid);
+    }
     if (q) { where.push("LOWER(t.title) LIKE :q"); params.q = `%${q}%`; }
     if (tag) { where.push("EXISTS (SELECT 1 FROM thread_tags tt WHERE tt.thread_id=t.id AND LOWER(tt.tag)=:tag)"); params.tag = tag; }
     const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
@@ -1603,9 +1719,12 @@ app.get("/api/search/threads", async (req, res) => {
     `, { ...params, limit: size, offset });
     return res.json({ items, page, size, total, pages: Math.ceil(total / size) });
   }
+  
   const db = await readDB();
   let list = db.threads;
-  if (categoryId) list = list.filter(t => t.category_id === categoryId);
+  if (categoryId && categoryIdsToInclude.length > 0) {
+    list = list.filter(t => categoryIdsToInclude.includes(t.category_id));
+  }
   if (q) list = list.filter(t => t.title.toLowerCase().includes(q));
   if (tag) list = list.filter(t => (t.tags || []).map(x => x.toLowerCase()).includes(tag));
   const total = list.length;

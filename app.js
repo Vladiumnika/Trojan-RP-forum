@@ -908,6 +908,7 @@ const ui = {
     this.el.performResetSubmit = document.getElementById("performResetSubmit");
     this.el.categoriesTitle = document.getElementById("categoriesTitle");
     this.el.addCategoryBtn = document.getElementById("addCategoryBtn");
+    this.el.addSubcategoryBtn = document.getElementById("addSubcategoryBtn");
     this.el.categoryList = document.getElementById("categoryList");
     this.el.latestPostsSection = document.getElementById("latestPostsSection");
     this.el.latestPostsTitle = document.getElementById("latestPostsTitle");
@@ -1324,16 +1325,32 @@ const ui = {
         alert("OK");
       } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
     });
-    this.el.addCategoryBtn.addEventListener("click", () => this.el.categoryDialog.showModal());
+    this.el.addCategoryBtn.addEventListener("click", () => {
+      this.el.categoryDialogTitle.textContent = this.t("newCategory");
+      this.el.categoryDialog.dataset.parentId = "";
+      this.el.categoryDialog.showModal();
+    });
+    this.el.addSubcategoryBtn.addEventListener("click", () => {
+      if (!this.state.user || this.state.user.role !== "admin") { alert(ui.t("adminOnly")); return }
+      this.el.categoryDialogTitle.textContent = this.t("newSubcategory");
+      this.el.categoryDialog.dataset.parentId = this.state.current.categoryId;
+      this.el.categoryDialog.showModal();
+    });
     this.el.categoryForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const name = this.el.categoryNameInput.value.trim();
       if (!name) return;
       if (!this.state.user || this.state.user.role !== "admin") { alert(ui.t("adminOnly")); return }
-      store.addCategory(name).then(() => {
+      const parentId = this.el.categoryDialog.dataset.parentId || null;
+      store.addCategory(name, parentId).then(() => {
         this.el.categoryNameInput.value = "";
+        this.el.categoryDialog.dataset.parentId = "";
         this.el.categoryDialog.close();
-        this.renderCategories();
+        if (this.state.current.categoryId) {
+          this.renderThreads(this.state.current.categoryId);
+        } else {
+          this.renderCategories();
+        }
       }).catch(err => alert(ui.t("apiError") + ": " + err.message));
     });
     this.el.backToCategories.addEventListener("click", () => {
@@ -1571,6 +1588,7 @@ const ui = {
     this.el.profileBtn.textContent = this.t("profile");
     this.el.categoriesTitle.textContent = this.t("categories");
     this.el.addCategoryBtn.textContent = this.t("addCategory");
+    this.el.addSubcategoryBtn.textContent = this.t("addSubcategory");
     this.el.categoryDialogTitle.textContent = this.t("newCategory");
     this.el.cancelLabel.textContent = this.t("cancel");
     this.el.createLabel.textContent = this.t("create");
