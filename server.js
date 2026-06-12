@@ -1052,47 +1052,46 @@ app.get("/api/categories", async (req, res) => {
       }
     });
 
-    // Helper to calculate counts recursively
+    // Helper to calculate counts recursively (returns new object)
     const calculateCounts = (cat) => {
       let threadCount = threads.filter(t => t.category_id === cat.id).length;
       let postCount = 0;
       threads.filter(t => t.category_id === cat.id).forEach(t => {
         postCount += posts.filter(p => p.thread_id === t.id).length;
       });
-      cat.children.forEach(child => {
-        const childCounts = calculateCounts(child);
-        threadCount += childCounts.threads_count;
-        postCount += childCounts.posts_count;
+      const processedChildren = cat.children.map(child => calculateCounts(child));
+      processedChildren.forEach(child => {
+        threadCount += child.threads_count;
+        postCount += child.posts_count;
       });
-      return { ...cat, threads_count: threadCount, posts_count: postCount };
+      return { ...cat, threads_count: threadCount, posts_count: postCount, children: processedChildren };
     };
+
+    // Pre-calculate all processed nodes in a map
+    const processedMap = {};
+    const processTree = (nodes) => {
+      nodes.forEach(node => {
+        const processed = calculateCounts(node);
+        processedMap[processed.id] = processed;
+        processTree(processed.children);
+      });
+    };
+    const rootNodes = categories.filter(c => !c.parent_id).map(c => catMap[c.id]);
+    processTree(rootNodes);
 
     // Process all categories
     const processedCategories = categories.map(c => {
-      // Find the processed tree node
-      const findNode = (nodes, id) => {
-        for (const node of nodes) {
-          if (node.id === id) return node;
-          const found = findNode(node.children, id);
-          if (found) return found;
-        }
-        return null;
-      };
-      // First build the full tree
-      const rootNodes = categories.filter(c => !c.parent_id).map(c => catMap[c.id]);
-      let processedNode = findNode(rootNodes, c.id);
-      if (!processedNode) {
-        // If not found in root, calculate just for this node
-        let threadCount = threads.filter(t => t.category_id === c.id).length;
-        let postCount = 0;
-        threads.filter(t => t.category_id === c.id).forEach(t => {
-          postCount += posts.filter(p => p.thread_id === t.id).length;
-        });
-        processedNode = { ...c, threads_count: threadCount, posts_count: postCount };
-      } else {
-        processedNode = calculateCounts(processedNode);
+      const processed = processedMap[c.id];
+      if (processed) {
+        return { ...c, threads_count: processed.threads_count, posts_count: processed.posts_count };
       }
-      return { ...c, threads_count: processedNode.threads_count, posts_count: processedNode.posts_count };
+      // Fallback if not found in map
+      let threadCount = threads.filter(t => t.category_id === c.id).length;
+      let postCount = 0;
+      threads.filter(t => t.category_id === c.id).forEach(t => {
+        postCount += posts.filter(p => p.thread_id === t.id).length;
+      });
+      return { ...c, threads_count: threadCount, posts_count: postCount };
     });
 
     return res.json(processedCategories);

@@ -1331,7 +1331,10 @@ const ui = {
       this.el.categoryDialog.showModal();
     });
     this.el.addSubcategoryBtn.addEventListener("click", () => {
-      if (!this.state.user || this.state.user.role !== "admin") { alert(ui.t("adminOnly")); return }
+      if (!this.state.user || this.state.user.role !== "admin") { 
+        alert(ui.t("adminOnly")); 
+        return;
+      }
       this.el.categoryDialogTitle.textContent = this.t("newSubcategory");
       this.el.categoryDialog.dataset.parentId = this.state.current.categoryId;
       this.el.categoryDialog.showModal();
