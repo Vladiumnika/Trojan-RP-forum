@@ -7,7 +7,15 @@
       "password_hash": "$2a$10$tW8IJFJYkD7ATGbEyrDN2ecESmbOLGt8R6xURf0krDjievlDFKRmS",
       "role": "admin",
       "is_confirmed": false,
-      "created_at": 1768497801223
+      "created_at": 1768497801223,
+      "bio": null,
+      "totp_secret": null,
+      "twofa_enabled": false,
+      "twofa_prompt_required": true,
+      "refresh_token": null,
+      "refresh_expires": null,
+      "notifications": true,
+      "avatar_url": null
     },
     {
       "id": "e6d7a30c-2626-43e0-ad63-83bf922a40bd",
@@ -18,7 +26,15 @@
       "is_confirmed": true,
       "banned": false,
       "locale": "bg",
-      "created_at": 1768584450765
+      "created_at": 1768584450765,
+      "bio": null,
+      "totp_secret": null,
+      "twofa_enabled": false,
+      "twofa_prompt_required": true,
+      "refresh_token": null,
+      "refresh_expires": null,
+      "notifications": true,
+      "avatar_url": null
     },
     {
       "id": "19d1f827-10f4-4832-b7d3-1830a326c6a1",
@@ -30,7 +46,14 @@
       "banned": false,
       "locale": "bg",
       "created_at": 1769090858197,
-      "notifications": false
+      "notifications": false,
+      "bio": null,
+      "totp_secret": null,
+      "twofa_enabled": false,
+      "twofa_prompt_required": true,
+      "refresh_token": null,
+      "refresh_expires": null,
+      "avatar_url": null
     }
   ],
   "categories": [],
@@ -49,5 +72,11 @@
       "user_id": "e6d7a30c-2626-43e0-ad63-83bf922a40bd",
       "expires_at": 1768588751083
     }
-  ]
+  ],
+  "post_reports": [],
+  "notifications": [],
+  "polls": [],
+  "poll_options": [],
+  "poll_votes": [],
+  "private_messages": []
 }

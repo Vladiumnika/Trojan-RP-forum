@@ -65,8 +65,20 @@ async function ensureTables() {
     locale VARCHAR(5),
     avatar_url VARCHAR(255),
     notifications TINYINT(1) DEFAULT 1,
-    created_at BIGINT NOT NULL
+    created_at BIGINT NOT NULL,
+    bio TEXT,
+    totp_secret VARCHAR(255),
+    twofa_enabled TINYINT(1) DEFAULT 0,
+    twofa_prompt_required TINYINT(1) DEFAULT 1,
+    refresh_token VARCHAR(255),
+    refresh_expires BIGINT
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  try { await pool.query(`ALTER TABLE users ADD COLUMN bio TEXT`); } catch (e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN totp_secret VARCHAR(255)`); } catch (e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN twofa_enabled TINYINT(1) DEFAULT 0`); } catch (e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN twofa_prompt_required TINYINT(1) DEFAULT 1`); } catch (e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN refresh_token VARCHAR(255)`); } catch (e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN refresh_expires BIGINT`); } catch (e) {}
   await pool.query(`CREATE TABLE IF NOT EXISTS categories (
     id VARCHAR(36) PRIMARY KEY,
     parent_id VARCHAR(36) NULL,
@@ -110,6 +122,14 @@ async function ensureTables() {
     CONSTRAINT fk_react_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     CONSTRAINT fk_react_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS post_likes (
+    post_id VARCHAR(36) NOT NULL,
+    user_id VARCHAR(36) NOT NULL,
+    created_at BIGINT NOT NULL,
+    PRIMARY KEY (post_id, user_id),
+    CONSTRAINT fk_like_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_like_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
   await pool.query(`CREATE TABLE IF NOT EXISTS post_reports (
     id VARCHAR(36) PRIMARY KEY,
     post_id VARCHAR(36) NOT NULL,
@@ -131,6 +151,53 @@ async function ensureTables() {
     user_id VARCHAR(36) NOT NULL,
     expires_at BIGINT NOT NULL,
     CONSTRAINT fk_pr_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS notifications (
+    id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(255),
+    content TEXT,
+    data TEXT,
+    read_at BIGINT,
+    created_at BIGINT NOT NULL,
+    CONSTRAINT fk_notif_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS polls (
+    id VARCHAR(36) PRIMARY KEY,
+    thread_id VARCHAR(36) NOT NULL,
+    question VARCHAR(255) NOT NULL,
+    author_id VARCHAR(36) NOT NULL,
+    created_at BIGINT NOT NULL,
+    expires_at BIGINT,
+    CONSTRAINT fk_poll_thread FOREIGN KEY (thread_id) REFERENCES threads(id) ON DELETE CASCADE,
+    CONSTRAINT fk_poll_author FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS poll_options (
+    id VARCHAR(36) PRIMARY KEY,
+    poll_id VARCHAR(36) NOT NULL,
+    text VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_option_poll FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS poll_votes (
+    poll_id VARCHAR(36) NOT NULL,
+    option_id VARCHAR(36) NOT NULL,
+    user_id VARCHAR(36) NOT NULL,
+    created_at BIGINT NOT NULL,
+    PRIMARY KEY (poll_id, user_id),
+    CONSTRAINT fk_vote_poll FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE,
+    CONSTRAINT fk_vote_option FOREIGN KEY (option_id) REFERENCES poll_options(id) ON DELETE CASCADE,
+    CONSTRAINT fk_vote_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS private_messages (
+    id VARCHAR(36) PRIMARY KEY,
+    sender_id VARCHAR(36) NOT NULL,
+    receiver_id VARCHAR(36) NOT NULL,
+    content TEXT NOT NULL,
+    read_at BIGINT,
+    created_at BIGINT NOT NULL,
+    CONSTRAINT fk_msg_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_msg_receiver FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
 }
 async function initMySQL() {
@@ -360,7 +427,7 @@ function buildRemoteHeaders() {
   return h;
 }
 function normalizeDb(db) {
-  const empty = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [] };
+  const empty = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [], notifications: [], polls: [], poll_options: [], poll_votes: [], private_messages: [] };
   try {
     return {
       users: Array.isArray(db?.users) ? db.users : [],
@@ -369,7 +436,12 @@ function normalizeDb(db) {
       posts: Array.isArray(db?.posts) ? db.posts : [],
       email_verifications: Array.isArray(db?.email_verifications) ? db.email_verifications : [],
       password_resets: Array.isArray(db?.password_resets) ? db.password_resets : [],
-      post_reports: Array.isArray(db?.post_reports) ? db.post_reports : []
+      post_reports: Array.isArray(db?.post_reports) ? db.post_reports : [],
+      notifications: Array.isArray(db?.notifications) ? db.notifications : [],
+      polls: Array.isArray(db?.polls) ? db.polls : [],
+      poll_options: Array.isArray(db?.poll_options) ? db.poll_options : [],
+      poll_votes: Array.isArray(db?.poll_votes) ? db.poll_votes : [],
+      private_messages: Array.isArray(db?.private_messages) ? db.private_messages : []
     };
   } catch { return empty }
 }
@@ -957,7 +1029,18 @@ app.post("/api/auth/login", async (req, res) => {
       if (!okTotp) return res.status(401).json({ error: "Invalid 2FA code" });
     }
     const token = jwt.sign({ sub: u.id, role: u.role }, JWT_SECRET, { expiresIn: "7d" });
-    return res.json({ token, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
+    return res.json({ 
+      token, 
+      user: { 
+        id: u.id, 
+        email: u.email, 
+        username: u.username, 
+        role: u.role,
+        avatar_url: u.avatar_url,
+        bio: u.bio,
+        notifications: !!u.notifications
+      } 
+    });
   }
   const db = await readDB();
   const u = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -976,55 +1059,23 @@ app.post("/api/auth/login", async (req, res) => {
   u.refresh_token = refresh_token;
   u.refresh_expires = Date.now() + 1000 * 60 * 60 * 24 * 30;
   await writeDB(db);
-  return res.json({ token, refresh_token, require_twofa_prompt: !u.twofa_enabled && !!u.twofa_prompt_required, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
+  return res.json({ 
+    token, 
+    refresh_token, 
+    require_twofa_prompt: !u.twofa_enabled && !!u.twofa_prompt_required, 
+    user: { 
+      id: u.id, 
+      email: u.email, 
+      username: u.username, 
+      role: u.role,
+      avatar_url: u.avatar_url,
+      bio: u.bio,
+      notifications: !!u.notifications
+    } 
+  });
 });
 
-// Refresh and logout-all endpoints (JSON mode supported; MySQL returns 501)
-app.post("/api/auth/refresh", async (req, res) => {
-  const { refresh_token } = req.body || {};
-  if (!refresh_token) return res.status(400).json({ error: "Missing refresh token" });
-  if (MYSQL_READY) return res.status(501).json({ error: "Refresh not available in MySQL mode yet" });
-  const db = await readDB();
-  const u = db.users.find(x => x.refresh_token === refresh_token);
-  if (!u) return res.status(401).json({ error: "Invalid refresh token" });
-  if (!u.refresh_expires || u.refresh_expires < Date.now()) return res.status(401).json({ error: "Refresh token expired" });
-  const token = jwt.sign({ sub: u.id, role: u.role }, JWT_SECRET, { expiresIn: "7d" });
-  const newRefresh = uid();
-  u.refresh_token = newRefresh;
-  u.refresh_expires = Date.now() + 1000 * 60 * 60 * 24 * 30;
-  await writeDB(db);
-  return res.json({ token, refresh_token: newRefresh, user: { id: u.id, email: u.email, username: u.username, role: u.role } });
-});
-app.post("/api/auth/logout_all", authMiddleware, async (req, res) => {
-  if (MYSQL_READY) return res.status(501).json({ error: "Logout-all not available in MySQL mode yet" });
-  const db = await readDB();
-  const u = db.users.find(x => x.id === req.user.sub);
-  if (!u) return res.status(404).json({ error: "User not found" });
-  u.refresh_token = null;
-  u.refresh_expires = null;
-  await writeDB(db);
-  return res.json({ ok: true });
-});
-app.post("/api/auth/2fa/skip", authMiddleware, async (req, res) => {
-  if (MYSQL_READY) return res.status(501).json({ error: "2FA not available in MySQL mode yet" });
-  const db = await readDB();
-  const u = db.users.find(x => x.id === req.user.sub);
-  if (!u) return res.status(404).json({ error: "User not found" });
-  u.twofa_prompt_required = false;
-  await writeDB(db);
-  return res.json({ ok: true });
-});
-app.get("/api/me", authMiddleware, async (req, res) => {
-  if (MYSQL_READY) {
-    const [rows] = await pool.query("SELECT id,email,username,role,is_confirmed,avatar_url FROM users WHERE id=:id", { id: req.user.sub });
-    if (!rows.length) return res.status(404).json({ error: "User not found" });
-    return res.json(rows[0]);
-  }
-  const db = await readDB();
-  const u = db.users.find(u => u.id === req.user.sub);
-  if (!u) return res.status(404).json({ error: "User not found" });
-  return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, twofa_enabled: !!u.twofa_enabled, avatar_url: u.avatar_url || null });
-});
+
 
 // Helper function to get all child category ids recursively
 function getAllChildCategoryIds(categories, parentId) {
@@ -1609,67 +1660,29 @@ app.post("/api/users/:id/avatar", authMiddleware, upload.single("avatar"), async
   return res.json({ ok: true, avatar_url: u.avatar_url });
 });
 app.post("/api/users/:id/profile", authMiddleware, async (req, res) => {
-  const { username, notifications } = req.body || {};
+  const { username, notifications, bio } = req.body || {};
   if (req.user.sub !== req.params.id && req.user.role !== "admin") return res.status(403).json({ error: "Forbidden" });
   if (MYSQL_READY) {
     const name = typeof username === "string" && username.trim() ? username.trim() : undefined;
     const notif = typeof notifications === "boolean" ? (notifications ? 1 : 0) : undefined;
+    const userBio = typeof bio === "string" ? bio : undefined;
     if (name !== undefined) await pool.query("UPDATE users SET username=:name WHERE id=:id", { name, id: req.params.id });
     if (notif !== undefined) await pool.query("UPDATE users SET notifications=:notif WHERE id=:id", { notif, id: req.params.id });
-    return res.json({ ok: true });
+    if (userBio !== undefined) await pool.query("UPDATE users SET bio=:bio WHERE id=:id", { bio: userBio, id: req.params.id });
+    const [rows] = await pool.query("SELECT id, email, username, role, avatar_url, bio, notifications, created_at FROM users WHERE id=:id", { id: req.params.id });
+    return res.json(rows[0]);
   }
   const db = await readDB();
   const u = db.users.find(x => x.id === req.params.id);
   if (!u) return res.status(404).json({ error: "User not found" });
   if (typeof username === "string" && username.trim()) u.username = username.trim();
   if (typeof notifications === "boolean") u.notifications = notifications;
+  if (typeof bio === "string") u.bio = bio;
   await writeDB(db);
-  return res.json({ ok: true });
+  return res.json(u);
 });
 
-// 2FA (TOTP) endpoints
-app.post("/api/auth/2fa/setup", authMiddleware, async (req, res) => {
-  if (MYSQL_READY) return res.status(501).json({ error: "2FA not available in MySQL mode yet" });
-  const db = await readDB();
-  const u = db.users.find(x => x.id === req.user.sub);
-  if (!u) return res.status(404).json({ error: "User not found" });
-  const secret = authenticator.generateSecret();
-  u.totp_secret = secret;
-  u.twofa_enabled = false;
-  await writeDB(db);
-  const issuer = "Prestige RP";
-  const uri = authenticator.keyuri(u.email, issuer, secret);
-  return res.json({ secret, uri });
-});
-app.post("/api/auth/2fa/activate", authMiddleware, async (req, res) => {
-  const { code } = req.body || {};
-  if (!code) return res.status(400).json({ error: "Missing code" });
-  if (MYSQL_READY) return res.status(501).json({ error: "2FA not available in MySQL mode yet" });
-  const db = await readDB();
-  const u = db.users.find(x => x.id === req.user.sub);
-  if (!u) return res.status(404).json({ error: "User not found" });
-  if (!u.totp_secret) return res.status(400).json({ error: "2FA not initialized" });
-  const ok = authenticator.verify({ token: code, secret: u.totp_secret });
-  if (!ok) return res.status(401).json({ error: "Invalid 2FA code" });
-  u.twofa_enabled = true;
-  await writeDB(db);
-  return res.json({ ok: true, twofa_enabled: true });
-});
-app.post("/api/auth/2fa/disable", authMiddleware, async (req, res) => {
-  const { code } = req.body || {};
-  if (MYSQL_READY) return res.status(501).json({ error: "2FA not available in MySQL mode yet" });
-  const db = await readDB();
-  const u = db.users.find(x => x.id === req.user.sub);
-  if (!u) return res.status(404).json({ error: "User not found" });
-  if (u.twofa_enabled) {
-    if (!code) return res.status(400).json({ error: "Missing code" });
-    const ok = authenticator.verify({ token: code, secret: u.totp_secret });
-    if (!ok) return res.status(401).json({ error: "Invalid 2FA code" });
-  }
-  u.twofa_enabled = false;
-  await writeDB(db);
-  return res.json({ ok: true, twofa_enabled: false });
-});
+
 
 app.get("/api/search/threads", async (req, res) => {
   const q = (req.query.q || "").toString().toLowerCase();
@@ -1863,6 +1876,652 @@ app.post("/api/auth/reset/perform", async (req, res) => {
   db.password_resets = db.password_resets.filter(x => x.token !== token);
   await writeDB(db);
   return res.json({ ok: true });
+});
+
+// Post Likes Endpoints
+app.post("/api/posts/:id/like", authMiddleware, async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.user.sub;
+  if (MYSQL_READY) {
+    const [exists] = await pool.query("SELECT 1 FROM post_likes WHERE post_id=:postId AND user_id=:userId", { postId, userId });
+    if (!exists.length) {
+      await pool.query("INSERT INTO post_likes (post_id, user_id, created_at) VALUES (:postId, :userId, :now)", { postId, userId, now: Date.now() });
+    }
+    const [[{ count }]] = await pool.query("SELECT COUNT(*) as count FROM post_likes WHERE post_id=:postId", { postId });
+    return res.json({ count });
+  }
+  const db = await readDB();
+  const post = db.posts.find(p => p.id === postId);
+  if (!post) return res.status(404).json({ error: "Post not found" });
+  if (!Array.isArray(post.likes)) post.likes = [];
+  if (!post.likes.find(l => l.user_id === userId)) {
+    post.likes.push({ user_id: userId, created_at: Date.now() });
+  }
+  await writeDB(db);
+  return res.json({ count: post.likes.length });
+});
+
+app.delete("/api/posts/:id/like", authMiddleware, async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.user.sub;
+  if (MYSQL_READY) {
+    await pool.query("DELETE FROM post_likes WHERE post_id=:postId AND user_id=:userId", { postId, userId });
+    const [[{ count }]] = await pool.query("SELECT COUNT(*) as count FROM post_likes WHERE post_id=:postId", { postId });
+    return res.json({ count });
+  }
+  const db = await readDB();
+  const post = db.posts.find(p => p.id === postId);
+  if (!post) return res.status(404).json({ error: "Post not found" });
+  if (Array.isArray(post.likes)) {
+    post.likes = post.likes.filter(l => l.user_id !== userId);
+  }
+  await writeDB(db);
+  return res.json({ count: post.likes?.length || 0 });
+});
+
+app.get("/api/posts/:id/likes", async (req, res) => {
+  const postId = req.params.id;
+  if (MYSQL_READY) {
+    const [rows] = await pool.query(`
+      SELECT pl.user_id, pl.created_at, u.username, u.avatar_url 
+      FROM post_likes pl 
+      LEFT JOIN users u ON u.id = pl.user_id 
+      WHERE pl.post_id = :postId 
+      ORDER BY pl.created_at DESC
+    `, { postId });
+    const [[{ count }]] = await pool.query("SELECT COUNT(*) as count FROM post_likes WHERE post_id=:postId", { postId });
+    return res.json({ likes: rows, count });
+  }
+  const db = await readDB();
+  const post = db.posts.find(p => p.id === postId);
+  if (!post) return res.status(404).json({ error: "Post not found" });
+  const likes = (post.likes || []).map(l => {
+    const user = db.users.find(u => u.id === l.user_id);
+    return { ...l, username: user?.username, avatar_url: user?.avatar_url };
+  });
+  return res.json({ likes, count: likes.length });
+});
+
+// Post Reactions Endpoints
+app.get("/api/posts/:id/reactions", async (req, res) => {
+  const postId = req.params.id;
+  if (MYSQL_READY) {
+    const [reactions] = await pool.query(`
+      SELECT pr.post_id, pr.user_id, pr.type, u.username, u.avatar_url 
+      FROM post_reactions pr 
+      LEFT JOIN users u ON u.id = pr.user_id 
+      WHERE pr.post_id = :postId
+    `, { postId });
+    const [counts] = await pool.query(`
+      SELECT type, COUNT(*) as count 
+      FROM post_reactions 
+      WHERE post_id = :postId 
+      GROUP BY type
+    `, { postId });
+    const grouped = {};
+    counts.forEach(c => { grouped[c.type] = c.count; });
+    return res.json({ reactions, counts: grouped });
+  }
+  const db = await readDB();
+  const post = db.posts.find(p => p.id === postId);
+  if (!post) return res.status(404).json({ error: "Post not found" });
+  const reactions = (post.reactions || []).map(r => {
+    const user = db.users.find(u => u.id === r.user_id);
+    return { ...r, username: user?.username, avatar_url: user?.avatar_url };
+  });
+  const counts = {};
+  (post.reactions || []).forEach(r => { counts[r.type] = (counts[r.type] || 0) + 1; });
+  return res.json({ reactions, counts });
+});
+
+app.post("/api/posts/:id/reactions", authMiddleware, async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.user.sub;
+  const { type } = req.body || {};
+  if (!type) return res.status(400).json({ error: "Missing reaction type" });
+  if (MYSQL_READY) {
+    await pool.query("INSERT IGNORE INTO post_reactions (post_id, user_id, type) VALUES (:postId, :userId, :type)", { postId, userId, type });
+    const [counts] = await pool.query(`
+      SELECT type, COUNT(*) as count 
+      FROM post_reactions 
+      WHERE post_id = :postId 
+      GROUP BY type
+    `, { postId });
+    const grouped = {};
+    counts.forEach(c => { grouped[c.type] = c.count; });
+    return res.json({ counts: grouped });
+  }
+  const db = await readDB();
+  const post = db.posts.find(p => p.id === postId);
+  if (!post) return res.status(404).json({ error: "Post not found" });
+  if (!Array.isArray(post.reactions)) post.reactions = [];
+  if (!post.reactions.find(r => r.user_id === userId && r.type === type)) {
+    post.reactions.push({ user_id: userId, type });
+  }
+  await writeDB(db);
+  const counts = {};
+  (post.reactions || []).forEach(r => { counts[r.type] = (counts[r.type] || 0) + 1; });
+  return res.json({ counts });
+});
+
+app.delete("/api/posts/:id/reactions", authMiddleware, async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.user.sub;
+  const { type } = req.body || {};
+  if (MYSQL_READY) {
+    if (type) {
+      await pool.query("DELETE FROM post_reactions WHERE post_id=:postId AND user_id=:userId AND type=:type", { postId, userId, type });
+    } else {
+      await pool.query("DELETE FROM post_reactions WHERE post_id=:postId AND user_id=:userId", { postId, userId });
+    }
+    const [counts] = await pool.query(`
+      SELECT type, COUNT(*) as count 
+      FROM post_reactions 
+      WHERE post_id = :postId 
+      GROUP BY type
+    `, { postId });
+    const grouped = {};
+    counts.forEach(c => { grouped[c.type] = c.count; });
+    return res.json({ counts: grouped });
+  }
+  const db = await readDB();
+  const post = db.posts.find(p => p.id === postId);
+  if (!post) return res.status(404).json({ error: "Post not found" });
+  if (Array.isArray(post.reactions)) {
+    if (type) {
+      post.reactions = post.reactions.filter(r => !(r.user_id === userId && r.type === type));
+    } else {
+      post.reactions = post.reactions.filter(r => r.user_id !== userId);
+    }
+  }
+  await writeDB(db);
+  const counts = {};
+  (post.reactions || []).forEach(r => { counts[r.type] = (counts[r.type] || 0) + 1; });
+  return res.json({ counts });
+});
+
+// Notifications Endpoints
+app.get("/api/notifications", authMiddleware, async (req, res) => {
+  const userId = req.user.sub;
+  if (MYSQL_READY) {
+    const [rows] = await pool.query(`
+      SELECT * FROM notifications 
+      WHERE user_id = :userId 
+      ORDER BY created_at DESC
+    `, { userId });
+    return res.json(rows.map(n => ({ ...n, data: n.data ? JSON.parse(n.data) : null })));
+  }
+  const db = await readDB();
+  const notifications = db.notifications.filter(n => n.user_id === userId).sort((a, b) => b.created_at - a.created_at);
+  return res.json(notifications);
+});
+
+app.post("/api/notifications/:id/read", authMiddleware, async (req, res) => {
+  const notifId = req.params.id;
+  const userId = req.user.sub;
+  if (MYSQL_READY) {
+    await pool.query("UPDATE notifications SET read_at=:now WHERE id=:notifId AND user_id=:userId", { now: Date.now(), notifId, userId });
+    const [rows] = await pool.query("SELECT * FROM notifications WHERE id=:notifId AND user_id=:userId", { notifId, userId });
+    if (!rows.length) return res.status(404).json({ error: "Notification not found" });
+    return res.json({ ...rows[0], data: rows[0].data ? JSON.parse(rows[0].data) : null });
+  }
+  const db = await readDB();
+  const notif = db.notifications.find(n => n.id === notifId && n.user_id === userId);
+  if (!notif) return res.status(404).json({ error: "Notification not found" });
+  notif.read_at = Date.now();
+  await writeDB(db);
+  return res.json(notif);
+});
+
+// User Profile Endpoints
+app.get("/api/users/:id", async (req, res) => {
+  const userId = req.params.id;
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT id, email, username, role, avatar_url, bio, created_at FROM users WHERE id=:userId", { userId });
+    if (!rows.length) return res.status(404).json({ error: "User not found" });
+    const [[{ postCount }]] = await pool.query("SELECT COUNT(*) as postCount FROM posts WHERE author_id=:userId", { userId });
+    const [[{ threadCount }]] = await pool.query("SELECT COUNT(*) as threadCount FROM threads WHERE author_id=:userId", { userId });
+    return res.json({ ...rows[0], postCount, threadCount });
+  }
+  const db = await readDB();
+  const user = db.users.find(u => u.id === userId);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  const postCount = db.posts.filter(p => p.author_id === userId).length;
+  const threadCount = db.threads.filter(t => t.author_id === userId).length;
+  return res.json({
+    id: user.id,
+    email: user.email,
+    username: user.username,
+    role: user.role,
+    avatar_url: user.avatar_url,
+    bio: user.bio,
+    created_at: user.created_at,
+    postCount,
+    threadCount
+  });
+});
+
+app.patch("/api/users/:id/profile", authMiddleware, async (req, res) => {
+  const userId = req.params.id;
+  if (req.user.sub !== userId && req.user.role !== "admin") return res.status(403).json({ error: "Forbidden" });
+  const { bio, username } = req.body || {};
+  if (MYSQL_READY) {
+    if (username !== undefined) await pool.query("UPDATE users SET username=:username WHERE id=:userId", { username, userId });
+    if (bio !== undefined) await pool.query("UPDATE users SET bio=:bio WHERE id=:userId", { bio, userId });
+    const [rows] = await pool.query("SELECT id, email, username, role, avatar_url, bio, created_at FROM users WHERE id=:userId", { userId });
+    return res.json(rows[0]);
+  }
+  const db = await readDB();
+  const user = db.users.find(u => u.id === userId);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  if (username !== undefined) user.username = username;
+  if (bio !== undefined) user.bio = bio;
+  await writeDB(db);
+  return res.json(user);
+});
+
+// Polls Endpoints
+app.get("/api/threads/:id/polls", async (req, res) => {
+  const threadId = req.params.id;
+  if (MYSQL_READY) {
+    const [polls] = await pool.query("SELECT * FROM polls WHERE thread_id=:threadId", { threadId });
+    const allPollIds = polls.map(p => p.id);
+    const [options] = allPollIds.length > 0 ? await pool.query("SELECT * FROM poll_options WHERE poll_id IN (?)", [allPollIds]) : [[]];
+    const [votes] = allPollIds.length > 0 ? await pool.query("SELECT poll_id, option_id, COUNT(*) as count FROM poll_votes WHERE poll_id IN (?) GROUP BY poll_id, option_id", [allPollIds]) : [[]];
+    const pollsWithOptions = polls.map(p => {
+      const pollOptions = options.filter(o => o.poll_id === p.id);
+      const pollVotes = votes.filter(v => v.poll_id === p.id);
+      const optionsWithVotes = pollOptions.map(o => ({ ...o, votes: pollVotes.find(v => v.option_id === o.id)?.count || 0 }));
+      return { ...p, options: optionsWithVotes };
+    });
+    return res.json(pollsWithOptions);
+  }
+  const db = await readDB();
+  const polls = db.polls.filter(p => p.thread_id === threadId);
+  const pollsWithOptions = polls.map(p => {
+    const options = db.poll_options.filter(o => o.poll_id === p.id);
+    const optionsWithVotes = options.map(o => ({ ...o, votes: db.poll_votes.filter(v => v.poll_id === p.id && v.option_id === o.id).length }));
+    return { ...p, options: optionsWithVotes };
+  });
+  return res.json(pollsWithOptions);
+});
+
+app.post("/api/threads/:id/polls", authMiddleware, async (req, res) => {
+  const threadId = req.params.id;
+  const userId = req.user.sub;
+  const { question, options, expires_at } = req.body || {};
+  if (!question || !Array.isArray(options) || options.length < 2) return res.status(400).json({ error: "Missing question or options" });
+  const pollId = uid();
+  if (MYSQL_READY) {
+    await pool.query("INSERT INTO polls (id, thread_id, question, author_id, created_at, expires_at) VALUES (:id, :threadId, :question, :authorId, :now, :expiresAt)", {
+      id: pollId,
+      threadId,
+      question,
+      authorId: userId,
+      now: Date.now(),
+      expiresAt: expires_at || null
+    });
+    for (const optionText of options) {
+      const optionId = uid();
+      await pool.query("INSERT INTO poll_options (id, poll_id, text) VALUES (:optionId, :pollId, :text)", { optionId, pollId, text: optionText });
+    }
+    const [poll] = await pool.query("SELECT * FROM polls WHERE id=:pollId", { pollId });
+    const [pollOptions] = await pool.query("SELECT * FROM poll_options WHERE poll_id=:pollId", { pollId });
+    return res.json({ ...poll[0], options: pollOptions.map(o => ({ ...o, votes: 0 })) });
+  }
+  const db = await readDB();
+  const poll = { id: pollId, thread_id: threadId, question, author_id: userId, created_at: Date.now(), expires_at: expires_at || null };
+  db.polls.push(poll);
+  const pollOptions = [];
+  for (const optionText of options) {
+    const optionId = uid();
+    const option = { id: optionId, poll_id: pollId, text: optionText };
+    db.poll_options.push(option);
+    pollOptions.push(option);
+  }
+  await writeDB(db);
+  return res.json({ ...poll, options: pollOptions.map(o => ({ ...o, votes: 0 })) });
+});
+
+app.post("/api/polls/:id/vote", authMiddleware, async (req, res) => {
+  const pollId = req.params.id;
+  const userId = req.user.sub;
+  const { option_id } = req.body || {};
+  if (!option_id) return res.status(400).json({ error: "Missing option_id" });
+  if (MYSQL_READY) {
+    await pool.query("DELETE FROM poll_votes WHERE poll_id=:pollId AND user_id=:userId", { pollId, userId });
+    await pool.query("INSERT INTO poll_votes (poll_id, option_id, user_id, created_at) VALUES (:pollId, :optionId, :userId, :now)", { pollId, optionId, userId, now: Date.now() });
+    const [poll] = await pool.query("SELECT * FROM polls WHERE id=:pollId", { pollId });
+    const [options] = await pool.query("SELECT * FROM poll_options WHERE poll_id=:pollId", { pollId });
+    const [votes] = await pool.query("SELECT option_id, COUNT(*) as count FROM poll_votes WHERE poll_id=:pollId GROUP BY option_id", { pollId });
+    const optionsWithVotes = options.map(o => ({ ...o, votes: votes.find(v => v.option_id === o.id)?.count || 0 }));
+    return res.json({ ...poll[0], options: optionsWithVotes });
+  }
+  const db = await readDB();
+  db.poll_votes = db.poll_votes.filter(v => !(v.poll_id === pollId && v.user_id === userId));
+  db.poll_votes.push({ poll_id: pollId, option_id, user_id: userId, created_at: Date.now() });
+  await writeDB(db);
+  const poll = db.polls.find(p => p.id === pollId);
+  const options = db.poll_options.filter(o => o.poll_id === pollId);
+  const optionsWithVotes = options.map(o => ({ ...o, votes: db.poll_votes.filter(v => v.poll_id === pollId && v.option_id === o.id).length }));
+  return res.json({ ...poll, options: optionsWithVotes });
+});
+
+// Private Messages Endpoints
+app.get("/api/messages", authMiddleware, async (req, res) => {
+  const userId = req.user.sub;
+  const withUserId = req.query.with;
+  if (MYSQL_READY) {
+    let query, params;
+    if (withUserId) {
+      query = `
+        SELECT pm.*, 
+          s.username as sender_username, s.avatar_url as sender_avatar_url,
+          r.username as receiver_username, r.avatar_url as receiver_avatar_url
+        FROM private_messages pm
+        LEFT JOIN users s ON s.id = pm.sender_id
+        LEFT JOIN users r ON r.id = pm.receiver_id
+        WHERE (pm.sender_id=:userId AND pm.receiver_id=:withUserId) OR (pm.sender_id=:withUserId AND pm.receiver_id=:userId)
+        ORDER BY pm.created_at ASC
+      `;
+      params = { userId, withUserId };
+    } else {
+      // Get conversations list (latest message with each user)
+      query = `
+        SELECT DISTINCT
+          CASE WHEN pm.sender_id = :userId THEN pm.receiver_id ELSE pm.sender_id END as other_user_id,
+          MAX(pm.created_at) as last_message_at,
+          u.username as other_username,
+          u.avatar_url as other_avatar_url
+        FROM private_messages pm
+        LEFT JOIN users u ON u.id = CASE WHEN pm.sender_id = :userId THEN pm.receiver_id ELSE pm.sender_id END
+        WHERE pm.sender_id=:userId OR pm.receiver_id=:userId
+        GROUP BY other_user_id
+        ORDER BY last_message_at DESC
+      `;
+      params = { userId };
+    }
+    const [rows] = await pool.query(query, params);
+    return res.json(rows);
+  }
+  const db = await readDB();
+  if (withUserId) {
+    const messages = db.private_messages.filter(m => 
+      (m.sender_id === userId && m.receiver_id === withUserId) || (m.sender_id === withUserId && m.receiver_id === userId)
+    ).sort((a, b) => a.created_at - b.created_at).map(m => {
+      const sender = db.users.find(u => u.id === m.sender_id);
+      const receiver = db.users.find(u => u.id === m.receiver_id);
+      return { ...m, sender_username: sender?.username, sender_avatar_url: sender?.avatar_url, receiver_username: receiver?.username, receiver_avatar_url: receiver?.avatar_url };
+    });
+    return res.json(messages);
+  } else {
+    const conversations = {};
+    db.private_messages.forEach(m => {
+      const otherId = m.sender_id === userId ? m.receiver_id : m.sender_id;
+      if (!conversations[otherId] || conversations[otherId].last_message_at < m.created_at) {
+        const other = db.users.find(u => u.id === otherId);
+        conversations[otherId] = {
+          other_user_id: otherId,
+          other_username: other?.username,
+          other_avatar_url: other?.avatar_url,
+          last_message_at: m.created_at
+        };
+      }
+    });
+    return res.json(Object.values(conversations).sort((a, b) => b.last_message_at - a.last_message_at));
+  }
+});
+
+app.post("/api/messages", authMiddleware, async (req, res) => {
+  const userId = req.user.sub;
+  const { receiver_id, content } = req.body || {};
+  if (!receiver_id || !content) return res.status(400).json({ error: "Missing receiver_id or content" });
+  if (MYSQL_READY) {
+    const msgId = uid();
+    await pool.query("INSERT INTO private_messages (id, sender_id, receiver_id, content, created_at) VALUES (:id, :senderId, :receiverId, :content, :now)", {
+      id: msgId,
+      senderId: userId,
+      receiverId: receiver_id,
+      content,
+      now: Date.now()
+    });
+    const [rows] = await pool.query(`
+      SELECT pm.*, 
+        s.username as sender_username, s.avatar_url as sender_avatar_url,
+        r.username as receiver_username, r.avatar_url as receiver_avatar_url
+      FROM private_messages pm
+      LEFT JOIN users s ON s.id = pm.sender_id
+      LEFT JOIN users r ON r.id = pm.receiver_id
+      WHERE pm.id = :msgId
+    `, { msgId });
+    // Create notification for receiver
+    const notifId = uid();
+    await pool.query("INSERT INTO notifications (id, user_id, type, title, content, data, created_at) VALUES (:id, :userId, 'message', 'Нове повідомлення', :msg, :data, :now)", {
+      id: notifId,
+      userId: receiver_id,
+      msg: content.substring(0, 100),
+      data: JSON.stringify({ sender_id: userId }),
+      now: Date.now()
+    });
+    return res.json(rows[0]);
+  }
+  const db = await readDB();
+  const msgId = uid();
+  const message = { id: msgId, sender_id: userId, receiver_id, content, created_at: Date.now() };
+  db.private_messages.push(message);
+  // Create notification for receiver
+  const notifId = uid();
+  db.notifications.push({
+    id: notifId,
+    user_id: receiver_id,
+    type: 'message',
+    title: 'Нове повідомлення',
+    content: content.substring(0, 100),
+    data: { sender_id: userId },
+    created_at: Date.now()
+  });
+  await writeDB(db);
+  const sender = db.users.find(u => u.id === userId);
+  const receiver = db.users.find(u => u.id === receiver_id);
+  return res.json({ ...message, sender_username: sender?.username, sender_avatar_url: sender?.avatar_url, receiver_username: receiver?.username, receiver_avatar_url: receiver?.avatar_url });
+});
+
+app.get("/api/messages/:id", authMiddleware, async (req, res) => {
+  const userId = req.user.sub;
+  const msgId = req.params.id;
+  if (MYSQL_READY) {
+    const [rows] = await pool.query(`
+      SELECT pm.*, 
+        s.username as sender_username, s.avatar_url as sender_avatar_url,
+        r.username as receiver_username, r.avatar_url as receiver_avatar_url
+      FROM private_messages pm
+      LEFT JOIN users s ON s.id = pm.sender_id
+      LEFT JOIN users r ON r.id = pm.receiver_id
+      WHERE pm.id = :msgId AND (pm.sender_id=:userId OR pm.receiver_id=:userId)
+    `, { msgId, userId });
+    if (!rows.length) return res.status(404).json({ error: "Message not found" });
+    // Mark as read if receiver
+    if (rows[0].receiver_id === userId && !rows[0].read_at) {
+      await pool.query("UPDATE private_messages SET read_at=:now WHERE id=:msgId", { now: Date.now(), msgId });
+      rows[0].read_at = Date.now();
+    }
+    return res.json(rows[0]);
+  }
+  const db = await readDB();
+  const message = db.private_messages.find(m => m.id === msgId && (m.sender_id === userId || m.receiver_id === userId));
+  if (!message) return res.status(404).json({ error: "Message not found" });
+  // Mark as read if receiver
+  if (message.receiver_id === userId && !message.read_at) {
+    message.read_at = Date.now();
+    await writeDB(db);
+  }
+  const sender = db.users.find(u => u.id === message.sender_id);
+  const receiver = db.users.find(u => u.id === message.receiver_id);
+  return res.json({ ...message, sender_username: sender?.username, sender_avatar_url: sender?.avatar_url, receiver_username: receiver?.username, receiver_avatar_url: receiver?.avatar_url });
+});
+
+// Update 2FA endpoints to work with MySQL
+app.post("/api/auth/2fa/setup", authMiddleware, async (req, res) => {
+  const userId = req.user.sub;
+  const secret = authenticator.generateSecret();
+  if (MYSQL_READY) {
+    await pool.query("UPDATE users SET totp_secret=:secret, twofa_enabled=0 WHERE id=:userId", { secret, userId });
+    const uri = authenticator.keyuri((await pool.query("SELECT email FROM users WHERE id=:userId", { userId }))[0][0].email, "Prestige RP", secret);
+    return res.json({ secret, uri });
+  }
+  const db = await readDB();
+  const user = db.users.find(x => x.id === userId);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  user.totp_secret = secret;
+  user.twofa_enabled = false;
+  await writeDB(db);
+  const uri = authenticator.keyuri(user.email, "Prestige RP", secret);
+  return res.json({ secret, uri });
+});
+
+app.post("/api/auth/2fa/activate", authMiddleware, async (req, res) => {
+  const { code } = req.body || {};
+  if (!code) return res.status(400).json({ error: "Missing code" });
+  const userId = req.user.sub;
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT * FROM users WHERE id=:userId", { userId });
+    if (!rows.length || !rows[0].totp_secret) return res.status(400).json({ error: "2FA not initialized" });
+    const ok = authenticator.verify({ token: code, secret: rows[0].totp_secret });
+    if (!ok) return res.status(401).json({ error: "Invalid 2FA code" });
+    await pool.query("UPDATE users SET twofa_enabled=1 WHERE id=:userId", { userId });
+    return res.json({ ok: true, twofa_enabled: true });
+  }
+  const db = await readDB();
+  const user = db.users.find(x => x.id === userId);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  if (!user.totp_secret) return res.status(400).json({ error: "2FA not initialized" });
+  const ok = authenticator.verify({ token: code, secret: user.totp_secret });
+  if (!ok) return res.status(401).json({ error: "Invalid 2FA code" });
+  user.twofa_enabled = true;
+  await writeDB(db);
+  return res.json({ ok: true, twofa_enabled: true });
+});
+
+app.post("/api/auth/2fa/disable", authMiddleware, async (req, res) => {
+  const { code } = req.body || {};
+  const userId = req.user.sub;
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT * FROM users WHERE id=:userId", { userId });
+    if (!rows.length) return res.status(404).json({ error: "User not found" });
+    if (rows[0].twofa_enabled) {
+      if (!code) return res.status(400).json({ error: "Missing code" });
+      const ok = authenticator.verify({ token: code, secret: rows[0].totp_secret });
+      if (!ok) return res.status(401).json({ error: "Invalid 2FA code" });
+    }
+    await pool.query("UPDATE users SET twofa_enabled=0 WHERE id=:userId", { userId });
+    return res.json({ ok: true, twofa_enabled: false });
+  }
+  const db = await readDB();
+  const user = db.users.find(x => x.id === userId);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  if (user.twofa_enabled) {
+    if (!code) return res.status(400).json({ error: "Missing code" });
+    const ok = authenticator.verify({ token: code, secret: user.totp_secret });
+    if (!ok) return res.status(401).json({ error: "Invalid 2FA code" });
+  }
+  user.twofa_enabled = false;
+  await writeDB(db);
+  return res.json({ ok: true, twofa_enabled: false });
+});
+
+// Update refresh token endpoint to work with MySQL
+app.post("/api/auth/refresh", async (req, res) => {
+  const { refresh_token } = req.body || {};
+  if (!refresh_token) return res.status(400).json({ error: "Missing refresh token" });
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT * FROM users WHERE refresh_token=:refreshToken", { refreshToken: refresh_token });
+    if (!rows.length) return res.status(401).json({ error: "Invalid refresh token" });
+    const user = rows[0];
+    if (!user.refresh_expires || user.refresh_expires < Date.now()) return res.status(401).json({ error: "Refresh token expired" });
+    const token = jwt.sign({ sub: user.id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
+    const newRefresh = uid();
+    await pool.query("UPDATE users SET refresh_token=:newRefresh, refresh_expires=:expires WHERE id=:userId", {
+      newRefresh,
+      expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
+      userId: user.id
+    });
+    return res.json({ 
+      token, 
+      refresh_token: newRefresh, 
+      user: { 
+        id: user.id, 
+        email: user.email, 
+        username: user.username, 
+        role: user.role,
+        avatar_url: user.avatar_url,
+        bio: user.bio,
+        notifications: !!user.notifications
+      } 
+    });
+  }
+  const db = await readDB();
+  const user = db.users.find(x => x.refresh_token === refresh_token);
+  if (!user) return res.status(401).json({ error: "Invalid refresh token" });
+  if (!user.refresh_expires || user.refresh_expires < Date.now()) return res.status(401).json({ error: "Refresh token expired" });
+  const token = jwt.sign({ sub: user.id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
+  const newRefresh = uid();
+  user.refresh_token = newRefresh;
+  user.refresh_expires = Date.now() + 1000 * 60 * 60 * 24 * 30;
+  await writeDB(db);
+  return res.json({ 
+    token, 
+    refresh_token: newRefresh, 
+    user: { 
+      id: user.id, 
+      email: user.email, 
+      username: user.username, 
+      role: user.role,
+      avatar_url: user.avatar_url,
+      bio: user.bio,
+      notifications: !!user.notifications
+    } 
+  });
+});
+
+app.post("/api/auth/logout_all", authMiddleware, async (req, res) => {
+  const userId = req.user.sub;
+  if (MYSQL_READY) {
+    await pool.query("UPDATE users SET refresh_token=NULL, refresh_expires=NULL WHERE id=:userId", { userId });
+    return res.json({ ok: true });
+  }
+  const db = await readDB();
+  const user = db.users.find(x => x.id === userId);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  user.refresh_token = null;
+  user.refresh_expires = null;
+  await writeDB(db);
+  return res.json({ ok: true });
+});
+
+app.post("/api/auth/2fa/skip", authMiddleware, async (req, res) => {
+  const userId = req.user.sub;
+  if (MYSQL_READY) {
+    await pool.query("UPDATE users SET twofa_prompt_required=0 WHERE id=:userId", { userId });
+    return res.json({ ok: true });
+  }
+  const db = await readDB();
+  const user = db.users.find(x => x.id === userId);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  user.twofa_prompt_required = false;
+  await writeDB(db);
+  return res.json({ ok: true });
+});
+
+app.get("/api/me", authMiddleware, async (req, res) => {
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT id, email, username, role, is_confirmed, avatar_url, bio, twofa_enabled, totp_secret, twofa_prompt_required FROM users WHERE id=:id", { id: req.user.sub });
+    if (!rows.length) return res.status(404).json({ error: "User not found" });
+    return res.json(rows[0]);
+  }
+  const db = await readDB();
+  const u = db.users.find(u => u.id === req.user.sub);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, twofa_enabled: !!u.twofa_enabled, avatar_url: u.avatar_url, bio: u.bio });
 });
 
 const server = app.listen(PORT, () => {

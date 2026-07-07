@@ -1021,6 +1021,24 @@ const ui = {
     this.el.cropImage = document.getElementById("cropImage");
     this.el.cropSave = document.getElementById("cropSave");
     this.el.cropCancel = document.getElementById("cropCancel");
+    this.el.notificationsBtn = document.getElementById("notificationsBtn");
+    this.el.notificationsDialog = document.getElementById("notificationsDialog");
+    this.el.notificationsForm = document.getElementById("notificationsForm");
+    this.el.notificationsList = document.getElementById("notificationsList");
+    this.el.notificationsTitle = document.getElementById("notificationsTitle");
+    this.el.notificationsCancel = document.getElementById("notificationsCancel");
+    this.el.messagesBtn = document.getElementById("messagesBtn");
+    this.el.messagesDialog = document.getElementById("messagesDialog");
+    this.el.messagesForm = document.getElementById("messagesForm");
+    this.el.messagesList = document.getElementById("messagesList");
+    this.el.messagesTitle = document.getElementById("messagesTitle");
+    this.el.messagesCancel = document.getElementById("messagesCancel");
+    this.el.profileBio = document.getElementById("profileBio");
+    this.el.addPollCheckbox = document.getElementById("addPollCheckbox");
+    this.el.pollOptionsContainer = document.getElementById("pollOptionsContainer");
+    this.el.pollQuestionInput = document.getElementById("pollQuestionInput");
+    this.el.pollOptionsList = document.getElementById("pollOptionsList");
+    this.el.addPollOptionBtn = document.getElementById("addPollOptionBtn");
   },
   bind() {
     this.el.lang.addEventListener("change", () => {
@@ -1134,9 +1152,70 @@ const ui = {
     });
     this.el.loginBtn.addEventListener("click", () => { this.el.loginDialog.showModal(); captcha.mount(this.el.loginCaptcha, () => {}); if (this.el.loginNote) this.el.loginNote.textContent = this.t("loginWarning"); });
     this.el.registerBtn.addEventListener("click", () => { this.el.registerDialog.showModal(); captcha.mount(this.el.registerCaptcha, () => {}); });
+    this.el.notificationsBtn.addEventListener("click", async () => { 
+      try {
+        const notifications = await api.get("/api/notifications");
+        this.el.notificationsList.innerHTML = "";
+        if (!notifications.length) {
+          this.el.notificationsList.innerHTML = `<div style="padding: 16px; text-align: center;">${this.t("empty") || "Няма уведомления"}</div>`;
+        } else {
+          notifications.forEach(n => {
+            const li = document.createElement("li");
+            li.className = "post";
+            li.style.padding = "12px";
+            li.style.marginBottom = "8px";
+            li.style.borderBottom = "1px solid var(--border)";
+            li.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                  <div style="font-weight: bold; ${n.read_at ? 'opacity: 0.7;' : ''}">${escapeHtml(n.title || "Уведомление")}</div>
+                  <div style="font-size: 0.9em; margin-top: 4px; ${n.read_at ? 'opacity: 0.7;' : ''}">${escapeHtml(n.content || "")}</div>
+                  <div style="font-size: 0.8em; color: var(--text); opacity: 0.6; margin-top: 8px;">${new Date(n.created_at).toLocaleString()}</div>
+                </div>
+              </div>
+            `;
+            if (!n.read_at) {
+              li.addEventListener("click", async () => {
+                await api.post(`/api/notifications/${n.id}/read`, {});
+                this.renderNotifications();
+              });
+            }
+            this.el.notificationsList.appendChild(li);
+          });
+        }
+      } catch (err) {
+        this.el.notificationsList.innerHTML = `<div style="padding: 16px; color: var(--error);">${this.t("apiError")}: ${err.message}</div>`;
+      }
+      this.el.notificationsDialog.showModal(); 
+    });
+    this.el.messagesBtn.addEventListener("click", async () => { 
+      try {
+        this.renderMessagesList();
+      } catch (err) {
+        this.el.messagesList.innerHTML = `<div style="padding: 16px; color: var(--error);">${this.t("apiError")}: ${err.message}</div>`;
+      }
+      this.el.messagesDialog.showModal(); 
+    });
+    this.el.notificationsCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.notificationsDialog.close(); });
+    this.el.messagesCancel.addEventListener("click", (e) => { e.preventDefault(); this.el.messagesDialog.close(); });
+    if (this.el.addPollCheckbox) {
+      this.el.addPollCheckbox.addEventListener("change", () => {
+        this.el.pollOptionsContainer.style.display = this.el.addPollCheckbox.checked ? "block" : "none";
+      });
+    }
+    if (this.el.addPollOptionBtn) {
+      this.el.addPollOptionBtn.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Опция";
+        input.className = "poll-option-input";
+        this.el.pollOptionsList.appendChild(input);
+      });
+    }
     this.el.profileBtn.addEventListener("click", () => {
       if (!this.state.user) return;
       this.el.profileUsername.value = this.state.user.username || "";
+      this.el.profileBio.value = this.state.user.bio || "";
       this.el.profileNotifications.checked = !!this.state.user.notifications;
       // Ensure stats elements exist even if HTML is older
       if (!this.el.profileStatsThreads || !this.el.profileStatsPosts) {
@@ -1178,7 +1257,8 @@ const ui = {
           const j = await r.json();
           if (j.avatar_url) this.state.user.avatar_url = j.avatar_url;
         }
-        await api.post(`/api/users/${id}/profile`, { username: this.el.profileUsername.value.trim(), notifications: !!this.el.profileNotifications.checked });
+        const updatedUser = await api.post(`/api/users/${id}/profile`, { username: this.el.profileUsername.value.trim(), bio: this.el.profileBio.value.trim(), notifications: !!this.el.profileNotifications.checked });
+        this.state.user = { ...this.state.user, ...updatedUser };
         this.el.profileDialog.close();
         this.updateHeaderAuth();
       } catch (err) { alert(ui.t("apiError") + ": " + err.message) }
@@ -1368,26 +1448,44 @@ const ui = {
       if (!this.state.user) { this.el.loginDialog.showModal(); return }
       this.el.threadDialog.showModal();
     });
-    this.el.threadForm.addEventListener("submit", (e) => {
+    this.el.threadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const title = this.el.threadTitleInput.value.trim();
       const content = this.el.threadContentInput.value.trim();
       if (!title || !content) return;
-      store.addThread(this.state.current.categoryId, title, content)
-        .then(t => {
-          const tagsRaw = (this.el.threadTagsInput?.value || "").trim();
-          if (tagsRaw) {
-            const tags = tagsRaw.split(",").map(s => s.trim()).filter(Boolean);
-            api.post(`/api/threads/${t.id}/edit`, { tags }).catch(()=>{});
+      const thread = await store.addThread(this.state.current.categoryId, title, content);
+      
+      // Create poll if checkbox is checked
+      if (this.el.addPollCheckbox && this.el.addPollCheckbox.checked) {
+        const question = this.el.pollQuestionInput?.value?.trim();
+        const optionInputs = this.el.pollOptionsList?.querySelectorAll("input") || [];
+        const options = Array.from(optionInputs).map(i => i.value.trim()).filter(Boolean);
+        if (question && options.length >= 2) {
+          try {
+            await api.post(`/api/threads/${thread.id}/polls`, { question, options });
+          } catch (err) {
+            console.error("Failed to create poll:", err);
           }
-          this.el.threadTitleInput.value = "";
-          this.el.threadContentInput.value = "";
-          if (this.el.threadTagsInput) this.el.threadTagsInput.value = "";
-          this.el.threadDialog.close();
-          this.renderThreads(this.state.current.categoryId);
-          this.openThread(t.id);
-        })
-        .catch(err => alert(ui.t("apiError") + ": " + err.message));
+        }
+      }
+      
+      // Handle tags
+      const tagsRaw = (this.el.threadTagsInput?.value || "").trim();
+      if (tagsRaw) {
+        const tags = tagsRaw.split(",").map(s => s.trim()).filter(Boolean);
+        api.post(`/api/threads/${thread.id}/edit`, { tags }).catch(()=>{});
+      }
+      
+      this.el.threadTitleInput.value = "";
+      this.el.threadContentInput.value = "";
+      if (this.el.threadTagsInput) this.el.threadTagsInput.value = "";
+      if (this.el.pollQuestionInput) this.el.pollQuestionInput.value = "";
+      if (this.el.pollOptionsList) this.el.pollOptionsList.innerHTML = "";
+      if (this.el.addPollCheckbox) this.el.addPollCheckbox.checked = false;
+      if (this.el.pollOptionsContainer) this.el.pollOptionsContainer.style.display = "none";
+      this.el.threadDialog.close();
+      this.renderThreads(this.state.current.categoryId);
+      this.openThread(thread.id);
     });
     this.el.searchBtn.addEventListener("click", () => {
       this.state.searchPage = 1;
@@ -2122,12 +2220,94 @@ const ui = {
     this.show("posts");
     this.renderPosts(threadId);
   },
-  renderPosts(threadId) {
+  async renderPosts(threadId) {
     const ul = this.el.postList;
     ul.innerHTML = "";
     api.get(`/api/threads/${threadId}/meta`).then(meta => {
       if (this.el.threadMeta) this.el.threadMeta.textContent = `${escapeHtml(meta.category_name || "")} > ${escapeHtml(meta.title || "")} • ${this.t("views")}: ${meta.views || 0}`;
     }).catch(()=>{});
+    
+    // Render polls
+    try {
+      const polls = await api.get(`/api/threads/${threadId}/polls`);
+      if (polls.length > 0) {
+        polls.forEach(poll => {
+          const pollDiv = document.createElement("div");
+          pollDiv.className = "post";
+          pollDiv.style.padding = "16px";
+          pollDiv.style.marginBottom = "16px";
+          
+          const totalVotes = poll.options.reduce((sum, o) => sum + (o.votes || 0), 0);
+          
+          pollDiv.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 12px; font-size: 1.1em;">📊 ${escapeHtml(poll.question)}</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${poll.options.map(option => {
+                const percentage = totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0;
+                return `
+                  <div style="position: relative;">
+                    <div style="
+                      height: 32px;
+                      background: var(--border);
+                      border-radius: 8px;
+                      overflow: hidden;
+                    ">
+                      <div style="
+                        height: 100%;
+                        width: ${percentage}%;
+                        background: var(--primary);
+                        transition: width 0.3s ease;
+                      "></div>
+                    </div>
+                    <div style="
+                      position: absolute;
+                      top: 50%;
+                      left: 12px;
+                      transform: translateY(-50%);
+                      display: flex;
+                      justify-content: space-between;
+                      width: calc(100% - 24px);
+                    ">
+                      <span style="font-weight: 500;">${escapeHtml(option.text)}</span>
+                      <span style="opacity: 0.8;">${option.votes || 0} (${percentage}%)</span>
+                    </div>
+                    <button class="ghost" data-option-id="${option.id}" data-poll-id="${poll.id}" style="
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 100%;
+                      opacity: 0;
+                      cursor: pointer;
+                    "></button>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+            <div style="margin-top: 8px; font-size: 0.9em; opacity: 0.7;">${totalVotes} ${this.t("likes") || "гласа"}</div>
+          `;
+          
+          // Add click handlers for voting
+          pollDiv.querySelectorAll("button[data-option-id]").forEach(btn => {
+            btn.addEventListener("click", async (e) => {
+              const optionId = btn.dataset.optionId;
+              const pollId = btn.dataset.pollId;
+              try {
+                const updatedPoll = await api.post(`/api/polls/${pollId}/vote`, { option_id: optionId });
+                this.renderPosts(threadId); // Re-render to update poll
+              } catch (err) {
+                alert(ui.t("apiError") + ": " + err.message);
+              }
+            });
+          });
+          
+          ul.appendChild(pollDiv);
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load polls:", err);
+    }
+    
     const page = this.state.postsPage || 1;
     api.get(`/api/threads/${threadId}/posts_paginated?page=${page}&size=10`).then(res => {
       const list = res.items;
@@ -2147,6 +2327,14 @@ const ui = {
         const roleBadge = role === "admin" ? `<span class="badge badge-error">ADMIN</span>` : (role === "moderator" ? `<span class="badge badge-warning">MOD</span>` : "");
         const likeCount = (p.reactions || []).filter(r => r.type === "like").length;
         
+        // Get reaction counts
+        const reactions = p.reactions || [];
+        const reactionCounts = {};
+        reactions.forEach(r => {
+          reactionCounts[r.type] = (reactionCounts[r.type] || 0) + 1;
+        });
+        const reactionTypes = ["👍", "❤️", "😮", "😢", "😡"];
+        
         li.innerHTML = `
           <div class="post-sidebar">
             <img src="${avatarSrc}" class="post-avatar" alt="${escapeHtml(p.author_username || "User")}">
@@ -2157,6 +2345,13 @@ const ui = {
             <div class="post-header">
               <div class="post-time">${date}</div>
               <div class="post-actions">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                  ${reactionTypes.map(type => `
+                    <button class="reaction-btn" data-post-id="${p.id}" data-reaction="${type}">
+                      ${type} ${reactionCounts[type] || ''}
+                    </button>
+                  `).join('')}
+                </div>
                 <button class="ghost like-btn" data-post-id="${p.id}">${this.t("likes")}: ${likeCount}</button>
                 <button class="ghost" data-action="quote" data-post-id="${p.id}">${this.t("quote")}</button>
                 <button class="ghost" data-action="report" data-post-id="${p.id}">${this.t("report")}</button>
@@ -2215,9 +2410,203 @@ const ui = {
           });
         });
         
+        // Add reaction button listeners
+        li.querySelectorAll('.reaction-btn').forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const reaction = btn.dataset.reaction;
+            api.post(`/api/posts/${p.id}/react`, { type: reaction }).then(r => {
+              this.renderPosts(threadId);
+            });
+          });
+        });
+        
         ul.appendChild(li);
       });
     });
+  },
+  async renderMessagesList(withUserId = null) {
+    this.el.messagesList.innerHTML = "";
+    if (withUserId) {
+      // Render conversation with a specific user
+      const messages = await api.get(`/api/messages?with=${encodeURIComponent(withUserId)}`);
+      const container = document.createElement("div");
+      container.style.display = "flex";
+      container.style.flexDirection = "column";
+      container.style.gap = "8px";
+      container.style.maxHeight = "400px";
+      container.style.overflowY = "auto";
+      container.style.paddingBottom = "8px";
+      
+      // Back button
+      const backBtn = document.createElement("button");
+      backBtn.className = "ghost";
+      backBtn.textContent = this.t("back") || "Назад";
+      backBtn.style.marginBottom = "8px";
+      backBtn.addEventListener("click", () => this.renderMessagesList());
+      container.appendChild(backBtn);
+      
+      // Messages
+      messages.forEach(m => {
+        const msgDiv = document.createElement("div");
+        const isOwn = m.sender_id === this.state.user.id;
+        msgDiv.style.display = "flex";
+        msgDiv.style.flexDirection = "column";
+        msgDiv.style.alignItems = isOwn ? "flex-end" : "flex-start";
+        msgDiv.innerHTML = `
+          <div style="
+            background: ${isOwn ? 'var(--primary)' : 'var(--border)'}; 
+            color: ${isOwn ? 'white' : 'var(--text)'}; 
+            padding: 8px 12px; 
+            border-radius: 12px; 
+            max-width: 70%;
+            word-wrap: break-word;
+          ">
+            ${escapeHtml(m.content)}
+          </div>
+          <div style="font-size: 0.75em; opacity: 0.6; margin-top: 4px;">${new Date(m.created_at).toLocaleString()}</div>
+        `;
+        container.appendChild(msgDiv);
+      });
+      
+      // Send new message form
+      const formDiv = document.createElement("div");
+      formDiv.style.display = "flex";
+      formDiv.style.gap = "8px";
+      formDiv.style.marginTop = "8px";
+      formDiv.innerHTML = `
+        <input type="text" placeholder="${this.t("reply")}" style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+        <button class="primary">${this.t("send") || "Изпрати"}</button>
+      `;
+      const input = formDiv.querySelector("input");
+      const sendBtn = formDiv.querySelector("button");
+      sendBtn.addEventListener("click", async () => {
+        const content = input.value.trim();
+        if (!content) return;
+        await api.post("/api/messages", { receiver_id: withUserId, content });
+        input.value = "";
+        this.renderMessagesList(withUserId);
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") sendBtn.click();
+      });
+      container.appendChild(formDiv);
+      this.el.messagesList.appendChild(container);
+    } else {
+      // Render conversations list
+      const conversations = await api.get("/api/messages");
+      if (!conversations.length) {
+        this.el.messagesList.innerHTML = `<div style="padding: 16px; text-align: center;">${this.t("empty")}</div>`;
+      } else {
+        conversations.forEach(c => {
+          const li = document.createElement("li");
+          li.style.cursor = "pointer";
+          li.style.padding = "12px";
+          li.style.display = "flex";
+          li.style.alignItems = "center";
+          li.style.gap = "12px";
+          li.style.borderBottom = "1px solid var(--border)";
+          const avatarSrc = this.avatarUrlOrFallback({ username: c.other_username, avatar_url: c.other_avatar_url });
+          li.innerHTML = `
+            <img src="${avatarSrc}" style="width: 40px; height: 40px; border-radius: 50%;">
+            <div style="flex: 1;">
+              <div style="font-weight: bold;">${escapeHtml(c.other_username)}</div>
+              <div style="font-size: 0.85em; opacity: 0.7;">${new Date(c.last_message_at).toLocaleString()}</div>
+            </div>
+          `;
+          li.addEventListener("click", () => this.renderMessagesList(c.other_user_id));
+          this.el.messagesList.appendChild(li);
+        });
+      }
+      // Add new message button
+      const newMsgBtn = document.createElement("button");
+      newMsgBtn.className = "primary";
+      newMsgBtn.textContent = this.t("newPost") || "Ново съобщение";
+      newMsgBtn.style.marginTop = "12px";
+      newMsgBtn.addEventListener("click", async () => {
+        const users = await api.get("/api/users");
+        const userSelect = document.createElement("select");
+        userSelect.style.padding = "8px";
+        userSelect.style.borderRadius = "8px";
+        userSelect.style.border = "1px solid var(--border)";
+        userSelect.style.background = "var(--bg)";
+        userSelect.style.color = "var(--text)";
+        userSelect.style.flex = "1";
+        users.filter(u => u.id !== this.state.user.id).forEach(u => {
+          const opt = document.createElement("option");
+          opt.value = u.id;
+          opt.textContent = u.username;
+          userSelect.appendChild(opt);
+        });
+        const contentInput = document.createElement("input");
+        contentInput.type = "text";
+        contentInput.placeholder = this.t("reply");
+        contentInput.style.padding = "8px";
+        contentInput.style.borderRadius = "8px";
+        contentInput.style.border = "1px solid var(--border)";
+        contentInput.style.background = "var(--bg)";
+        contentInput.style.color = "var(--text)";
+        contentInput.style.flex = "2";
+        
+        const container = document.createElement("div");
+        container.style.display = "flex";
+        container.style.gap = "8px";
+        container.style.marginTop = "12px";
+        container.appendChild(userSelect);
+        container.appendChild(contentInput);
+        
+        const sendBtn = document.createElement("button");
+        sendBtn.className = "primary";
+        sendBtn.textContent = this.t("send") || "Изпрати";
+        sendBtn.style.marginTop = "8px";
+        sendBtn.addEventListener("click", async () => {
+          const receiverId = userSelect.value;
+          const content = contentInput.value.trim();
+          if (!receiverId || !content) return;
+          await api.post("/api/messages", { receiver_id: receiverId, content });
+          this.renderMessagesList();
+        });
+        container.appendChild(sendBtn);
+        
+        this.el.messagesList.appendChild(container);
+      });
+      this.el.messagesList.appendChild(newMsgBtn);
+    }
+  },
+  async renderNotifications() {
+    try {
+        const notifications = await api.get("/api/notifications");
+        this.el.notificationsList.innerHTML = "";
+        if (!notifications.length) {
+          this.el.notificationsList.innerHTML = `<div style="padding: 16px; text-align: center;">${this.t("empty") || "Няма уведомления"}</div>`;
+        } else {
+          notifications.forEach(n => {
+            const li = document.createElement("li");
+            li.className = "post";
+            li.style.padding = "12px";
+            li.style.marginBottom = "8px";
+            li.style.borderBottom = "1px solid var(--border)";
+            li.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                  <div style="font-weight: bold; ${n.read_at ? 'opacity: 0.7;' : ''}">${escapeHtml(n.title || "Уведомление")}</div>
+                  <div style="font-size: 0.9em; margin-top: 4px; ${n.read_at ? 'opacity: 0.7;' : ''}">${escapeHtml(n.content || "")}</div>
+                  <div style="font-size: 0.8em; color: var(--text); opacity: 0.6; margin-top: 8px;">${new Date(n.created_at).toLocaleString()}</div>
+                </div>
+              </div>
+            `;
+            if (!n.read_at) {
+              li.addEventListener("click", async () => {
+                await api.post(`/api/notifications/${n.id}/read`, {});
+                this.renderNotifications();
+              });
+            }
+            this.el.notificationsList.appendChild(li);
+          });
+        }
+      } catch (err) {
+        this.el.notificationsList.innerHTML = `<div style="padding: 16px; color: var(--error);">${this.t("apiError")}: ${err.message}</div>`;
+      }
   },
   renderAdmin() {
     this.el.adminCategoryList.innerHTML = "";
