@@ -16,8 +16,88 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <section class="site-identity">
+    <div class="site-brand-bar">
+      <div class="brand-left">
+        <div class="brand-logo" aria-hidden="true"><span>P</span></div>
+        <div class="brand-text">
+          <div class="brand-title">
+            <h1 class="brand-name"><span class="neon-highlight">PRESTIGE</span> ROLEPLAY</h1>
+            <span class="brand-tag live" data-badge="live">ONLINE</span>
+            <span class="brand-tag" data-badge="tag">CRMP / SA-MP</span>
+          </div>
+          <div class="brand-subtitle">
+            <span>Форум на общността</span>
+            <span class="sep">◆</span>
+            <span>GTA RolePlay • Criminal Russia</span>
+            <span class="sep">◆</span>
+            <span id="siteSubtitleTag">Cyberpunk Theme</span>
+          </div>
+        </div>
+      </div>
+      <div class="site-stats" id="siteStatsBar">
+        <div class="stat-pill online" title="Онлайн в момента">
+          <span class="stat-dot"></span>
+          <span class="stat-icon">👥</span>
+          <span>Онлайн</span>
+          <span class="stat-num" id="statOnline">0</span>
+        </div>
+        <div class="stat-pill" title="Потребители в форума">
+          <span class="stat-icon">🧑</span>
+          <span>Потребители</span>
+          <span class="stat-num" id="statUsers">0</span>
+        </div>
+        <div class="stat-pill" title="Отворени теми">
+          <span class="stat-icon">📝</span>
+          <span>Теми</span>
+          <span class="stat-num" id="statThreads">0</span>
+        </div>
+        <div class="stat-pill" title="Публикации/постове">
+          <span class="stat-icon">💬</span>
+          <span>Постове</span>
+          <span class="stat-num" id="statPosts">0</span>
+        </div>
+      </div>
+    </div>
+    <nav class="site-quick-nav" aria-label="Quick Navigation">
+      <div class="quick-links" id="quickLinks">
+        <button class="quick-link" data-nav="home" title="Начало">
+          <span class="ql-icon">🏠</span><span>Начало</span>
+        </button>
+        <button class="quick-link" data-nav="rules" title="Правила">
+          <span class="ql-icon">📋</span><span>Правила</span>
+        </button>
+        <button class="quick-link" data-nav="factions" title="Фракции">
+          <span class="ql-icon">👥</span><span>Фракции</span>
+        </button>
+        <button class="quick-link" data-nav="applications" title="Заявления">
+          <span class="ql-icon">📨</span><span>Заявления</span>
+        </button>
+        <button class="quick-link" data-nav="reports" title="Репорти">
+          <span class="ql-icon">🚨</span><span>Репорти</span>
+        </button>
+        <button class="quick-link" data-nav="appeals" title="Апели">
+          <span class="ql-icon">⚠️</span><span>Апели</span>
+        </button>
+        <button class="quick-link" data-nav="marketplace" title="Пазар">
+          <span class="ql-icon">🛒</span><span>Пазар</span>
+        </button>
+        <button class="quick-link" data-nav="events" title="Събития">
+          <span class="ql-icon">🎉</span><span>Събития</span>
+        </button>
+        <button class="quick-link" data-nav="guides" title="Уроци">
+          <span class="ql-icon">🎓</span><span>Уроци</span>
+        </button>
+      </div>
+      <div class="header-actions">
+        <button id="themeEditorQuick" class="header-btn" title="Тема">🎨 Тема</button>
+        <button id="searchBtnQuick" class="header-btn" title="Търсене">🔍 Търси</button>
+      </div>
+    </nav>
+  </section>
+
   <header class="header">
-    <div class="brand">
+    <div class="brand" style="display:none;">
       <img class="logo" src="/acetone-2026128-211852-355.png" alt="Prestige RP">
       <div class="titles">
         <h1 id="title">Prestige RolePlay</h1>
@@ -25,29 +105,29 @@
       </div>
     </div>
     <button id="burgerBtn" class="ghost burger" aria-label="Меню" title="Меню">☰</button>
-    <div class="controls" id="controls">
-      <label for="lang" id="langLabel">Език</label>
-      <select id="lang">
+    <div class="controls" id="controls" style="flex:1;justify-content:flex-end;gap:10px;">
+      <label for="lang" id="langLabel" style="font-size:11px;opacity:0.9;">Език</label>
+      <select id="lang" style="padding:8px;border-radius:4px;">
         <option value="ru" selected>Русский</option>
         <option value="kk">Қазақша</option>
         <option value="uk">Українська</option>
         <option value="bg">Български</option>
         <option value="en">English</option>
       </select>
-      <button id="notificationsBtn" class="ghost">🔔</button>
-      <button id="messagesBtn" class="ghost">💬</button>
-      <button id="groupBtn" class="ghost"></button>
-      <button id="supportBtn" class="ghost"></button>
-      <button id="discordBtn" class="ghost">Discord</button>
-      <button id="themeToggle" class="ghost"></button>
-      <button id="themeEditor" class="ghost"></button>
-      <button id="loginBtn" class="ghost">Вход</button>
-      <button id="registerBtn" class="primary">Регистрация</button>
+      <button id="notificationsBtn" class="ghost header-btn" style="padding:8px 10px;">🔔</button>
+      <button id="messagesBtn" class="ghost header-btn" style="padding:8px 10px;">💬</button>
+      <button id="groupBtn" class="ghost header-btn" style="padding:8px 10px;">👥</button>
+      <button id="supportBtn" class="ghost header-btn" style="padding:8px 10px;">🛟</button>
+      <button id="discordBtn" class="ghost header-btn" style="padding:8px 12px;">Discord</button>
+      <button id="themeToggle" class="ghost header-btn" style="padding:8px 10px;">🌓</button>
+      <button id="themeEditor" class="ghost header-btn" style="padding:8px 10px;">🎨</button>
+      <button id="loginBtn" class="ghost header-btn" style="padding:8px 14px;">Вход</button>
+      <button id="registerBtn" class="primary" style="padding:8px 18px;font-weight:800;">Регистрация</button>
       <span id="userBadge" class="badge" style="display:none"></span>
       <img id="headerAvatar" class="avatar" alt="" style="display:none">
-      <button id="logoutBtn" class="ghost" style="display:none">Изход</button>
-      <button id="profileBtn" class="ghost" style="display:none">Профил</button>
-      <button id="adminBtn" class="ghost" style="display:none">Админ</button>
+      <button id="logoutBtn" class="ghost header-btn" style="display:none;padding:8px 14px;">Изход</button>
+      <button id="profileBtn" class="ghost header-btn" style="display:none;padding:8px 14px;">Профил</button>
+      <button id="adminBtn" class="ghost header-btn" style="display:none;padding:8px 14px;">Админ</button>
       <span id="dbBadge" class="badge"></span>
     </div>
   </header>
