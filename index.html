@@ -172,7 +172,20 @@
         <div class="meta">
           <span id="profileStatsThreads"></span>
           <span id="profileStatsPosts" style="margin-left:12px"></span>
+          <span id="profileReputation" style="margin-left:12px; font-weight:700;"></span>
+          <span id="profileWarnCount" style="margin-left:12px; font-weight:700;"></span>
         </div>
+        <div id="rpProfileRpSection" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;">
+          <div id="profileReputationBox" style="padding:12px;border-radius:4px;background:linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04));border:1px solid rgba(16,185,129,0.3);">
+            <div id="profileRepLabel" style="font-weight:700;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;font-size:12px;">Репутация</div>
+            <div id="profileRepValue" style="font-size:24px;font-weight:700;color:#10b981;text-shadow:0 0 8px rgba(16,185,129,0.4);">+0</div>
+          </div>
+          <div id="profileWarnsBox" style="padding:12px;border-radius:4px;background:linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));border:1px solid rgba(239,68,68,0.3);">
+            <div id="profileWarnsLabel" style="font-weight:700;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;font-size:12px;">Предупреждения</div>
+            <div id="profileWarnsValue" style="font-size:24px;font-weight:700;color:#ef4444;text-shadow:0 0 8px rgba(239,68,68,0.4);">0 / 3</div>
+          </div>
+        </div>
+        <div id="profileWarnsList" style="margin-bottom:16px;"></div>
         <div class="actions">
           <button type="button" class="ghost" id="enable2faBtn">Включи 2FA (Google Authenticator)</button>
           <button type="button" class="ghost" id="disable2faBtn">Изключи 2FA</button>
@@ -254,6 +267,34 @@
       <dialog id="threadDialog">
       <form method="dialog" id="threadForm" class="form">
         <h3 id="threadDialogTitle">Нова тема</h3>
+        <div id="rpThreadOptions" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label for="threadStatusSelect" style="font-weight:700;margin-bottom:6px;display:block;" id="threadStatusLabel">Статус на темата</label>
+            <select id="threadStatusSelect">
+              <option value="open" data-label-status="statusOpen">Отворена</option>
+              <option value="in_progress" data-label-status="statusInProgress">В процес</option>
+              <option value="approved" data-label-status="statusApproved">Одобрена</option>
+              <option value="rejected" data-label-status="statusRejected">Отхвърлена</option>
+              <option value="closed" data-label-status="statusClosed">Затворена</option>
+              <option value="under_review" data-label-status="statusReview">В преглед</option>
+            </select>
+          </div>
+          <div>
+            <label for="threadTemplateSelect" style="font-weight:700;margin-bottom:6px;display:block;" id="threadTemplateLabel">Шаблон</label>
+            <select id="threadTemplateSelect">
+              <option value="" data-label-template="templateNone">Без шаблон</option>
+              <option value="report" data-label-template="templateReport">Жалба - Репорт (Report)</option>
+              <option value="application" data-label-template="templateApplication">Заявление (Application)</option>
+              <option value="ban_appeal" data-label-template="templateBanAppeal">Апел за бан (Unban)</option>
+              <option value="warn_appeal" data-label-template="templateWarnAppeal">Апел за предупреждение</option>
+              <option value="suggestion" data-label-template="templateSuggestion">Предложение</option>
+              <option value="bug" data-label-template="templateBug">Bug Report</option>
+              <option value="whitelist" data-label-template="templateWhitelist">Whitelist заявка</option>
+              <option value="complaint" data-label-template="templateComplaint">Жалба до Администрация</option>
+              <option value="faction_app" data-label-template="templateFactionApp">Заявка за фракция</option>
+            </select>
+          </div>
+        </div>
         <input id="threadTitleInput" type="text" required>
         <textarea id="threadContentInput" rows="6" required></textarea>
         <input id="threadTagsInput" type="text" placeholder="Тагове (разделени със запетая)">
@@ -277,6 +318,15 @@
         <form method="dialog" id="editThreadForm" class="form">
           <h3 id="editThreadTitle">Редакция на тема</h3>
           <input id="editThreadTitleInput" type="text" required>
+          <label for="editThreadStatusSelect" style="font-weight:700;margin-bottom:6px;display:block;" id="editThreadStatusLabel">Статус</label>
+          <select id="editThreadStatusSelect" style="margin-bottom:12px;">
+            <option value="open" data-edit-status="statusOpen">Отворена</option>
+            <option value="in_progress" data-edit-status="statusInProgress">В процес</option>
+            <option value="approved" data-edit-status="statusApproved">Одобрена</option>
+            <option value="rejected" data-edit-status="statusRejected">Отхвърлена</option>
+            <option value="closed" data-edit-status="statusClosed">Затворена</option>
+            <option value="under_review" data-edit-status="statusReview">В преглед</option>
+          </select>
           <input id="editThreadTagsInput" type="text" placeholder="Тагове (разделени със запетая)">
           <div class="actions">
             <button type="button" class="ghost" id="editThreadCancel">Отказ</button>
@@ -332,6 +382,7 @@
           <button id="adminExportDBBtn" class="ghost">Експорт база</button>
           <button id="adminImportDBBtn" class="ghost">Импорт база</button>
           <input id="adminImportFile" type="file" accept="application/json" style="display:none">
+          <button id="adminInstallRpBtn" class="primary" style="background:linear-gradient(135deg,#0bf1ff,#08a8b2);color:#0c101b;box-shadow:0 0 16px rgba(11,241,255,0.3);">💾 Инсталирай CRMP Standard</button>
         </div>
       </div>
       <div class="meta" id="adminMeta"></div>
@@ -340,6 +391,31 @@
         <input id="adminCategoryName" type="text" placeholder="Име на категория">
         <select id="adminCategoryParent" style="padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
           <option value="">-- Без родител --</option>
+        </select>
+        <select id="adminCategoryIcon" style="padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);" title="Икона">
+          <option value="📢">📢 Новини</option>
+          <option value="📋">📋 Правила</option>
+          <option value="💭">💭 Общо</option>
+          <option value="🔰">🔰 Представяне</option>
+          <option value="👥">👥 Фракции</option>
+          <option value="🚔">🚔 Полиция</option>
+          <option value="🏥">🏥 Болница</option>
+          <option value="⚖️">⚖️ Правосъдие</option>
+          <option value="🏛️">🏛️ Правителство</option>
+          <option value="🔫">🔫 Мафия</option>
+          <option value="🏴">🏴 Банди</option>
+          <option value="🏪">🏪 Бизнеси</option>
+          <option value="📝">📝 Заявки</option>
+          <option value="📨">📨 Репорти</option>
+          <option value="⚠️">⚠️ Апели</option>
+          <option value="💯">💯 Whitelist</option>
+          <option value="💡">💡 Предложения</option>
+          <option value="🐛">🐛 Bug Reports</option>
+          <option value="🛒">🛒 Marketplace</option>
+          <option value="🎉">🎉 Събития</option>
+          <option value="📊">📊 Статистика</option>
+          <option value="💼">💼 Фирми</option>
+          <option value="📺">📺 Media</option>
         </select>
         <button id="adminAddCategory" class="primary">Добави</button>
       </div>
