@@ -1,15 +1,16 @@
 /* ========================================
-   PRESTIGE ROLEPLAY - MODERN FORUM THEME
+   PRESTIGE ROLEPLAY - CYBERPUNK FORUM THEME
+   Inspired by HYPE RP design
    ======================================== */
 
 :root {
-  /* Primary Colors - Rich Purple Gradient */
-  --primary: #6d28d9;
-  --primary-light: #8b5cf6;
-  --primary-dark: #5b21b6;
-  --primary-soft: rgba(109, 40, 217, 0.15);
-  --accent: #a855f7;
-  --accent-light: #c084fc;
+  /* Primary Colors - Cyberpunk Cyan/Blue Palette */
+  --primary: #0bf1ff;
+  --primary-light: #5ff6ff;
+  --primary-dark: #08a8b2;
+  --primary-soft: rgba(11, 241, 255, 0.15);
+  --accent: #0bf1ff;
+  --accent-light: #5ff6ff;
   
   /* Success/Warning/Danger */
   --success: #10b981;
@@ -18,36 +19,37 @@
   --danger: #ef4444;
   --danger-soft: rgba(239, 68, 68, 0.15);
   
-  /* Backgrounds */
-  --bg: #0f0f1a;
-  --bg-soft: #151525;
-  --bg-card: #1a1a30;
-  --bg-card-hover: #21213d;
+  /* Backgrounds - Dark Industrial */
+  --bg: #0a0d16;
+  --bg-soft: #0c101b;
+  --bg-card: #10141f;
+  --bg-card-hover: #181e2e;
   
   /* Text Colors */
-  --text: #f8fafc;
+  --text: #f7f7f7;
   --text-soft: #cbd5e1;
-  --text-muted: #94a3b8;
+  --text-muted: #6b7a99;
   
   /* Borders */
-  --border: #334155;
-  --border-soft: #475569;
+  --border: #1e2538;
+  --border-soft: #2a3350;
   
-  /* Shadows & Glows */
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-  --shadow: 0 8px 24px rgba(0,0,0,0.4);
-  --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
-  --shadow-glow: 0 0 32px rgba(109, 40, 217, 0.3);
+  /* Shadows & Glows - Cyan Neon */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
+  --shadow: 0 8px 24px rgba(0,0,0,0.6);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.7);
+  --shadow-glow: 0 0 32px rgba(11, 241, 255, 0.4);
+  --shadow-glow-sm: 1px 1px 12px 1px rgba(11, 241, 255, 0.5);
   
   /* Border Radius */
-  --radius-sm: 8px;
-  --radius: 16px;
-  --radius-lg: 24px;
+  --radius-sm: 4px;
+  --radius: 4px;
+  --radius-lg: 4px;
   
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ========================================
@@ -64,16 +66,42 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Play', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
   background: 
-    radial-gradient(1200px 800px at 10% -10%, rgba(109,40,217,0.2), transparent 60%),
-    radial-gradient(1000px 600px at 90% 110%, rgba(168,85,247,0.15), transparent 60%),
-    linear-gradient(135deg, var(--bg) 0%, #0a0a14 100%);
+    radial-gradient(1200px 800px at 10% -10%, rgba(11,241,255,0.08), transparent 60%),
+    radial-gradient(1000px 600px at 90% 110%, rgba(11,241,255,0.05), transparent 60%),
+    linear-gradient(135deg, var(--bg) 0%, #05070d 100%);
   min-height: 100vh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+/* Cyberpunk corner accents utility */
+.cyber-corner {
+  position: relative;
+}
+
+.cyber-corner::before,
+.cyber-corner::after {
+  content: '';
+  position: absolute;
+  width: 47px;
+  height: 13px;
+  background-color: var(--primary);
+  transform: skewX(-45deg);
+  z-index: 2;
+}
+
+.cyber-corner::before {
+  top: -7px;
+  left: 20px;
+}
+
+.cyber-corner::after {
+  bottom: -7px;
+  right: 35px;
 }
 
 /* ========================================
@@ -85,13 +113,13 @@ body {
   justify-content: space-between;
   gap: 16px;
   padding: 16px 32px;
-  border-bottom: 1px solid rgba(109, 40, 217, 0.2);
-  background: linear-gradient(135deg, rgba(21,21,37,0.95) 0%, rgba(26,26,48,0.95) 100%);
+  border-bottom: 1px solid rgba(11, 241, 255, 0.25);
+  background: linear-gradient(135deg, rgba(12,16,27,0.97) 0%, rgba(16,20,31,0.97) 100%);
   backdrop-filter: blur(24px);
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 1px 0 rgba(11,241,255,0.1);
 }
 
 .brand {
@@ -108,32 +136,34 @@ body {
   object-fit: cover;
   border: 2px solid transparent;
   background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-              linear-gradient(135deg, var(--primary), var(--accent)) border-box;
+              linear-gradient(135deg, var(--primary), var(--primary-dark)) border-box;
   box-shadow: var(--shadow-sm);
   transition: all var(--transition);
+  position: relative;
 }
 
 .logo:hover {
-  transform: scale(1.05) rotate(3deg);
+  transform: scale(1.05);
   box-shadow: var(--shadow-glow);
 }
 
 .titles h1 {
   font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.3px;
-  background: linear-gradient(135deg, var(--text), var(--accent-light));
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--primary-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-family: 'Play', sans-serif;
 }
 
 .titles p {
   color: var(--text-muted);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 2px;
   margin-top: 2px;
 }
 
@@ -158,6 +188,7 @@ body {
 #burgerBtn:hover {
   border-color: var(--primary);
   background: var(--primary-soft);
+  color: var(--primary);
 }
 
 /* ========================================
@@ -168,65 +199,106 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: inherit;
+  font-family: 'Play', inherit;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
   border-radius: var(--radius-sm);
   padding: 12px 20px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition);
   white-space: nowrap;
   position: relative;
   overflow: hidden;
+  letter-spacing: 0.5px;
 }
 
-button::after {
+button::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
   transform: translateX(-100%);
   transition: transform var(--transition-slow);
 }
 
-button:hover::after {
+button:hover::before {
   transform: translateX(100%);
 }
 
 button.primary {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: white;
-  box-shadow: var(--shadow-sm);
+  background: var(--primary);
+  color: #0c101b;
+  box-shadow: 0 0 0 rgba(11,241,255,0);
+  position: relative;
+}
+
+button.primary::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: 10px;
+  width: 30px;
+  height: 6px;
+  background-color: var(--primary);
+  transform: skewX(-45deg);
+  opacity: 0;
+  transition: opacity var(--transition);
 }
 
 button.primary:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow), 0 8px 24px rgba(109,40,217,0.3);
+  background: var(--primary-light);
+  box-shadow: var(--shadow-glow), 0 8px 24px rgba(11,241,255,0.35);
+}
+
+button.primary:hover::after {
+  opacity: 1;
 }
 
 button.primary:active {
-  transform: translateY(0) scale(0.97);
+  transform: translateY(0) scale(0.98);
 }
 
 button.ghost {
-  background: transparent;
+  background: var(--bg-card);
   color: var(--text);
   border: 1.5px solid var(--border-soft);
   box-shadow: none;
+  position: relative;
+}
+
+button.ghost::before {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: 10px;
+  width: 0;
+  height: 3px;
+  background-color: var(--primary);
+  transition: width var(--transition), left var(--transition);
+  left: auto;
+  transform: none;
 }
 
 button.ghost:hover {
   background: var(--bg-card-hover);
   border-color: var(--primary);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), 0 0 16px rgba(11,241,255,0.15);
+  color: var(--primary-light);
+}
+
+button.ghost:hover::before {
+  width: calc(100% - 20px);
+  left: 10px;
+  transform: none;
 }
 
 button.ghost:active {
-  background: rgba(109, 40, 217, 0.15);
+  background: rgba(11, 241, 255, 0.1);
   border-color: var(--primary);
-  transform: translateY(0) scale(0.97);
+  transform: translateY(0) scale(0.98);
 }
 
 button.danger {
@@ -242,7 +314,8 @@ button.danger:hover {
 
 button.success {
   background: var(--success);
-  color: white;
+  color: #0c101b;
+  font-weight: 700;
 }
 
 button.success:hover {
@@ -257,7 +330,7 @@ button.success:hover {
 select,
 input,
 textarea {
-  font-family: inherit;
+  font-family: 'Play', inherit;
   font-size: 14px;
   color: var(--text);
   background: var(--bg-soft);
@@ -268,15 +341,22 @@ textarea {
   transition: all var(--transition-fast);
   min-width: 140px;
   width: 100%;
+  letter-spacing: 0.3px;
 }
 
 select:focus,
 input:focus,
 textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.15);
+  box-shadow: 0 0 0 3px rgba(11, 241, 255, 0.12), 0 0 16px rgba(11, 241, 255, 0.15);
   background: var(--bg-card);
   transform: translateY(-1px);
+}
+
+select::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: rgba(242, 242, 242, 0.4);
 }
 
 textarea {
@@ -312,27 +392,37 @@ textarea {
    PANEL / CARD
    ======================================== */
 .panel {
-  background: linear-gradient(135deg, rgba(26,26,48,0.9) 0%, rgba(21,21,37,0.9) 100%);
-  border: 1px solid rgba(109, 40, 217, 0.2);
+  background: linear-gradient(135deg, rgba(16,20,31,0.95) 0%, rgba(12,16,27,0.95) 100%);
+  border: 1px solid rgba(11, 241, 255, 0.2);
   border-radius: var(--radius-lg);
   padding: 32px;
   backdrop-filter: blur(20px);
   box-shadow: var(--shadow-lg);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.panel::before,
+.panel::after {
+  content: '';
+  position: absolute;
+  width: 51px;
+  height: 14px;
+  background-color: var(--primary);
+  transform: skewX(-45deg);
+  z-index: 5;
 }
 
 .panel::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: var(--radius-lg);
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(109,40,217,0.3), transparent, rgba(168,85,247,0.2));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+  top: -7px;
+  left: 30px;
+  box-shadow: 25px 0 0 var(--primary);
+}
+
+.panel::after {
+  bottom: -7px;
+  right: 30px;
+  box-shadow: -25px 0 0 var(--primary);
 }
 
 .panel-header {
@@ -343,17 +433,27 @@ textarea {
   margin-bottom: 24px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.panel-header::after {
+  content: '';
+  position: absolute;
+  background-color: var(--primary);
+  height: 4px;
+  width: 118px;
+  left: 0;
+  bottom: -2px;
 }
 
 .panel-header h2,
 .panel-header h3 {
   font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.4px;
-  background: linear-gradient(135deg, var(--text), var(--accent-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text);
+  font-family: 'Play', sans-serif;
+  text-transform: uppercase;
 }
 
 .panel-actions {
@@ -381,6 +481,7 @@ textarea {
   padding: 24px;
   background: var(--bg-soft);
   border: 1.5px solid var(--border);
+  border-bottom: 1px solid var(--primary);
   border-radius: var(--radius);
   transition: all var(--transition);
   cursor: pointer;
@@ -391,8 +492,21 @@ textarea {
 .list li::before {
   content: '';
   position: absolute;
+  top: -5px;
+  left: 15px;
+  width: 40px;
+  height: 8px;
+  background-color: var(--primary);
+  transform: skewX(-45deg);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.list li::after {
+  content: '';
+  position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(109,40,217,0.1), transparent);
+  background: linear-gradient(90deg, rgba(11,241,255,0.08), transparent);
   transform: translateX(-100%);
   transition: transform var(--transition-slow);
   pointer-events: none;
@@ -400,17 +514,21 @@ textarea {
 
 .list li:hover {
   border-color: var(--primary);
-  background: linear-gradient(135deg, rgba(109,40,217,0.1), var(--bg-card-hover));
+  background: linear-gradient(135deg, rgba(11,241,255,0.08), var(--bg-card-hover));
   transform: translateX(4px) translateY(-2px);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow), 0 0 24px rgba(11,241,255,0.1);
 }
 
 .list li:hover::before {
+  opacity: 1;
+}
+
+.list li:hover::after {
   transform: translateX(0);
 }
 
 .list li:active {
-  transform: translateX(2px) scale(0.99);
+  transform: translateX(2px) scale(0.995);
 }
 
 /* Category Icon */
@@ -418,14 +536,26 @@ textarea {
   width: 64px;
   height: 64px;
   border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28px;
   flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 12px rgba(11,241,255,0.25);
   animation: float 6s ease-in-out infinite;
+  position: relative;
+}
+
+.category-icon::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 15px;
+  height: 5px;
+  background: var(--primary);
+  transform: skewX(-45deg);
 }
 
 @keyframes float {
@@ -443,6 +573,8 @@ textarea {
   font-weight: 700;
   margin: 0 0 8px 0;
   color: var(--text);
+  font-family: 'Play', sans-serif;
+  letter-spacing: 0.3px;
 }
 
 .category-desc {
@@ -462,20 +594,19 @@ textarea {
 
 .category-stat-number {
   font-size: 28px;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-light), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 700;
+  color: var(--primary);
+  text-shadow: 0 0 16px rgba(11,241,255,0.4);
   line-height: 1;
+  font-family: 'Play', sans-serif;
 }
 
 .category-stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 1.5px;
 }
 
 /* Thread Card */
@@ -491,12 +622,33 @@ textarea {
   flex-shrink: 0;
   border: 2px solid var(--border);
   transition: all var(--transition);
+  position: relative;
+}
+
+.thread-icon::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 8px;
+  width: 0;
+  height: 3px;
+  background: var(--primary);
+  transition: width var(--transition);
 }
 
 .thread-icon.pinned {
   border-color: var(--success);
   background: var(--success-soft);
   animation: pulse 2s infinite;
+}
+
+.thread-icon.pinned::after {
+  width: 24px;
+  background: var(--success);
+}
+
+.list li:hover .thread-icon::after {
+  width: 24px;
 }
 
 @keyframes pulse {
@@ -509,6 +661,8 @@ textarea {
   font-weight: 700;
   margin: 0 0 8px 0;
   color: var(--text);
+  font-family: 'Play', sans-serif;
+  letter-spacing: 0.3px;
 }
 
 .thread-meta {
@@ -524,7 +678,8 @@ textarea {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--border);
+  background: var(--primary);
+  opacity: 0.5;
 }
 
 .thread-tags {
@@ -536,14 +691,21 @@ textarea {
 
 .thread-tag {
   font-size: 11px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: rgba(109, 40, 217, 0.15);
-  color: var(--accent-light);
+  padding: 5px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(11, 241, 255, 0.1);
+  color: var(--primary-light);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  letter-spacing: 1px;
+  border: 1px solid rgba(11, 241, 255, 0.3);
+  position: relative;
+  transition: all var(--transition);
+}
+
+.thread-tag:hover {
+  background: rgba(11, 241, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 /* ========================================
@@ -552,11 +714,24 @@ textarea {
 .post {
   background: var(--bg-soft);
   border: 1.5px solid var(--border);
+  border-bottom: 2px solid var(--primary);
   border-radius: var(--radius);
   padding: 32px;
   display: flex;
   gap: 24px;
   animation: fadeIn 0.3s ease-out;
+  position: relative;
+}
+
+.post::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 20px;
+  width: 45px;
+  height: 10px;
+  background-color: var(--primary);
+  transform: skewX(-45deg);
 }
 
 @keyframes fadeIn {
@@ -578,8 +753,8 @@ textarea {
   margin-bottom: 12px;
   border: 3px solid transparent;
   background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-              linear-gradient(135deg, var(--primary), var(--accent)) border-box;
-  box-shadow: var(--shadow-sm);
+              linear-gradient(135deg, var(--primary), var(--primary-dark)) border-box;
+  box-shadow: 0 4px 12px rgba(11,241,255,0.2);
   transition: all var(--transition);
 }
 
@@ -592,14 +767,16 @@ textarea {
   font-weight: 700;
   font-size: 14px;
   margin: 0 0 4px 0;
+  font-family: 'Play', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .post-role {
   font-size: 11px;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  font-weight: 600;
+  letter-spacing: 1.5px;
+  font-weight: 700;
 }
 
 .post-content-area {
@@ -614,11 +791,23 @@ textarea {
   margin-bottom: 20px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.post-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 80px;
+  height: 2px;
+  background: var(--primary);
 }
 
 .post-time {
   font-size: 13px;
   color: var(--text-muted);
+  letter-spacing: 0.5px;
 }
 
 .post-body {
@@ -637,20 +826,20 @@ textarea {
 }
 
 .like-btn {
-  background: rgba(109, 40, 217, 0.1);
-  color: var(--accent-light);
+  background: rgba(11, 241, 255, 0.08);
+  color: var(--primary-light);
   border: 1.5px solid var(--border);
   transition: all var(--transition-fast);
 }
 
 .like-btn:hover {
   border-color: var(--primary);
-  background: rgba(109, 40, 217, 0.2);
+  background: rgba(11, 241, 255, 0.18);
   transform: translateY(-2px);
 }
 
 .reaction-btn {
-  background: rgba(109, 40, 217, 0.1);
+  background: rgba(11, 241, 255, 0.08);
   color: var(--text);
   border: 1.5px solid var(--border);
   border-radius: 999px;
@@ -662,7 +851,7 @@ textarea {
 
 .reaction-btn:hover {
   border-color: var(--primary);
-  background: rgba(109, 40, 217, 0.2);
+  background: rgba(11, 241, 255, 0.15);
   transform: translateY(-2px);
 }
 
@@ -680,7 +869,7 @@ textarea {
   background: var(--danger);
   color: white;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -700,6 +889,7 @@ textarea {
   padding: 16px;
   background: var(--bg-card);
   border: 1.5px solid var(--border);
+  border-bottom: 1px solid var(--primary);
   border-radius: var(--radius);
   margin-bottom: 12px;
   display: flex;
@@ -707,6 +897,7 @@ textarea {
   align-items: flex-start;
   transition: all var(--transition-fast);
   cursor: pointer;
+  position: relative;
 }
 
 .notification-item:hover {
@@ -716,20 +907,44 @@ textarea {
 }
 
 .notification-item.unread {
-  background: linear-gradient(135deg, rgba(109, 40, 217, 0.1), var(--bg-card));
+  background: linear-gradient(135deg, rgba(11, 241, 255, 0.1), var(--bg-card));
   border-color: var(--primary);
+}
+
+.notification-item.unread::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--primary);
 }
 
 .notification-icon {
   width: 44px;
   height: 44px;
   border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
+  position: relative;
+}
+
+.notification-icon::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 12px;
+  height: 4px;
+  background: var(--primary);
+  transform: skewX(-45deg);
 }
 
 .notification-content {
@@ -741,6 +956,7 @@ textarea {
   font-weight: 700;
   font-size: 14px;
   margin-bottom: 4px;
+  font-family: 'Play', sans-serif;
 }
 
 .notification-text {
@@ -752,6 +968,7 @@ textarea {
 .notification-time {
   color: var(--text-muted);
   font-size: 12px;
+  letter-spacing: 0.5px;
 }
 
 /* ========================================
@@ -761,6 +978,7 @@ textarea {
   padding: 20px;
   background: var(--bg-card);
   border: 1.5px solid var(--border);
+  border-bottom: 1px solid var(--primary);
   border-radius: var(--radius);
   margin-bottom: 12px;
   display: flex;
@@ -768,6 +986,7 @@ textarea {
   align-items: flex-start;
   transition: all var(--transition-fast);
   cursor: pointer;
+  position: relative;
 }
 
 .message-item:hover {
@@ -777,8 +996,20 @@ textarea {
 }
 
 .message-item.unread {
-  background: linear-gradient(135deg, rgba(109, 40, 217, 0.1), var(--bg-card));
+  background: linear-gradient(135deg, rgba(11, 241, 255, 0.08), var(--bg-card));
   border-color: var(--primary);
+}
+
+.message-item.unread::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--primary);
 }
 
 .message-avatar {
@@ -788,6 +1019,11 @@ textarea {
   object-fit: cover;
   flex-shrink: 0;
   border: 2px solid var(--border);
+  transition: all var(--transition);
+}
+
+.message-item:hover .message-avatar {
+  border-color: var(--primary);
 }
 
 .message-content {
@@ -806,6 +1042,8 @@ textarea {
 .message-sender {
   font-weight: 700;
   font-size: 15px;
+  font-family: 'Play', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .message-preview {
@@ -828,20 +1066,32 @@ textarea {
   border-radius: var(--radius);
   margin-bottom: 12px;
   line-height: 1.6;
+  position: relative;
 }
 
 .conversation-bubble.sent {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: white;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #0c101b;
   margin-left: auto;
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 0;
+  font-weight: 600;
+}
+
+.conversation-bubble.sent::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -8px;
+  width: 8px;
+  height: 8px;
+  background: var(--primary-dark);
 }
 
 .conversation-bubble.received {
   background: var(--bg-card);
   border: 1.5px solid var(--border);
   margin-right: auto;
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 0;
 }
 
 /* ========================================
@@ -850,9 +1100,22 @@ textarea {
 .poll-container {
   background: var(--bg-soft);
   border: 1.5px solid var(--border);
+  border-bottom: 2px solid var(--primary);
   border-radius: var(--radius);
   padding: 24px;
   margin-bottom: 20px;
+  position: relative;
+}
+
+.poll-container::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 18px;
+  width: 40px;
+  height: 10px;
+  background: var(--primary);
+  transform: skewX(-45deg);
 }
 
 .poll-question {
@@ -860,6 +1123,8 @@ textarea {
   font-weight: 700;
   margin-bottom: 20px;
   color: var(--text);
+  font-family: 'Play', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .poll-options {
@@ -875,6 +1140,7 @@ textarea {
   overflow: hidden;
   cursor: pointer;
   transition: all var(--transition-fast);
+  background: var(--bg-card);
 }
 
 .poll-option:hover {
@@ -883,6 +1149,7 @@ textarea {
 
 .poll-option.selected {
   border-color: var(--primary);
+  box-shadow: 0 0 16px rgba(11,241,255,0.15);
 }
 
 .poll-option-label {
@@ -898,24 +1165,27 @@ textarea {
   width: 20px;
   height: 20px;
   border: 2px solid var(--border-soft);
-  border-radius: 50%;
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: all var(--transition-fast);
+  transform: skewX(-10deg);
 }
 
 .poll-option.selected .poll-option-radio {
   border-color: var(--primary);
+  background: var(--primary-soft);
 }
 
 .poll-option.selected .poll-option-radio::after {
   content: '';
   width: 10px;
   height: 10px;
-  border-radius: 50%;
   background: var(--primary);
+  transform: skewX(-10deg);
+  box-shadow: 0 0 8px var(--primary);
 }
 
 .poll-option-text {
@@ -925,8 +1195,10 @@ textarea {
 
 .poll-option-percent {
   font-weight: 700;
-  color: var(--accent-light);
+  color: var(--primary);
+  text-shadow: 0 0 8px rgba(11,241,255,0.4);
   flex-shrink: 0;
+  font-family: 'Play', sans-serif;
 }
 
 .poll-progress-bar {
@@ -934,7 +1206,7 @@ textarea {
   top: 0;
   left: 0;
   height: 100%;
-  background: linear-gradient(90deg, rgba(109, 40, 217, 0.2), rgba(168, 85, 247, 0.1));
+  background: linear-gradient(90deg, rgba(11, 241, 255, 0.18), rgba(11, 241, 255, 0.06));
   transition: width var(--transition-slow);
   z-index: 0;
 }
@@ -965,21 +1237,22 @@ textarea {
   padding: 6px 12px;
   background: var(--bg-card);
   border: 1.5px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   cursor: pointer;
   transition: all var(--transition-fast);
+  position: relative;
 }
 
 .reaction-item:hover {
   border-color: var(--primary);
-  background: rgba(109, 40, 217, 0.15);
+  background: rgba(11, 241, 255, 0.1);
   transform: translateY(-2px);
 }
 
 .reaction-item.active {
   border-color: var(--primary);
-  background: rgba(109, 40, 217, 0.2);
+  background: rgba(11, 241, 255, 0.15);
 }
 
 .reaction-emoji {
@@ -989,17 +1262,20 @@ textarea {
 .reaction-count {
   font-weight: 700;
   font-size: 12px;
-  color: var(--accent-light);
+  color: var(--primary-light);
+  font-family: 'Play', sans-serif;
 }
 
 .like-btn.liked {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #0c101b;
   border-color: transparent;
+  font-weight: 700;
 }
 
 .like-btn.liked:hover {
   transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 20px rgba(11,241,255,0.4);
 }
 
 .reactions-picker {
@@ -1027,21 +1303,23 @@ textarea {
 .reaction-picker-btn:hover {
   background: var(--bg-card-hover);
   transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(11,241,255,0.3);
 }
 
 /* ========================================
    BADGES
    ======================================== */
 .badge {
-  background: rgba(109, 40, 217, 0.15);
-  color: var(--accent-light);
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  border-radius: 999px;
+  background: rgba(11, 241, 255, 0.12);
+  color: var(--primary-light);
+  border: 1px solid rgba(11, 241, 255, 0.35);
+  border-radius: var(--radius-sm);
   padding: 6px 14px;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 1px;
+  font-family: 'Play', sans-serif;
 }
 
 .badge-success {
@@ -1063,9 +1341,10 @@ textarea {
 }
 
 .badge-primary {
-  background: rgba(109, 40, 217, 0.2);
-  color: var(--accent-light);
-  border-color: rgba(109, 40, 217, 0.4);
+  background: rgba(11, 241, 255, 0.18);
+  color: var(--primary-light);
+  border-color: rgba(11, 241, 255, 0.5);
+  box-shadow: 0 0 12px rgba(11,241,255,0.15);
 }
 
 /* ========================================
@@ -1074,12 +1353,35 @@ textarea {
 dialog {
   border: none;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(26,26,48,0.98) 0%, rgba(21,21,37,0.98) 100%);
+  background: linear-gradient(135deg, rgba(16,20,31,0.98) 0%, rgba(12,16,27,0.98) 100%);
   color: var(--text);
-  box-shadow: var(--shadow-lg), 0 0 64px rgba(109,40,217,0.2);
+  box-shadow: var(--shadow-lg), 0 0 64px rgba(11,241,255,0.15);
   padding: 0;
   width: min(92vw, 640px);
   animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible;
+}
+
+dialog::before,
+dialog::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 12px;
+  background: var(--primary);
+  transform: skewX(-45deg);
+  z-index: 10;
+}
+
+dialog::before {
+  top: -6px;
+  right: 20px;
+}
+
+dialog::after {
+  bottom: -6px;
+  left: 20px;
 }
 
 @keyframes modalSlideIn {
@@ -1094,7 +1396,7 @@ dialog {
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
   animation: backdropFadeIn 0.2s ease-out;
 }
@@ -1112,13 +1414,24 @@ dialog::backdrop {
 
 .form h3 {
   font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.3px;
-  background: linear-gradient(135deg, var(--text), var(--accent-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text);
   margin-bottom: 4px;
+  font-family: 'Play', sans-serif;
+  text-transform: uppercase;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.form h3::after {
+  content: '';
+  position: absolute;
+  background-color: var(--primary);
+  height: 4px;
+  width: 100px;
+  left: 0;
+  bottom: 0;
 }
 
 .actions {
@@ -1136,6 +1449,7 @@ dialog::backdrop {
   color: var(--text-muted);
   margin: 12px 0 24px;
   font-size: 14px;
+  letter-spacing: 0.3px;
 }
 
 .footer {
@@ -1146,6 +1460,7 @@ dialog::backdrop {
   background: linear-gradient(180deg, transparent 0%, var(--bg-soft) 100%);
   text-align: center;
   font-size: 13px;
+  letter-spacing: 0.8px;
 }
 
 .hidden {
@@ -1155,6 +1470,7 @@ dialog::backdrop {
 .item-title {
   font-weight: 700;
   font-size: 15px;
+  font-family: 'Play', sans-serif;
 }
 
 .item-sub {
@@ -1180,6 +1496,7 @@ dialog::backdrop {
 .avatar:hover {
   border-color: var(--primary);
   transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(11,241,255,0.3);
 }
 
 .attachments {
@@ -1200,7 +1517,7 @@ dialog::backdrop {
 .attachments img:hover {
   border-color: var(--primary);
   transform: scale(1.02);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow), 0 0 20px rgba(11,241,255,0.2);
 }
 
 .attachments img {
@@ -1220,14 +1537,15 @@ dialog::backdrop {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--primary), var(--accent));
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
   border: 3px solid var(--bg);
-  border-radius: 999px;
+  border-radius: 2px;
   transition: all var(--transition);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--primary-light), var(--accent-light));
+  background: linear-gradient(180deg, var(--primary-light) 0%, var(--primary) 100%);
+  box-shadow: 0 0 8px rgba(11,241,255,0.4);
 }
 
 /* ========================================
@@ -1247,6 +1565,7 @@ dialog::backdrop {
   cursor: pointer;
   accent-color: var(--primary);
   min-width: auto;
+  border-radius: 2px;
 }
 
 /* ========================================
@@ -1261,11 +1580,24 @@ dialog::backdrop {
 .subforum-sidebar {
   background: var(--bg-soft);
   border: 1.5px solid var(--border);
+  border-bottom: 2px solid var(--primary);
   border-radius: var(--radius);
   padding: 20px;
   height: fit-content;
   position: sticky;
   top: 100px;
+  position: relative;
+}
+
+.subforum-sidebar::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 15px;
+  width: 35px;
+  height: 8px;
+  background: var(--primary);
+  transform: skewX(-45deg);
 }
 
 .subforum-sidebar h3 {
@@ -1273,6 +1605,22 @@ dialog::backdrop {
   font-weight: 700;
   margin-bottom: 16px;
   color: var(--text);
+  font-family: 'Play', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.subforum-sidebar h3::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--primary);
 }
 
 .forum-main {
@@ -1331,6 +1679,12 @@ dialog::backdrop {
 
   .panel {
     padding: 24px;
+  }
+
+  .panel::before,
+  .panel::after {
+    width: 35px;
+    height: 10px;
   }
 
   .panel-header {
