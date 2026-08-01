@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ru">
+<html lang="bg">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="api-base" content="__RUNTIME_API_BASE__">
-  <title>Prestige RolePlay Форум</title>
+  <title>Prestige RolePlay Forum</title>
   <link rel="icon" type="image/png" href="/acetone-2026128-211852-355.png">
   <link rel="apple-touch-icon" href="/acetone-2026128-211852-355.png">
   <meta property="og:image" content="/Picsart_26-01-28_22-56-41-130.jpg">
@@ -12,12 +12,145 @@
   <meta name="thumbnail" content="/Picsart_26-01-28_22-56-41-130.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Play:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <section class="site-identity">
+    <div class="site-brand-bar">
+      <div class="brand-left">
+        <div class="brand-logo" aria-hidden="true"><span>P</span></div>
+        <div class="brand-text">
+          <div class="brand-title">
+            <h1 class="brand-name"><span class="neon-highlight">PRESTIGE</span> ROLEPLAY</h1>
+            <span class="brand-tag live" data-badge="live">ONLINE</span>
+            <span class="brand-tag" data-badge="tag">CRMP / SA-MP</span>
+          </div>
+          <div class="brand-subtitle">
+            <span id="siteCommunityLabel">Официален форум</span>
+            <span class="sep">◆</span>
+            <span id="siteUniverseLabel">GTA RolePlay • Criminal Russia</span>
+            <span class="sep">◆</span>
+            <span id="siteSubtitleTag">Премиум CRMP общност</span>
+          </div>
+        </div>
+      </div>
+      <div class="site-stats" id="siteStatsBar">
+        <div class="stat-pill online" title="Онлайн в момента">
+          <span class="stat-dot"></span>
+          <span class="stat-icon">👥</span>
+          <span id="statOnlineLabel">Онлайн</span>
+          <span class="stat-num" id="statOnline">0</span>
+        </div>
+        <div class="stat-pill" title="Потребители в форума">
+          <span class="stat-icon">🧑</span>
+          <span id="statUsersLabel">Потребители</span>
+          <span class="stat-num" id="statUsers">0</span>
+        </div>
+        <div class="stat-pill" title="Отворени теми">
+          <span class="stat-icon">📝</span>
+          <span id="statThreadsLabel">Теми</span>
+          <span class="stat-num" id="statThreads">0</span>
+        </div>
+        <div class="stat-pill" title="Публикации/постове">
+          <span class="stat-icon">💬</span>
+          <span id="statPostsLabel">Постове</span>
+          <span class="stat-num" id="statPosts">0</span>
+        </div>
+      </div>
+    </div>
+    <nav class="site-quick-nav" aria-label="Quick Navigation">
+      <div class="quick-links" id="quickLinks">
+        <button class="quick-link" data-nav="home" title="Начало">
+          <span class="ql-icon">🏠</span><span class="nav-label">Начало</span>
+        </button>
+        <button class="quick-link" data-nav="rules" title="Правила">
+          <span class="ql-icon">📋</span><span class="nav-label">Правила</span>
+        </button>
+        <button class="quick-link" data-nav="factions" title="Фракции">
+          <span class="ql-icon">👥</span><span class="nav-label">Фракции</span>
+        </button>
+        <button class="quick-link" data-nav="applications" title="Заявления">
+          <span class="ql-icon">📨</span><span class="nav-label">Заявления</span>
+        </button>
+        <button class="quick-link" data-nav="reports" title="Репорти">
+          <span class="ql-icon">🚨</span><span class="nav-label">Сигнали</span>
+        </button>
+        <button class="quick-link" data-nav="appeals" title="Апели">
+          <span class="ql-icon">⚠️</span><span class="nav-label">Обжалвания</span>
+        </button>
+        <button class="quick-link" data-nav="marketplace" title="Пазар">
+          <span class="ql-icon">🛒</span><span class="nav-label">Пазар</span>
+        </button>
+        <button class="quick-link" data-nav="events" title="Събития">
+          <span class="ql-icon">🎉</span><span class="nav-label">Събития</span>
+        </button>
+        <button class="quick-link" data-nav="guides" title="Уроци">
+          <span class="ql-icon">🎓</span><span class="nav-label">Ръководства</span>
+        </button>
+      </div>
+      <div class="header-actions">
+        <button id="themeEditorQuick" class="header-btn" title="Тема">🎨 Тема</button>
+        <button id="searchBtnQuick" class="header-btn" title="Търсене">🔍 Търси</button>
+      </div>
+    </nav>
+    <section class="site-hero">
+      <div class="hero-copy">
+        <span class="hero-kicker" id="heroKicker">Официален CRMP форум</span>
+        <h2 class="hero-title" id="heroTitle">Prestige RolePlay общност, подредена като истински RP хъб</h2>
+        <p class="hero-text" id="heroText">Правила, фракции, заявления, сигнали и пазар на едно място с изчистена навигация и по-модерна визия.</p>
+        <div class="hero-actions">
+          <button id="heroBrowseBtn" class="primary" data-nav="home">Разгледай форума</button>
+          <button id="heroJoinBtn" class="ghost">Създай акаунт</button>
+        </div>
+        <div class="hero-meta">
+          <span class="hero-meta-chip" id="heroMetaOne">Ясни раздели за играчи и администрация</span>
+          <span class="hero-meta-chip" id="heroMetaTwo">По-бърз достъп до важните теми</span>
+          <span class="hero-meta-chip" id="heroMetaThree">CRMP стил с по-премиум усещане</span>
+        </div>
+      </div>
+      <div class="hero-side">
+        <article class="announce-card">
+          <span class="announce-chip" id="announceChip">Акцент</span>
+          <h3 id="announceTitle">Готово ядро за правила, фракции и сигнали</h3>
+          <p id="announceText">Началната страница вече води по-ясно към най-важните RP процеси и изглежда по-близо до модерен GTA community форум.</p>
+        </article>
+        <div class="shortcut-grid">
+          <button class="shortcut-card" data-nav="rules" title="Правила">
+            <span class="shortcut-icon">📋</span>
+            <span class="shortcut-copy">
+              <span class="nav-label">Правила</span>
+              <span class="shortcut-note" id="shortcutRulesNote">Основни правила и задължителна информация</span>
+            </span>
+          </button>
+          <button class="shortcut-card" data-nav="factions" title="Фракции">
+            <span class="shortcut-icon">👥</span>
+            <span class="shortcut-copy">
+              <span class="nav-label">Фракции</span>
+              <span class="shortcut-note" id="shortcutFactionsNote">Организации, лидери и вътрешни теми</span>
+            </span>
+          </button>
+          <button class="shortcut-card" data-nav="reports" title="Сигнали">
+            <span class="shortcut-icon">🚨</span>
+            <span class="shortcut-copy">
+              <span class="nav-label">Сигнали</span>
+              <span class="shortcut-note" id="shortcutReportsNote">Жалби, репорти и технически проблеми</span>
+            </span>
+          </button>
+          <button class="shortcut-card" data-nav="marketplace" title="Пазар">
+            <span class="shortcut-icon">🛒</span>
+            <span class="shortcut-copy">
+              <span class="nav-label">Пазар</span>
+              <span class="shortcut-note" id="shortcutMarketNote">Обяви, бизнеси, имоти и сделки</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </section>
+
   <header class="header">
-    <div class="brand">
+    <div class="brand" style="display:none;">
       <img class="logo" src="/acetone-2026128-211852-355.png" alt="Prestige RP">
       <div class="titles">
         <h1 id="title">Prestige RolePlay</h1>
@@ -25,29 +158,29 @@
       </div>
     </div>
     <button id="burgerBtn" class="ghost burger" aria-label="Меню" title="Меню">☰</button>
-    <div class="controls" id="controls">
-      <label for="lang" id="langLabel">Език</label>
-      <select id="lang">
-        <option value="ru" selected>Русский</option>
+    <div class="controls" id="controls" style="flex:1;justify-content:flex-end;gap:10px;">
+      <label for="lang" id="langLabel" style="font-size:11px;opacity:0.9;">Език</label>
+      <select id="lang" style="padding:8px;border-radius:4px;">
+        <option value="ru">Русский</option>
         <option value="kk">Қазақша</option>
         <option value="uk">Українська</option>
-        <option value="bg">Български</option>
+        <option value="bg" selected>Български</option>
         <option value="en">English</option>
       </select>
-      <button id="notificationsBtn" class="ghost">🔔</button>
-      <button id="messagesBtn" class="ghost">💬</button>
-      <button id="groupBtn" class="ghost"></button>
-      <button id="supportBtn" class="ghost"></button>
-      <button id="discordBtn" class="ghost">Discord</button>
-      <button id="themeToggle" class="ghost"></button>
-      <button id="themeEditor" class="ghost"></button>
-      <button id="loginBtn" class="ghost">Вход</button>
-      <button id="registerBtn" class="primary">Регистрация</button>
+      <button id="notificationsBtn" class="ghost header-btn" style="padding:8px 10px;">🔔</button>
+      <button id="messagesBtn" class="ghost header-btn" style="padding:8px 10px;">💬</button>
+      <button id="groupBtn" class="ghost header-btn" style="padding:8px 10px;">👥</button>
+      <button id="supportBtn" class="ghost header-btn" style="padding:8px 10px;">🛟</button>
+      <button id="discordBtn" class="ghost header-btn" style="padding:8px 12px;">Discord</button>
+      <button id="themeToggle" class="ghost header-btn" style="padding:8px 10px;">🌓</button>
+      <button id="themeEditor" class="ghost header-btn" style="padding:8px 10px;">🎨</button>
+      <button id="loginBtn" class="ghost header-btn" style="padding:8px 14px;">Вход</button>
+      <button id="registerBtn" class="primary" style="padding:8px 18px;font-weight:800;">Регистрация</button>
       <span id="userBadge" class="badge" style="display:none"></span>
       <img id="headerAvatar" class="avatar" alt="" style="display:none">
-      <button id="logoutBtn" class="ghost" style="display:none">Изход</button>
-      <button id="profileBtn" class="ghost" style="display:none">Профил</button>
-      <button id="adminBtn" class="ghost" style="display:none">Админ</button>
+      <button id="logoutBtn" class="ghost header-btn" style="display:none;padding:8px 14px;">Изход</button>
+      <button id="profileBtn" class="ghost header-btn" style="display:none;padding:8px 14px;">Профил</button>
+      <button id="adminBtn" class="ghost header-btn" style="display:none;padding:8px 14px;">Админ</button>
       <span id="dbBadge" class="badge"></span>
     </div>
   </header>
@@ -172,7 +305,20 @@
         <div class="meta">
           <span id="profileStatsThreads"></span>
           <span id="profileStatsPosts" style="margin-left:12px"></span>
+          <span id="profileReputation" style="margin-left:12px; font-weight:700;"></span>
+          <span id="profileWarnCount" style="margin-left:12px; font-weight:700;"></span>
         </div>
+        <div id="rpProfileRpSection" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;">
+          <div id="profileReputationBox" style="padding:12px;border-radius:4px;background:linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04));border:1px solid rgba(16,185,129,0.3);">
+            <div id="profileRepLabel" style="font-weight:700;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;font-size:12px;">Репутация</div>
+            <div id="profileRepValue" style="font-size:24px;font-weight:700;color:#10b981;text-shadow:0 0 8px rgba(16,185,129,0.4);">+0</div>
+          </div>
+          <div id="profileWarnsBox" style="padding:12px;border-radius:4px;background:linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));border:1px solid rgba(239,68,68,0.3);">
+            <div id="profileWarnsLabel" style="font-weight:700;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;font-size:12px;">Предупреждения</div>
+            <div id="profileWarnsValue" style="font-size:24px;font-weight:700;color:#ef4444;text-shadow:0 0 8px rgba(239,68,68,0.4);">0 / 3</div>
+          </div>
+        </div>
+        <div id="profileWarnsList" style="margin-bottom:16px;"></div>
         <div class="actions">
           <button type="button" class="ghost" id="enable2faBtn">Включи 2FA (Google Authenticator)</button>
           <button type="button" class="ghost" id="disable2faBtn">Изключи 2FA</button>
@@ -254,6 +400,34 @@
       <dialog id="threadDialog">
       <form method="dialog" id="threadForm" class="form">
         <h3 id="threadDialogTitle">Нова тема</h3>
+        <div id="rpThreadOptions" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label for="threadStatusSelect" style="font-weight:700;margin-bottom:6px;display:block;" id="threadStatusLabel">Статус на темата</label>
+            <select id="threadStatusSelect">
+              <option value="open" data-label-status="statusOpen">Отворена</option>
+              <option value="in_progress" data-label-status="statusInProgress">В процес</option>
+              <option value="approved" data-label-status="statusApproved">Одобрена</option>
+              <option value="rejected" data-label-status="statusRejected">Отхвърлена</option>
+              <option value="closed" data-label-status="statusClosed">Затворена</option>
+              <option value="under_review" data-label-status="statusReview">В преглед</option>
+            </select>
+          </div>
+          <div>
+            <label for="threadTemplateSelect" style="font-weight:700;margin-bottom:6px;display:block;" id="threadTemplateLabel">Шаблон</label>
+            <select id="threadTemplateSelect">
+              <option value="" data-label-template="templateNone">Без шаблон</option>
+              <option value="report" data-label-template="templateReport">Жалба - Репорт (Report)</option>
+              <option value="application" data-label-template="templateApplication">Заявление (Application)</option>
+              <option value="ban_appeal" data-label-template="templateBanAppeal">Апел за бан (Unban)</option>
+              <option value="warn_appeal" data-label-template="templateWarnAppeal">Апел за предупреждение</option>
+              <option value="suggestion" data-label-template="templateSuggestion">Предложение</option>
+              <option value="bug" data-label-template="templateBug">Bug Report</option>
+              <option value="whitelist" data-label-template="templateWhitelist">Whitelist заявка</option>
+              <option value="complaint" data-label-template="templateComplaint">Жалба до Администрация</option>
+              <option value="faction_app" data-label-template="templateFactionApp">Заявка за фракция</option>
+            </select>
+          </div>
+        </div>
         <input id="threadTitleInput" type="text" required>
         <textarea id="threadContentInput" rows="6" required></textarea>
         <input id="threadTagsInput" type="text" placeholder="Тагове (разделени със запетая)">
@@ -277,6 +451,15 @@
         <form method="dialog" id="editThreadForm" class="form">
           <h3 id="editThreadTitle">Редакция на тема</h3>
           <input id="editThreadTitleInput" type="text" required>
+          <label for="editThreadStatusSelect" style="font-weight:700;margin-bottom:6px;display:block;" id="editThreadStatusLabel">Статус</label>
+          <select id="editThreadStatusSelect" style="margin-bottom:12px;">
+            <option value="open" data-edit-status="statusOpen">Отворена</option>
+            <option value="in_progress" data-edit-status="statusInProgress">В процес</option>
+            <option value="approved" data-edit-status="statusApproved">Одобрена</option>
+            <option value="rejected" data-edit-status="statusRejected">Отхвърлена</option>
+            <option value="closed" data-edit-status="statusClosed">Затворена</option>
+            <option value="under_review" data-edit-status="statusReview">В преглед</option>
+          </select>
           <input id="editThreadTagsInput" type="text" placeholder="Тагове (разделени със запетая)">
           <div class="actions">
             <button type="button" class="ghost" id="editThreadCancel">Отказ</button>
@@ -332,6 +515,7 @@
           <button id="adminExportDBBtn" class="ghost">Експорт база</button>
           <button id="adminImportDBBtn" class="ghost">Импорт база</button>
           <input id="adminImportFile" type="file" accept="application/json" style="display:none">
+          <button id="adminInstallRpBtn" class="primary" style="background:linear-gradient(135deg,#0bf1ff,#08a8b2);color:#0c101b;box-shadow:0 0 16px rgba(11,241,255,0.3);">💾 Инсталирай CRMP Standard</button>
         </div>
       </div>
       <div class="meta" id="adminMeta"></div>
@@ -340,6 +524,31 @@
         <input id="adminCategoryName" type="text" placeholder="Име на категория">
         <select id="adminCategoryParent" style="padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
           <option value="">-- Без родител --</option>
+        </select>
+        <select id="adminCategoryIcon" style="padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);" title="Икона">
+          <option value="📢">📢 Новини</option>
+          <option value="📋">📋 Правила</option>
+          <option value="💭">💭 Общо</option>
+          <option value="🔰">🔰 Представяне</option>
+          <option value="👥">👥 Фракции</option>
+          <option value="🚔">🚔 Полиция</option>
+          <option value="🏥">🏥 Болница</option>
+          <option value="⚖️">⚖️ Правосъдие</option>
+          <option value="🏛️">🏛️ Правителство</option>
+          <option value="🔫">🔫 Мафия</option>
+          <option value="🏴">🏴 Банди</option>
+          <option value="🏪">🏪 Бизнеси</option>
+          <option value="📝">📝 Заявки</option>
+          <option value="📨">📨 Репорти</option>
+          <option value="⚠️">⚠️ Апели</option>
+          <option value="💯">💯 Whitelist</option>
+          <option value="💡">💡 Предложения</option>
+          <option value="🐛">🐛 Bug Reports</option>
+          <option value="🛒">🛒 Marketplace</option>
+          <option value="🎉">🎉 Събития</option>
+          <option value="📊">📊 Статистика</option>
+          <option value="💼">💼 Фирми</option>
+          <option value="📺">📺 Media</option>
         </select>
         <button id="adminAddCategory" class="primary">Добави</button>
       </div>
@@ -370,4 +579,3 @@
   <script src="app.js?v=20260122-2"></script>
 </body>
 </html>
-

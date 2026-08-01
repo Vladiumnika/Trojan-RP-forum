@@ -79,6 +79,32 @@ async function ensureTables() {
   try { await pool.query(`ALTER TABLE users ADD COLUMN twofa_prompt_required TINYINT(1) DEFAULT 1`); } catch (e) {}
   try { await pool.query(`ALTER TABLE users ADD COLUMN refresh_token VARCHAR(255)`); } catch (e) {}
   try { await pool.query(`ALTER TABLE users ADD COLUMN refresh_expires BIGINT`); } catch (e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN reputation INT DEFAULT 0`); } catch (e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN warn_count INT DEFAULT 0`); } catch (e) {}
+  await pool.query(`CREATE TABLE IF NOT EXISTS warns (
+    id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL,
+    issued_by VARCHAR(36) NOT NULL,
+    reason VARCHAR(500),
+    points INT DEFAULT 1,
+    active TINYINT(1) DEFAULT 1,
+    expired TINYINT(1) DEFAULT 0,
+    expires_at BIGINT,
+    created_at BIGINT NOT NULL,
+    CONSTRAINT fk_warn_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_warn_issuer FOREIGN KEY (issued_by) REFERENCES users(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS reputation_logs (
+    id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL,
+    giver_id VARCHAR(36) NOT NULL,
+    points INT NOT NULL,
+    post_id VARCHAR(36),
+    reason VARCHAR(500),
+    created_at BIGINT NOT NULL,
+    CONSTRAINT fk_rep_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_rep_giver FOREIGN KEY (giver_id) REFERENCES users(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
   await pool.query(`CREATE TABLE IF NOT EXISTS categories (
     id VARCHAR(36) PRIMARY KEY,
     parent_id VARCHAR(36) NULL,
@@ -94,10 +120,14 @@ async function ensureTables() {
     views BIGINT NOT NULL DEFAULT 0,
     locked TINYINT(1) DEFAULT 0,
     pinned TINYINT(1) DEFAULT 0,
+    status VARCHAR(32) DEFAULT 'open',
+    template VARCHAR(64),
     created_at BIGINT NOT NULL,
     CONSTRAINT fk_threads_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
     CONSTRAINT fk_threads_author FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  try { await pool.query(`ALTER TABLE threads ADD COLUMN status VARCHAR(32) DEFAULT 'open'`); } catch (e) {}
+  try { await pool.query(`ALTER TABLE threads ADD COLUMN template VARCHAR(64)`); } catch (e) {}
   await pool.query(`CREATE TABLE IF NOT EXISTS thread_tags (
     thread_id VARCHAR(36) NOT NULL,
     tag VARCHAR(64) NOT NULL,
@@ -369,7 +399,7 @@ async function readDB() {
       console.error("[Prestige RP] DB Read Error (backing up):", e.message);
       try { await fs.copyFile(DATA_PATH, DATA_PATH + ".bak"); } catch {}
     }
-    const db = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [] };
+    const db = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [], notifications: [], polls: [], poll_options: [], poll_votes: [], private_messages: [], warns: [], reputation_logs: [] };
     await writeDB(db);
     return db;
   }
@@ -427,7 +457,7 @@ function buildRemoteHeaders() {
   return h;
 }
 function normalizeDb(db) {
-  const empty = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [], notifications: [], polls: [], poll_options: [], poll_votes: [], private_messages: [] };
+  const empty = { users: [], categories: [], threads: [], posts: [], email_verifications: [], password_resets: [], post_reports: [], notifications: [], polls: [], poll_options: [], poll_votes: [], private_messages: [], warns: [], reputation_logs: [] };
   try {
     return {
       users: Array.isArray(db?.users) ? db.users : [],
@@ -441,7 +471,9 @@ function normalizeDb(db) {
       polls: Array.isArray(db?.polls) ? db.polls : [],
       poll_options: Array.isArray(db?.poll_options) ? db.poll_options : [],
       poll_votes: Array.isArray(db?.poll_votes) ? db.poll_votes : [],
-      private_messages: Array.isArray(db?.private_messages) ? db.private_messages : []
+      private_messages: Array.isArray(db?.private_messages) ? db.private_messages : [],
+      warns: Array.isArray(db?.warns) ? db.warns : [],
+      reputation_logs: Array.isArray(db?.reputation_logs) ? db.reputation_logs : []
     };
   } catch { return empty }
 }
@@ -927,7 +959,7 @@ app.post("/api/auth/register", async (req, res) => {
     const [countRows] = await pool.query("SELECT COUNT(*) as c FROM users");
     const role = countRows[0].c === 0 ? "admin" : "user";
     const id = uid();
-    await pool.query("INSERT INTO users (id,email,username,password_hash,role,is_confirmed,banned,locale,created_at) VALUES (:id,:email,:username,:password_hash,:role,0,0,:locale,:created_at)",
+    await pool.query("INSERT INTO users (id,email,username,password_hash,role,is_confirmed,banned,locale,created_at,reputation,warn_count) VALUES (:id,:email,:username,:password_hash,:role,0,0,:locale,:created_at,0,0)",
       { id, email, username, password_hash, role, locale: locale || "ru", created_at: Date.now() });
     const token = uid();
     const expires_at = Date.now() + 1000 * 60 * 60 * 24;
@@ -942,7 +974,7 @@ app.post("/api/auth/register", async (req, res) => {
   const exists = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
   if (exists) return res.status(409).json({ error: "Email exists" });
   const password_hash = await bcrypt.hash(password, 10);
-  const user = { id: uid(), email, username, password_hash, role: db.users.length === 0 ? "admin" : "user", is_confirmed: false, banned: false, locale: locale || "ru", created_at: Date.now(), twofa_enabled: false, twofa_prompt_required: true };
+  const user = { id: uid(), email, username, password_hash, role: db.users.length === 0 ? "admin" : "user", is_confirmed: false, banned: false, locale: locale || "ru", created_at: Date.now(), twofa_enabled: false, twofa_prompt_required: true, reputation: 0, warn_count: 0 };
   db.users.push(user);
   const token = uid();
   const expires_at = Date.now() + 1000 * 60 * 60 * 24;
@@ -1291,8 +1323,9 @@ app.get("/api/categories/:id/threads", async (req, res) => {
     categoryIdsToInclude.forEach((cid, i) => params[`cid${i}`] = cid);
     
     const [rows] = await pool.query(`
-      SELECT t.id, t.category_id, t.title, t.author_id, t.locked, t.pinned, t.created_at,
-             (SELECT COUNT(*) FROM posts p WHERE p.thread_id=t.id) AS posts_count
+      SELECT t.id, t.category_id, t.title, t.author_id, t.locked, t.pinned, t.created_at, t.status, t.template, t.views,
+             (SELECT COUNT(*) FROM posts p WHERE p.thread_id=t.id) AS posts_count,
+             (SELECT MAX(p.created_at) FROM posts p WHERE p.thread_id=t.id) AS last_reply_at
       FROM threads t
       WHERE t.category_id IN (${placeholders})
       ORDER BY t.pinned DESC, t.created_at DESC
@@ -1317,7 +1350,7 @@ app.post("/api/threads", authMiddleware, requireConfirmed, rateLimit({ windowMs:
     if (cRows[0].locked) return res.status(423).json({ error: "Category locked" });
     const tid = uid();
     const now = Date.now();
-    await pool.query("INSERT INTO threads (id,category_id,title,author_id,created_at) VALUES (:id,:category_id,:title,:author_id,:created_at)", { id: tid, category_id: categoryId, title, author_id: req.user.sub, created_at: now });
+    await pool.query("INSERT INTO threads (id,category_id,title,author_id,created_at,status) VALUES (:id,:category_id,:title,:author_id,:created_at,'open')", { id: tid, category_id: categoryId, title, author_id: req.user.sub, created_at: now });
     const pid = uid();
     await pool.query("INSERT INTO posts (id,thread_id,author_id,content,created_at) VALUES (:id,:thread_id,:author_id,:content,:created_at)", { id: pid, thread_id: tid, author_id: req.user.sub, content, created_at: now });
     return res.json({ id: tid, category_id: categoryId, title, author_id: req.user.sub, created_at: now });
@@ -1328,7 +1361,7 @@ app.post("/api/threads", authMiddleware, requireConfirmed, rateLimit({ windowMs:
   const category = db.categories.find(c => c.id === categoryId);
   if (!category) return res.status(404).json({ error: "Category not found" });
   if (category.locked) return res.status(423).json({ error: "Category locked" });
-  const t = { id: uid(), category_id: categoryId, title, author_id: req.user.sub, created_at: Date.now() };
+  const t = { id: uid(), category_id: categoryId, title, author_id: req.user.sub, created_at: Date.now(), status: "open", views: 0 };
   db.threads.push(t);
   const p = { id: uid(), thread_id: t.id, author_id: req.user.sub, content, created_at: Date.now() };
   db.posts.push(p);
@@ -1403,13 +1436,20 @@ app.post("/api/posts", authMiddleware, requireConfirmed, rateLimit({ windowMs: 6
 });
 
 app.post("/api/threads/:id/edit", authMiddleware, async (req, res) => {
-  const { title, tags } = req.body || {};
+  const { title, tags, status, template } = req.body || {};
   if (MYSQL_READY) {
     const [rows] = await pool.query("SELECT * FROM threads WHERE id=:id", { id: req.params.id });
     if (!rows.length) return res.status(404).json({ error: "Thread not found" });
     const t = rows[0];
     if (!(req.user.role === "admin" || req.user.role === "moderator" || req.user.sub === t.author_id)) return res.status(403).json({ error: "Forbidden" });
     if (title) await pool.query("UPDATE threads SET title=:title WHERE id=:id", { title, id: req.params.id });
+    if (typeof status === "string" && status.length) {
+      const valid = ["open","in_progress","approved","rejected","closed","under_review"];
+      if (valid.includes(status)) await pool.query("UPDATE threads SET status=:status WHERE id=:id", { status, id: req.params.id });
+    }
+    if (typeof template === "string") {
+      await pool.query("UPDATE threads SET template=:template WHERE id=:id", { template: template || null, id: req.params.id });
+    }
     if (Array.isArray(tags)) {
       const clean = tags.filter(s => typeof s === "string").slice(0, 10);
       await pool.query("DELETE FROM thread_tags WHERE thread_id=:id", { id: req.params.id });
@@ -1425,6 +1465,11 @@ app.post("/api/threads/:id/edit", authMiddleware, async (req, res) => {
   if (!t) return res.status(404).json({ error: "Thread not found" });
   if (!(req.user.role === "admin" || req.user.role === "moderator" || req.user.sub === t.author_id)) return res.status(403).json({ error: "Forbidden" });
   if (title) t.title = title;
+  if (typeof status === "string" && status.length) {
+    const valid = ["open","in_progress","approved","rejected","closed","under_review"];
+    if (valid.includes(status)) t.status = status;
+  }
+  if (typeof template === "string") t.template = template || null;
   if (Array.isArray(tags)) t.tags = tags.filter(s => typeof s === "string").slice(0, 10);
   await writeDB(db);
   return res.json(t);
@@ -1575,11 +1620,11 @@ app.post("/api/threads/:id/pin", authMiddleware, async (req, res) => {
 });
 app.get("/api/users", authMiddleware, requireAdmin, async (req, res) => {
   if (MYSQL_READY) {
-    const [rows] = await pool.query("SELECT id,email,username,role,is_confirmed,banned FROM users ORDER BY created_at DESC");
+    const [rows] = await pool.query("SELECT id,email,username,role,is_confirmed,banned,reputation,warn_count,avatar_url,created_at FROM users ORDER BY created_at DESC");
     return res.json(rows);
   }
   const db = await readDB();
-  return res.json(db.users.map(u => ({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, banned: u.banned })));
+  return res.json(db.users.map(u => ({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, banned: u.banned, reputation: u.reputation || 0, warn_count: u.warn_count || 0, avatar_url: u.avatar_url, created_at: u.created_at })));
 });
 app.post("/api/users/:id/role", authMiddleware, requireAdmin, async (req, res) => {
   const { role } = req.body || {};
@@ -2514,14 +2559,143 @@ app.post("/api/auth/2fa/skip", authMiddleware, async (req, res) => {
 
 app.get("/api/me", authMiddleware, async (req, res) => {
   if (MYSQL_READY) {
-    const [rows] = await pool.query("SELECT id, email, username, role, is_confirmed, avatar_url, bio, twofa_enabled, totp_secret, twofa_prompt_required FROM users WHERE id=:id", { id: req.user.sub });
+    const [rows] = await pool.query("SELECT id, email, username, role, is_confirmed, avatar_url, bio, twofa_enabled, totp_secret, twofa_prompt_required, reputation, warn_count FROM users WHERE id=:id", { id: req.user.sub });
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     return res.json(rows[0]);
   }
   const db = await readDB();
   const u = db.users.find(u => u.id === req.user.sub);
   if (!u) return res.status(404).json({ error: "User not found" });
-  return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, twofa_enabled: !!u.twofa_enabled, avatar_url: u.avatar_url, bio: u.bio });
+  return res.json({ id: u.id, email: u.email, username: u.username, role: u.role, is_confirmed: u.is_confirmed, twofa_enabled: !!u.twofa_enabled, avatar_url: u.avatar_url, bio: u.bio, reputation: u.reputation || 0, warn_count: u.warn_count || 0 });
+});
+
+app.post("/api/threads/:id/view", async (req, res) => {
+  if (MYSQL_READY) {
+    await pool.query("UPDATE threads SET views=views+1 WHERE id=:id", { id: req.params.id });
+    const [[row]] = await pool.query("SELECT views FROM threads WHERE id=:id", { id: req.params.id });
+    return res.json({ views: row ? row.views : 0 });
+  }
+  const db = await readDB();
+  const t = db.threads.find(x => x.id === req.params.id);
+  if (t) t.views = (t.views || 0) + 1;
+  await writeDB(db);
+  return res.json({ views: t ? t.views : 0 });
+});
+
+app.get("/api/users/:id/stats", async (req, res) => {
+  const id = req.params.id;
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT id, reputation, warn_count FROM users WHERE id=:id", { id });
+    if (!rows.length) return res.status(404).json({ error: "User not found" });
+    const u = rows[0];
+    const [[pc]] = await pool.query("SELECT COUNT(*) AS c FROM posts WHERE author_id=:id", { id });
+    const [[tc]] = await pool.query("SELECT COUNT(*) AS c FROM threads WHERE author_id=:id", { id });
+    return res.json({ reputation: u.reputation || 0, warn_count: u.warn_count || 0, posts_count: pc.c, threads_count: tc.c });
+  }
+  const db = await readDB();
+  const u = db.users.find(u => u.id === id);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  const posts_count = db.posts.filter(p => p.author_id === id).length;
+  const threads_count = db.threads.filter(t => t.author_id === id).length;
+  return res.json({ reputation: u.reputation || 0, warn_count: u.warn_count || 0, posts_count, threads_count });
+});
+
+app.get("/api/users/:id/warns", authMiddleware, async (req, res) => {
+  const id = req.params.id;
+  const requesterId = req.user.sub;
+  const isStaff = req.user.role === "admin" || req.user.role === "moderator";
+  if (requesterId !== id && !isStaff) return res.status(403).json({ error: "Forbidden" });
+  if (MYSQL_READY) {
+    const [rows] = await pool.query("SELECT w.*, u.username AS issued_by_name FROM warns w LEFT JOIN users u ON u.id=w.issued_by WHERE w.user_id=:id ORDER BY w.created_at DESC LIMIT 30", { id });
+    return res.json(rows);
+  }
+  const db = await readDB();
+  const warns = db.warns.filter(w => w.user_id === id).sort((a, b) => (b.created_at || 0) - (a.created_at || 0)).slice(0, 30);
+  return res.json(warns);
+});
+
+app.post("/api/users/:id/warns", authMiddleware, async (req, res) => {
+  if (!(req.user.role === "admin" || req.user.role === "moderator")) return res.status(403).json({ error: "Staff only" });
+  const id = req.params.id;
+  const { reason, points } = req.body || {};
+  const pts = Math.min(3, Math.max(1, parseInt(points || "1", 10)));
+  if (MYSQL_READY) {
+    const [uRows] = await pool.query("SELECT * FROM users WHERE id=:id", { id });
+    if (!uRows.length) return res.status(404).json({ error: "User not found" });
+    const wid = uid();
+    const now = Date.now();
+    const expires = now + (1000 * 60 * 60 * 24 * 30);
+    await pool.query("INSERT INTO warns (id,user_id,issued_by,reason,points,active,expired,expires_at,created_at) VALUES (:id,:uid,:by,:reason,:pts,1,0,:exp,:now)",
+      { id: wid, uid: id, by: req.user.sub, reason: reason || "", points: pts, exp: expires, now });
+    const [[cur]] = await pool.query("SELECT COALESCE(SUM(points),0) AS s FROM warns WHERE user_id=:id AND active=1 AND expired=0", { id });
+    const totalActive = Math.min(3, cur.s || 0);
+    await pool.query("UPDATE users SET warn_count=:wc WHERE id=:id", { wc: totalActive, id });
+    const [rows] = await pool.query("SELECT * FROM warns WHERE id=:id", { id: wid });
+    return res.json(rows[0]);
+  }
+  const db = await readDB();
+  const u = db.users.find(u => u.id === id);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  const wid = uid();
+  const now = Date.now();
+  const w = { id: wid, user_id: id, issued_by: req.user.sub, reason: reason || "", points: pts, active: true, expired: false, expires_at: now + (1000 * 60 * 60 * 24 * 30), created_at: now };
+  db.warns.push(w);
+  const activeWarns = db.warns.filter(ww => ww.user_id === id && ww.active && !ww.expired);
+  const totalActive = Math.min(3, activeWarns.reduce((s, w) => s + (w.points || 1), 0));
+  u.warn_count = totalActive;
+  await writeDB(db);
+  return res.json(w);
+});
+
+app.post("/api/users/:id/reputation", authMiddleware, async (req, res) => {
+  const id = req.params.id;
+  const giver = req.user.sub;
+  if (giver === id) return res.status(400).json({ error: "Cannot self" });
+  const { points, reason, post_id } = req.body || {};
+  let p = parseInt(points, 10);
+  if (!Number.isFinite(p)) p = 1;
+  if (p > 5) p = 5;
+  if (p < -5) p = -5;
+  const isStaff = req.user.role === "admin" || req.user.role === "moderator";
+  if (!isStaff && p > 1) p = 1;
+  if (!isStaff && p < -1) p = -1;
+  if (MYSQL_READY) {
+    const [uRows] = await pool.query("SELECT id FROM users WHERE id=:id", { id });
+    if (!uRows.length) return res.status(404).json({ error: "User not found" });
+    const [gRows] = await pool.query("SELECT id FROM users WHERE id=:id", { id: giver });
+    if (!gRows.length) return res.status(404).json({ error: "Giver not found" });
+    const lid = uid();
+    await pool.query("INSERT INTO reputation_logs (id,user_id,giver_id,points,post_id,reason,created_at) VALUES (:id,:uid,:gid,:pts,:pid,:reason,:now)",
+      { id: lid, uid: id, gid: giver, pts: p, pid: post_id || null, reason: reason || "", now: Date.now() });
+    await pool.query("UPDATE users SET reputation = COALESCE(reputation,0) + :p WHERE id=:id", { p, id });
+    const [[u]] = await pool.query("SELECT reputation FROM users WHERE id=:id", { id });
+    return res.json({ reputation: u.reputation || 0, points: p });
+  }
+  const db = await readDB();
+  const u = db.users.find(u => u.id === id);
+  if (!u) return res.status(404).json({ error: "User not found" });
+  if (!db.users.find(g => g.id === giver)) return res.status(404).json({ error: "Giver not found" });
+  const lid = uid();
+  db.reputation_logs.push({ id: lid, user_id: id, giver_id: giver, points: p, post_id: post_id || null, reason: reason || "", created_at: Date.now() });
+  u.reputation = (u.reputation || 0) + p;
+  await writeDB(db);
+  return res.json({ reputation: u.reputation, points: p });
+});
+
+app.post("/api/posts/:id/report", authMiddleware, async (req, res) => {
+  const postId = req.params.id;
+  const { reason } = req.body || {};
+  if (MYSQL_READY) {
+    const id = uid();
+    await pool.query("INSERT INTO post_reports (id,post_id,reporter_id,reason,created_at) VALUES (:id,:pid,:rid,:reason,:now)",
+      { id, pid: postId, rid: req.user.sub, reason: reason || "", now: Date.now() });
+    return res.json({ ok: true, id });
+  }
+  const db = await readDB();
+  const r = { id: uid(), post_id: postId, reporter_id: req.user.sub, reason: reason || "", created_at: Date.now() };
+  db.post_reports.push(r);
+  await writeDB(db);
+  return res.json({ ok: true, id: r.id });
 });
 
 const server = app.listen(PORT, () => {
